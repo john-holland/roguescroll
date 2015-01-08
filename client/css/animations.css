@@ -1,0 +1,273 @@
+/* adapted from: http://coveloping.com/tools/css-animation-generator
+which is great */
+.animated { 
+    -webkit-animation-duration: 1s; 
+    animation-duration: 1s; 
+    -webkit-animation-fill-mode: both; 
+    animation-fill-mode: both; 
+} 
+
+.infinite-animation {
+    animation-iteration-count:infinite; 
+    -webkit-animation-iteration-count:infinite; 
+}
+
+/** attack-down **/
+@-webkit-keyframes attack-down { 
+    0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);} 
+    40% {-webkit-transform: translateY(40px);} 
+    60% {-webkit-transform: translateY(15px);} 
+} 
+
+@keyframes attack-down { 
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 
+    40% {transform: translateY(40px);} 
+    60% {transform: translateY(15px);} 
+} 
+
+.attack-down { 
+    -webkit-animation-name: attack-down; 
+    animation-name: attack-down; 
+}
+
+/** attack-up **/
+@-webkit-keyframes attack-up { 
+    0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);} 
+    40% {-webkit-transform: translateY(-40px);} 
+    60% {-webkit-transform: translateY(-15px);} 
+} 
+
+@keyframes attack-up { 
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 
+    40% {transform: translateY(-40px);} 
+    60% {transform: translateY(-15px);} 
+} 
+
+.attack-up { 
+    -webkit-animation-name: attack-up; 
+    animation-name: attack-up; 
+}
+
+/** take-damage **/
+@-webkit-keyframes take-damage { 
+    0% { -webkit-transform: skewX(9deg); } 
+    10% { -webkit-transform: skewX(-8deg); } 
+    20% { -webkit-transform: skewX(7deg); } 
+    30% { -webkit-transform: skewX(-6deg); } 
+    40% { -webkit-transform: skewX(5deg); } 
+    50% { -webkit-transform: skewX(-4deg); } 
+    60% { -webkit-transform: skewX(3deg); } 
+    70% { -webkit-transform: skewX(-2deg); } 
+    80% { -webkit-transform: skewX(1deg); } 
+    90% { -webkit-transform: skewX(0deg); } 
+    100% { -webkit-transform: skewX(0deg); } 
+} 
+@keyframes take-damage { 
+    0% { transform: skewX(9deg); } 
+    10% { transform: skewX(-8deg); } 
+    20% { transform: skewX(7deg); } 
+    30% { transform: skewX(-6deg); } 
+    40% { transform: skewX(5deg); } 
+    50% { transform: skewX(-4deg); } 
+    60% { transform: skewX(3deg); } 
+    70% { transform: skewX(-2deg); } 
+    80% { transform: skewX(1deg); } 
+    90% { transform: skewX(0deg); } 
+    100% { transform: skewX(0deg); } 
+} 
+.take-damage { 
+    -webkit-animation-name: take-damage; 
+    animation-name: take-damage; 
+    -webkit-animation-timing-function: ease-in; 
+    animation-timing-function: ease-in; 
+} 
+.animated.take-damage { 
+    -webkit-animation-duration: 0.75s; 
+    animation-duration: 0.75s; 
+}
+
+/** take-critical-damage **/
+@-webkit-keyframes take-critical-damage { 
+    0% { -webkit-transform: skewX(18deg); } 
+    10% { -webkit-transform: skewX(-16deg); } 
+    20% { -webkit-transform: skewX(14deg); } 
+    30% { -webkit-transform: skewX(-12deg); } 
+    40% { -webkit-transform: skewX(10deg); } 
+    50% { -webkit-transform: skewX(-8deg); } 
+    60% { -webkit-transform: skewX(6deg); } 
+    70% { -webkit-transform: skewX(-4deg); } 
+    80% { -webkit-transform: skewX(2deg); } 
+    90% { -webkit-transform: skewX(0deg); } 
+    100% { -webkit-transform: skewX(0deg); } 
+} 
+@keyframes take-critical-damage { 
+    0% { transform: skewX(18deg); } 
+    10% { transform: skewX(-16deg); } 
+    20% { transform: skewX(14deg); } 
+    30% { transform: skewX(-12deg); } 
+    40% { transform: skewX(10deg); } 
+    50% { transform: skewX(-8deg); } 
+    60% { transform: skewX(6deg); } 
+    70% { transform: skewX(-4deg); } 
+    80% { transform: skewX(2deg); } 
+    90% { transform: skewX(0deg); } 
+    100% { transform: skewX(0deg); } 
+} 
+.take-critical-damage { 
+    -webkit-animation-name: take-critical-damage; 
+    animation-name: take-critical-damage; 
+    -webkit-animation-timing-function: ease-in; 
+    animation-timing-function: ease-in; 
+} 
+.animated.take-critical-damage { 
+    -webkit-animation-duration: 0.75s; 
+    animation-duration: 0.75s; 
+}
+
+/** death **/
+@-webkit-keyframes death { 
+    0% { 
+        -webkit-transform: perspective(400px) rotateX(0deg); 
+        opacity: 1; 
+    } 
+    100% { 
+        -webkit-transform: perspective(400px) rotateX(90deg); 
+        opacity: 0; 
+    } 
+} 
+@keyframes death { 
+    0% { 
+        transform: perspective(400px) rotateX(0deg); 
+        opacity: 1; 
+    } 
+    100% { 
+        transform: perspective(400px) rotateX(90deg); 
+        opacity: 0; 
+    } 
+} 
+.death { 
+    -webkit-animation-name: death; 
+    -webkit-backface-visibility: visible !important; 
+    animation-name: death; 
+    backface-visibility: visible !important; 
+}
+
+/** fall-down-pit **/
+@-webkit-keyframes fall-down-pit { 
+    0% { 
+        -webkit-transform: scale(1); 
+    } 
+    25% { 
+        -webkit-transform: scale(.95); 
+    } 
+    50% { 
+        opacity: 1; 
+        -webkit-transform: scale(1.1); 
+    } 
+    100% { 
+        opacity: 0; 
+        -webkit-transform: scale(.3); 
+    } 
+} 
+@keyframes fall-down-pit { 
+    0% { 
+        transform: scale(1); 
+    } 
+    25% { 
+        transform: scale(.95); 
+    } 
+    50% { 
+        opacity: 1; 
+        transform: scale(1.1); 
+    } 
+    100% { 
+        opacity: 0; 
+        transform: scale(.3); 
+    } 
+} 
+.fall-down-pit { 
+    -webkit-animation-name: fall-down-pit; 
+    animation-name: fall-down-pit; 
+}
+
+/** walk-down-steps **/
+@-webkit-keyframes walk-down-steps { 
+    0% { 
+        -webkit-transform: translateY(0); 
+    } 
+    20% { 
+        opacity: 1; 
+        -webkit-transform: translateY(20px); 
+    } 
+    40% { 
+        opacity: 1; 
+        -webkit-transform: translateY(40px); 
+    } 
+    60% { 
+        opacity: 1; 
+        -webkit-transform: translateY(70px); 
+    } 
+    80% { 
+        opacity: 1; 
+        -webkit-transform: translateY(100px); 
+    } 
+    100% { 
+        opacity: 0; 
+        -webkit-transform: translateY(200px); 
+    } 
+} 
+@keyframes walk-down-steps { 
+    0% { 
+        transform: translateY(0); 
+    } 
+    20% { 
+        opacity: 1; 
+        transform: translateY(20px); 
+    } 
+    40% { 
+        opacity: 1; 
+        transform: translateY(40px); 
+    } 
+    60% { 
+        opacity: 1; 
+        transform: translateY(70px); 
+    } 
+    80% { 
+        opacity: 1; 
+        transform: translateY(100px); 
+    } 
+    100% { 
+        opacity: 0; 
+        transform: translateY(200px); 
+    } 
+} 
+.walk-down-steps { 
+    -webkit-animation-name: walk-down-steps; 
+    animation-name: walk-down-steps; 
+    -webkit-animation-duration: 3s; 
+    animation-duration: 3s; 
+}
+
+/** walk **/
+@-webkit-keyframes walk { 
+  0% { -webkit-transform: translateX(0%); } 
+  15% { -webkit-transform: translateX(-15%) rotate(-5deg); } 
+  30% { -webkit-transform: translateX(10%) rotate(3deg); } 
+  45% { -webkit-transform: translateX(-7%) rotate(-3deg); } 
+  60% { -webkit-transform: translateX(15%) rotate(2deg); } 
+  75% { -webkit-transform: translateX(-15%) rotate(-1deg); } 
+  100% { -webkit-transform: translateX(0%); } 
+} 
+@keyframes walk { 
+  0% { transform: translateX(0%); } 
+  15% { transform: translateX(-15%) rotate(-5deg); } 
+  30% { transform: translateX(10%) rotate(3deg); } 
+  45% { transform: translateX(-7%) rotate(-3deg); } 
+  60% { transform: translateX(15%) rotate(2deg); } 
+  75% { transform: translateX(-15%) rotate(-1deg); } 
+  100% { transform: translateX(0%); } 
+} 
+.walk { 
+    -webkit-animation-name: walk; 
+    animation-name: walk; 
+}

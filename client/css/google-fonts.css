@@ -1,0 +1,31 @@
+@import url(https://fonts.googleapis.com/css?family=Knewave|Permanent+Marker|Trade+Winds|Fredericka+the+Great|Philosopher|Frijole|Calligraffitti|Amatic+SC|Cinzel|Special+Elite|Freckle+Face|Ceviche+One|Slackey);
+
+.navbar-brand {
+    font-family: 'Trade Winds', cursive;
+    font-size: 3em;
+}
+
+h1, h2, h3, p, strong, span, i, a {
+    font-family: 'Amatic SC', cursive;
+    font-weight:  bold;
+}
+
+h1 {
+    font-size: 3em;
+}
+
+h2 {
+    font-size: 2.5em;
+}
+
+h3 {
+    font-size: 2em;
+}
+
+p, strong, i, span, a {
+    font-size: 1.5em;
+}
+
+strong {
+    font-weight: 800;
+}
