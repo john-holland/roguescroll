@@ -1,6 +1,11 @@
 //todo: Maybe implement a jquery like selector for entities
-function EntityWrapper(entity) {
+function EntityWrapper(entity, entities) {
+    this.entities = entities && entities.length ? entities || [];
     this.entity = entity;
+    
+    this.figureOutType = function() {
+        
+    }
 }
 
 EntityWrapper.prototype.position = function(setValue) {
@@ -30,6 +35,10 @@ EntityWrapper.prototype.Y = function(setValue) {
     return this.entity.data.position.y;
 }
 
-function $E(entity) {
-    return new EntityWrapper(entity);
+function $VG(entity) {
+    if (typeof entity === 'object') {
+        return new EntityWrapper(entity);
+    } else {
+        return parseEntitySelector(entity);
+    }
 }

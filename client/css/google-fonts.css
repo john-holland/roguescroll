@@ -1,6 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Knewave|Permanent+Marker|Trade+Winds|Fredericka+the+Great|Philosopher|Frijole|Calligraffitti|Amatic+SC|Cinzel|Special+Elite|Freckle+Face|Ceviche+One|Slackey);
 
-.navbar-brand {
+.navbar-brand, button.btn {
     font-family: 'Trade Winds', cursive;
     font-size: 3em;
 }
@@ -22,7 +22,7 @@ h3 {
     font-size: 2em;
 }
 
-p, strong, i, span, a {
+p, strong, i, span, a, button.btn {
     font-size: 1.5em;
 }
 

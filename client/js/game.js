@@ -136,7 +136,6 @@ $(function() {
                                     callback: callback,
                                     started: entity.engine.gameTime
                                 };
-                            //we need to see if the current animation is deferrable befor
                             
                             if (!data.currentAnimation) {
                                 playCurrent = true;
@@ -403,15 +402,18 @@ $(function() {
                 _: {
                     target: {
                         x: 0,
-                        y: 0
+                        y: 0,
+                        stopAfterArrival: false,
+                        callbacks: []
                     },
                     speed: 100,
                     isMoving: false,
-                    ignoreTarget: false,
+                    pursueTarget: true,
+                    ignoreXForTarget: true,
                     direction: "down"
                 },
                 update: function(dt, entity, component) {
-                    if (this.ignoreTarget) {
+                    if (!this.pursueTarget) {
                         return;
                     }
                     
@@ -421,11 +423,21 @@ $(function() {
                         newPosition = new V2(_x, _y),
                         length = newPosition.Length();
                     
-                    if (length < 10) {
+                    //we should check the dot product of the 
+                    if ((this.ignoreXForTarget && Math.abs(this.target.y - this.position.y) < 10) ||
+                        (this.ignoreXForTarget && length < 10)) {
                         if (this.isMoving) {
                             entity.sendMessage("stop-animating", {animation: "walk"});
                         }
                         this.isMoving = false;
+                        
+                        if (this.target.stopAfterArrival) {
+                            this.pursueTarget = false;
+                        }
+                        
+                        while (this.target.callbacks && this.target.callbacks.length) {
+                            this.target.callbacks.pop()();
+                        }
                         return;
                     }
                     
@@ -449,8 +461,11 @@ $(function() {
                 requiredComponents: ["position"],
                 messages: {
                     "go-to": function(entity, data) {
-                        this.target.x = data.target.x;
-                        this.target.y = data.target.y;
+                        this.target.x = data.x;
+                        this.target.y = data.y;
+                        
+                        if ("stopAfterArrive" in data) this.target.stopAfterArrival = data.stopAfterArrive;
+                        if ("callback" in data) this.target.callback = data.callback;
                     }
                 }
             },
@@ -513,7 +528,7 @@ $(function() {
                 },
                 messages: {
                     "damage": function(entity, data) {
-                        if (entity.health > 0) {
+                        if (this.health > 0) {
                             entity.sendMessage("animate", { animation: data.isCritical ? "take-critical-damage" : "take-damage" });
                         }
                     },
@@ -580,7 +595,7 @@ $(function() {
                         x: 35,
                         y: -35
                     },
-                    ignoreTarget: true,
+                    pursueTarget: false,
                     icon: "ax"
                 },
                 onAdd: function(entity, component) {
@@ -611,7 +626,7 @@ $(function() {
                         x: -35,
                         y: -35
                     },
-                    ignoreTarget: true,
+                    pursueTarget: false,
                     icon: "shield"
                 },
                 onAdd: function(entity, component) {
@@ -674,21 +689,62 @@ $(function() {
                     target: null,
                     icon: 'skull',
                     baseMiss: 10,
-                    side: 'baddies'
+                    side: 'baddies',
+                    senseDistance: 100,
+                    patrolTopTarget: {
+                        x: 0,
+                        y: 0
+                    },
+                    patrolBottomTarget: {
+                        x: 0,
+                        y: 0
+                    },
+                    patrolTo: "top",
+                    isPatrolling: false
                 },
                 onAdd: function(entity, component) {
-                    this.player = entity.engine.findEntityByTag("player")[0];
-                    this.baseMiss += _.random(this.player.character.level / 2, this.player.character.level);
                 },
                 update: function(dt, entity, component) {
-                    if (this.position.y - this.player.data.position.y > this.senseDistance) {
-                        this.target.y = this.player.data.position.y - 20;
+                    if (!this.player) {
+                        return;
+                    }
+                    
+                    if (Math.abs(this.position.y - this.player.data.position.y) < this.senseDistance) {
+                        entity.isPatrolling = false;
+                        this.target.y = this.player.data.position.y + 20;
                     } else {
                         //partrol.
-                        
+                        if (!this.isPatrolling) {
+                            this.isPatrolling = true;
+                            var continuePatrol = function() {
+                                var data = entity.data;
+                                entity.sendMessage("go-to", {
+                                    x: data.patrolTo === "top" ? data.patrolTopTarget.x : data.patrolBottomTarget.x,
+                                    y: data.patrolTo === "top" ? data.patrolTopTarget.y : data.patrolBottomTarget.y,
+                                    callback: function() {
+                                        if (entity.data.isPatrolling) {
+                                            if (entity.data.patrolTo === 'bottom') {
+                                                entity.data.patrolTo = 'top';
+                                            } else {
+                                                entity.data.patrolTo = 'bottom';
+                                            }
+                                        }
+                                        continuePatrol();
+                                    }
+                                });
+                            }
+                            continuePatrol();
+                        }
                     }
                 },
-                requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'center-aligned']
+                requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'center-aligned'],
+                messages: {
+                    'game-start': function(entity, data) {
+                        this.player = entity.engine.findEntityByTag("player")[0];
+                        this.world = entity.engine.findEntityByTag("world")[0];
+                        this.baseMiss += _.random(this.player.data.character.level / 2, this.player.data.character.level);
+                    }
+                }
             },
             "mounted": {
                 _: {
@@ -733,17 +789,20 @@ $(function() {
                     });
                 },
                 update: function(dt, entity, component) {
-                    if (this.mountTarget) {
-                        if (this.offset.x !== null) {
-                            this.position.x = this.mountTarget.data.position.x + this.offset.x;
-                        }
-                        
-                        if (this.offset.y !== null) {
-                            this.position.y = this.mountTarget.data.position.y + this.offset.y;
-                        }
-                        
-                        entity.shouldRender = this.mountTarget.shouldRender;
+                    if (!this.mountTarget) {
+                        return;
                     }
+                    
+                    if (this.offset.x !== null) {
+                        this.position.x = this.mountTarget.data.position.x + this.offset.x;
+                    }
+                    
+                    if (this.offset.y !== null) {
+                        this.position.y = this.mountTarget.data.position.y + this.offset.y;
+                    }
+                    
+                    entity.shouldRender = this.mountTarget.shouldRender;
+                    this.direction = this.mountTarget.data.direction;
                 },
                 requiredComponents: ["position"],
                 messages: {
@@ -763,14 +822,15 @@ $(function() {
                     },
                     isStaticPosition: false
                 },
+                requiredComponents: ["position"],
                 onAdd: function(entity, component) {
                     if (!component.spawned) {
                         component.spawned = true;
                         
                         for (var i = 0; i < 25; i++) {
-                            var ent = entity.engine.createEntity({tags: ['hide-at-start']});
+                            var ent = entity.engine.createEntity({ tags: ['hide-at-start'] });
                             ent.addComponent("sine-line", { });
-                           ent.addComponent("glyphicon-renderer", { icon: "clock" });
+                            ent.addComponent("glyphicon-renderer", { icon: "clock" });
                         }
                     }
                 },
@@ -785,7 +845,6 @@ $(function() {
                     });
                 }
             },
-            
             "enemy-spawner": {
                 _: {
                     lastSpawnTime: null,
@@ -797,7 +856,7 @@ $(function() {
                     this.lastSpawnTime = entity.engine.gameTime;
                 },
                 update: function(dt, entity, component) {
-                    if (this.enemiesToSpawn > 0 || (entity.engine.gameTime - this.lastSpawnTime) < this.spawnCooldown) {
+                    if (this.enemiesToSpawn <= 0 || (entity.engine.gameTime - this.lastSpawnTime) < this.spawnCooldown) {
                         return;
                     }
                     
@@ -805,8 +864,28 @@ $(function() {
                     this.enemiesToSpawn--;
                     
                     //create the enemy!
+                    var patrolCenter = _.random(0, this.world.data.size.height);
+                    var patrolRange = _.random(0, this.world.data.size.height / this.enemiesToSpawn);
+                    
+                    var patrolTop = patrolCenter - (patrolRange / 2);
+                    var patrolBottom = patrolCenter + (patrolRange / 2);
+                    var position = { y: patrolCenter, x: 0 };
+                    
                     var enemy = entity.engine.createEntity();
-                    enemy.addComponent("enemy", { position: { y: this.spawnPosition.y || 0, x: this.spawnPosition.x || 0 }, icon: "skull", target: { y: 0 } });
+                    
+                    if (this.spawnPosition !== null) {
+                        position = this.spawnPosition;
+                    }
+                    
+                    enemy.addComponent("enemy", { position: position, icon: "skull", target: { y: 0 } });
+                    
+                    enemy.data.patrolTopTarget.y = patrolTop;
+                    enemy.data.patrolBottomTarget.y = patrolBottom;
+                },
+                messages: {
+                    init: function(entity, data) {
+                        this.world = entity.engine.findEntityByTag("world")[0];
+                    }
                 }
             },
             "world-entity": {
@@ -829,12 +908,37 @@ $(function() {
                 _: {
                     lowestKnownY: 0
                 },
+                requiredComponents: ["position"],
                 onAdd: function(entity, component) {
                     if (!component.worldEntity) component.worldEntity = entity.engine.components.get('world-entity');
                     if (!component.worldEntity) component.player = entity.engine.findEntityByTag(['player'])[0];
-                },
-                update: function(dt, entity, component) {
                     
+                    entity.sendMessage("set-dimensions", {
+                        width: 1000,
+                        height: 3000
+                    });
+                },
+                aggragateUpdate: function(dt, entities, component) {
+                    var self = this;
+                    var previousLowest = self.lowestKnownY;
+                    component.worldEntity.entities.getList().forEach(function(entity) {
+                        if (entity.data.position.y > self.lowestKnownY) {
+                            self.lowestKnownY = entity.data.position.y;
+                        }
+                    });
+                },
+                messages: {
+                    "set-dimensions": function(entity, data) {
+                        var previousHeight = this.size.height;
+                        if ('width' in data) entity.data.size.width = data.width;
+                        if ('height' in data) entity.data.size.height = data.height;
+                        if ('x' in data) entity.data.size.x = data.x;
+                        if ('y' in data) entity.data.size.y = data.y;
+                        
+                        if (this.size.height != previousHeight) {
+                            $("#game").css("height", this.size.height + "px");
+                        }
+                    }
                 }
             },
             "game-manager": {
@@ -919,6 +1023,18 @@ $(function() {
                         
                         $("#game").append($(characterTemplate({characters: characters})));
                         
+                        function setCharacterUi(selectedCharacter) {
+                            //set the active on the character
+                            $(".character-selection .character-name-input").attr("placeholder", selectedCharacter.name);
+                            $(".character-selection .character-description").text(selectedCharacter.description);
+                            $(".character-selection .skills").text(selectedCharacter.skills);
+                            $(".character-selection .brains").text(selectedCharacter.brains);
+                            $(".character-selection .brawn").text(selectedCharacter.brawn);
+                            $(".character-selection .light").text(selectedCharacter.light);
+                        }
+                        
+                        setCharacterUi(characters[0]);
+                        
                         var data = this;
                         $(".character-selection .character-portrait").click(function() {
                             var $this = $(this);
@@ -932,12 +1048,8 @@ $(function() {
                             
                             if (selectedCharacter) {
                                 data.selectedCharacter = selectedCharacter;
-                                $(".character-selection .character-name-input").attr("placeholder", selectedCharacter.name);
-                                $(".character-selection .character-description").text(selectedCharacter.description);
-                                $(".character-selection .skills").text(selectedCharacter.skills);
-                                $(".character-selection .brains").text(selectedCharacter.brains);
-                                $(".character-selection .brawn").text(selectedCharacter.brawn);
-                                $(".character-selection .light").text(selectedCharacter.light);
+                                
+                                setCharacterUi(selectedCharacter);
                                 
                                 $(".character-selection .stats-container").show();
                             }
@@ -977,6 +1089,10 @@ $(function() {
                         
                         var world = entity.engine.findEntityByTag("world")[0];
                         world.sendMessage("generate", { seed: selectedCharacter.name + +new Date() });
+                        
+                        entity.engine.entities.getList().forEach(function(entity) {
+                            entity.sendMessage("game-start");
+                        })
                         
                         //start the enemy spawner going
                         //var enemySpawner = entity.engine.findEntityByTag("enemy-spawner")[0];
@@ -1027,9 +1143,11 @@ $(function() {
                 onAdd: function(entity, component) {
                     this.$renderedIcon.append($("<span style='line-height: 30px; vertical-align:middle;' data-health-display='" + entity.id + "'></span>"));
                     this.$healthDisplay = $("span[data-health-display='" + entity.id + "']");
+                    this.position.y = $(window).height() - 50;
                 },
                 update: function(dt, entity, component) {
                     this.$healthDisplay.text("gameTime " + (entity.engine.gameTime / 1000).toFixed(4));
+                    
                 }
             },
             "hide-on-pause": {
@@ -1104,6 +1222,12 @@ $(function() {
                     weapon: {
                         mountTag: "player"
                     }
+                }
+            },
+            {
+                tags:["enemy-spawner"],
+                components: {
+                    'enemy-spawner': {}
                 }
             },
             {
