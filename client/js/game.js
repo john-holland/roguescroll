@@ -255,7 +255,7 @@ $(function() {
                             })) {
                                 this.animationQueue = _.filter(this.animationQueue, function(animation) {
                                     return animation.metadata.name !== data.name;
-                                })
+                                });
                             }
                             return;
                         }
@@ -306,10 +306,18 @@ $(function() {
                 requiredComponents: ['position'],
                 onAdd: function(entity, component) {
                     $(this.selector).append($("<span style='position: " + (this.isStaticPosition ? "fixed" : "absolute") + 
-                        "; display: block; overflow: visible' class='glyphicons glyphicons-"
+                        "; display: block; overflow: visible' class='go-faster-hack glyphicons glyphicons-"
                         + this.icon + "' data-entity-id='" + entity.id + "'></span>"));
                     
                     this.$renderedIcon = $("span[data-entity-id='" + entity.id + "']");
+                    this.$renderedIcon.transition({
+                        left: this.position.x - (this.size.width / 2),
+                        top: this.position.y - (this.size.height / 2),
+                        "font-size": ((this.size.height + this.size.width) / 2) + "px",
+                        duration: 0,
+                        queue: false,
+                        rotate: (this.rotation !== null) ? this.rotation + 'deg' : null
+                    });
                     
                     if (!entity.shouldRender) {
                         this.$renderedIcon.hide();
@@ -412,20 +420,30 @@ $(function() {
                     ignoreXForTarget: true,
                     direction: "down"
                 },
+                onAdd: function(entity, component) {
+                    this.target.callbacks = [];
+                },
                 update: function(dt, entity, component) {
                     if (!this.pursueTarget) {
                         return;
                     }
                     
                     // A -> B :: B - A
-                    var _x = this.target.x - this.position.x,
-                        _y = this.target.y - this.position.y,
-                        newPosition = new V2(_x, _y),
-                        length = newPosition.Length();
+                    var _x = this.target.x - this.position.x;
+                    var _y = this.target.y - this.position.y;
+                    var toTarget = new V2(_x, _y);
+                    var length = toTarget.length();
+                    var move = toTarget.normalize().multiply(this.speed * (dt/1000));
+                        //if our move would put us passed our target, then we're there
+                        //so if (target - position) · (move) < 0 we're there.
+                    var target = new V2(this.target.x, this.target.y);
+                    var position = new V2(this.position.x, this.position.y);
+                    var reachedTarget = target.sub(position).dot(move) < 0;
                     
-                    //we should check the dot product of the 
-                    if ((this.ignoreXForTarget && Math.abs(this.target.y - this.position.y) < 10) ||
-                        (this.ignoreXForTarget && length < 10)) {
+                    //we've reached our destination if our new position would put us 
+                    if (reachedTarget || length < 10) {
+                        this.position.x = this.target.x;
+                        this.position.y = this.target.y;
                         if (this.isMoving) {
                             entity.sendMessage("stop-animating", {animation: "walk"});
                         }
@@ -446,11 +464,10 @@ $(function() {
                     }
                     
                     this.isMoving = true;
-                    
-                    newPosition.Normalize().Multiply((dt / 1000) * this.speed);
                         
-                    this.position.x += newPosition.X;
-                    this.position.y += newPosition.Y;
+                    this.position.x += move.X;
+                    this.position.y += move.Y;
+                    this.rotation = move.toDegrees();
                     
                     this.direction = this.position.y > this.target.y ? "down" : "up";
                     
@@ -461,15 +478,19 @@ $(function() {
                 requiredComponents: ["position"],
                 messages: {
                     "go-to": function(entity, data) {
+                        this.pursueTarget = true;
                         this.target.x = data.x;
                         this.target.y = data.y;
                         
                         if ("stopAfterArrive" in data) this.target.stopAfterArrival = data.stopAfterArrive;
-                        if ("callback" in data) this.target.callback = data.callback;
+                        if ("callback" in data) this.target.callbacks.push(data.callback);
                     }
                 }
             },
             "center-aligned": {
+                _: {
+                    alignCenter: true
+                },
                 requiredComponents: ["movement"],
                 onAdd: function(entity, component) {
                     if (!component.getCenter) {
@@ -477,19 +498,20 @@ $(function() {
                             return data.$document.width() / 2 - data.size.width / 2;
                         }
                     }
+                    
                     this.$document = $(document);
                     this.position.x = component.getCenter(this);
                     this.target.x = component.getCenter(this);
                 },
                 update: function(dt, entity, component) {
-                    this.target.x = component.getCenter(this);
+                    if (this.alignCenter) this.target.x = component.getCenter(this);
                 }
             },
             combatant: {
                 _: {
                     lastAttackTime: null,
                     attackCooldown: 1000,
-                    range: 20,
+                    range: 50,
                     side: "baddies"
                 },
                 requiredComponents: ["health", "movement", "position"],
@@ -500,7 +522,8 @@ $(function() {
                             var targets = _.filter(entity.engine.entities.getList(), function(entity) {
                                 return "side" in entity.data && "position" in entity.data && "health" in entity.data &&
                                        entity.data.health > 0 &&
-                                       entity.data.side !== data.side && Math.abs(entity.data.position.y - data.position.y) < data.range;
+                                       entity.data.side !== data.side && 
+                                       Math.abs(entity.data.position.y - data.position.y) < data.range;
                             });
                             
                             if (targets.length) {
@@ -533,7 +556,12 @@ $(function() {
                         }
                     },
                     "death": function(entity, data) {
-                        entity.sendMessage("animate", { animation: "death" });
+                        entity.sendMessage("animate", { 
+                            animation: "death",
+                            callback: function() {
+                                entity.shouldRender = false;
+                            }
+                        });
                     },
                     "attack": function(entity, data) {
                         this.tryAttack();
@@ -572,7 +600,7 @@ $(function() {
                     this.$menu = $("#menu");
                     this.$scrollContainer = $("#scroll-container");
                     this.$document = $(document);
-                    this.topMargin = Math.abs(parseInt(this.$menu.css("margin-top").replace("px", ""))) * 2;
+                    this.topMargin = $("#nav").height() * 3;
                 },
                 update: function(dt, entity, component) {
                     var top = Math.max(this.$document.scrollTop() - this.$menu.height(), 0) + this.topMargin;
@@ -580,6 +608,58 @@ $(function() {
                     this.target.y = top;
                 },
                 requiredComponents: ["movement"]
+            },
+            "floating-combat-text": {
+                //should spit text out in arks.
+                //pick random point above, use lerp 
+                messages: {
+                    "damage": function(entity, data) {
+                        var text = entity.engine.createEntity();
+                        text.addComponent("text", {icon: 'tint', position: { x: this.position.x, y: this.position.y } });
+                        text.data.$renderedIcon.css("color", "red");
+                        text.data.$text.css("color", "black");
+                        text.data.$text.text(data.amount);
+                        text.addComponent("movement", { speed: 100 });
+                        text.sendMessage("go-to", {
+                            x: this.position.x + _.random(-30, 30),
+                            y: this.position.y + (this.direction === 'up' ? 200 : -200)
+                                + _.random(-30, 30),
+                            callback: function() {
+                                text.destroy();
+                            }
+                        })
+                    },
+                    "heal": function(entity, data) {
+                        var text = entity.engine.createEntity();
+                        text.addComponent("text", {icon: 'heart', position: { x: this.position.x, y: this.position.y } });
+                        text.data.$renderedIcon.css("color", "green");
+                        text.data.$text.css("color", "black");
+                        text.data.$text.text(data.amount);
+                        text.addComponent("movement", { speed: 100 });
+                        text.sendMessage("go-to", {
+                            x: this.position.x + _.random(-30, 30),
+                            y: this.position.y + (this.direction === 'up' ? 200 : -200)
+                                + _.random(-30, 30),
+                            callback: function() {
+                                text.destroy();
+                            }
+                        })
+                    }
+                }
+            },
+            "timed-destroy": {
+                _: {
+                    spawned: null,
+                    destroyTimer: 5000
+                },
+                onAdd: function(entity, component) {
+                    this.spawned = entity.engine.gameTime;
+                },
+                update: function(entity, component) {
+                    if (entity.engine.gameTime - this.spawned > this.destroyTimer) {
+                        entity.destroy();
+                    }
+                }
             },
             "weapon": {
                 _: {
@@ -596,7 +676,9 @@ $(function() {
                         y: -35
                     },
                     pursueTarget: false,
-                    icon: "ax"
+                    icon: "ax",
+                    damage: "1d4",
+                    ability: null //function(entity)
                 },
                 onAdd: function(entity, component) {
                     if (this.mountTarget) this.mountTarget.data.weapon = entity;
@@ -610,7 +692,18 @@ $(function() {
                         }
                     }
                 },
-                requiredComponents: ["mounted", "animation", "glyphicon-renderer"]
+                requiredComponents: ["mounted", "animation", "glyphicon-renderer"],
+                messages: {
+                    attack: function(entity, data) {
+                        if (!data.target) {
+                            return false;
+                        }
+                        
+                        data.target.sendMessage("damage", {amount: chance.rpg(this.damage, {sum:true})});
+                        entity.sendMessage("animate", { animation: "attack-down" });
+                    }
+                }
+                
             },
             "shield": {
                 _: {
@@ -626,6 +719,7 @@ $(function() {
                         x: -35,
                         y: -35
                     },
+                    
                     pursueTarget: false,
                     icon: "shield"
                 },
@@ -643,6 +737,60 @@ $(function() {
                 },
                 requiredComponents: ["mounted", "animation", "glyphicon-renderer"]
             },
+            "augment": {
+                _: {
+                    augmentAbility: null,
+                    downRightOffset: {
+                        x: -35,
+                        y: -35
+                    },
+                    upRightOffset: {
+                        x: 35,
+                        y: 35
+                    },
+                    downLeftOffset: {
+                        x: 35,
+                        y: -35
+                    },
+                    upLeftOffset: {
+                        x: -35,
+                        y: 35
+                    },
+                    augmentPosition: "left"
+                },
+                requiredComponents: ["mounted", "animation", "glyphicon-renderer"],
+                update: function(dt, entity, component) {
+                    if (this.target) {
+                        if (this.augmentPosition === 'left') {
+                            if (this.target.direction == "down") {
+                                this.offset = this.downLeftOffset;
+                            } else {
+                                this.offset = this.upLeftOffset;
+                            }
+                        } else {
+                            if (this.target.direction == "down") {
+                                this.offset = this.downRightOffset;
+                            } else {
+                                this.offset = this.upRightOffset;
+                            }
+                        }
+                    }
+                }
+            },
+            "defensive-augment": {
+                _: {
+                    augmentPosition: "right",
+                    icon: 'umbrella'
+                },
+                requiredComponents: ['augment']
+            },
+            "offensive-augment": {
+                _: {
+                    augmentPosition: "right",
+                    icon: "candle"
+                },
+                requiredComponents: ['augment']
+            },
             "player": {
                 _: {
                     side: 'goodies',
@@ -650,7 +798,7 @@ $(function() {
                 },
                 onAdd: function(entity, component) {
                 },
-                requiredComponents: ["health", "scroll-chaser", "position", "glyphicon-renderer", "center-aligned", "animation"],
+                requiredComponents: ["health", "scroll-chaser", "position", "glyphicon-renderer", "center-aligned", "animation", 'combatant', "floating-combat-text"],
                 messages: {
                     "targets-in-range": function(entity, data) {
                         //for now we'll just hit one at a time.
@@ -665,7 +813,7 @@ $(function() {
                         }
                         
                         var target = data.targets[0];
-                        var toHit = _.random(this.character.skills / 2, (this.character.brawn + this.character.skills) / 3);
+                        var toHit = _.random(this.character.skills / 2, this.character.brawn + this.character.skills);
                         
                         if (toHit > target.data.baseMiss) {
                             //hit!
@@ -673,20 +821,20 @@ $(function() {
                                 amount: _.random(this.character.brains + this.character.level, this.character.brawn * 2 + this.character.level), 
                                 isCritical: _.random(this.character.skills / 4, 20) > 18
                             });
+                            this.weapon.sendMessage("attack", {
+                                target: target
+                            });
                         }
                         
                         return true;
                     },
-                    "keydown": function(entity, data) {
-                        if (data.which == 65) {
-                           this.weapon.sendMessage("animate", { animation: "attack-down" });
-                       }
+                    death: function(entity, component) {
+                        entity.engine.findEntityByTag("game-manager")[0].sendMessage("game-over");
                     }
                 }
             },
             "enemy": {
                 _: {
-                    target: null,
                     icon: 'skull',
                     baseMiss: 10,
                     side: 'baddies',
@@ -700,7 +848,8 @@ $(function() {
                         y: 0
                     },
                     patrolTo: "top",
-                    isPatrolling: false
+                    isPatrolling: false,
+                    damage: "1d6"
                 },
                 onAdd: function(entity, component) {
                 },
@@ -711,38 +860,49 @@ $(function() {
                     
                     if (Math.abs(this.position.y - this.player.data.position.y) < this.senseDistance) {
                         entity.isPatrolling = false;
-                        this.target.y = this.player.data.position.y + 20;
+                        this.target.y = this.player.data.position.y + 40;
                     } else {
                         //partrol.
+                        //todo: Implement smoke break
                         if (!this.isPatrolling) {
                             this.isPatrolling = true;
-                            var continuePatrol = function() {
-                                var data = entity.data;
-                                entity.sendMessage("go-to", {
-                                    x: data.patrolTo === "top" ? data.patrolTopTarget.x : data.patrolBottomTarget.x,
-                                    y: data.patrolTo === "top" ? data.patrolTopTarget.y : data.patrolBottomTarget.y,
-                                    callback: function() {
-                                        if (entity.data.isPatrolling) {
-                                            if (entity.data.patrolTo === 'bottom') {
-                                                entity.data.patrolTo = 'top';
-                                            } else {
-                                                entity.data.patrolTo = 'bottom';
-                                            }
+                            entity.sendMessage("go-to", {
+                                x: this.patrolTo === "top" ? this.patrolTopTarget.x : this.patrolBottomTarget.x,
+                                y: this.patrolTo === "top" ? this.patrolTopTarget.y : this.patrolBottomTarget.y,
+                                callback: function() {
+                                    if (entity.data.isPatrolling) {
+                                        entity.data.isPatrolling = false;
+                                        if (entity.data.patrolTo === 'bottom') {
+                                            entity.data.patrolTo = 'top';
+                                        } else {
+                                            entity.data.patrolTo = 'bottom';
                                         }
-                                        continuePatrol();
                                     }
-                                });
-                            }
-                            continuePatrol();
+                                },
+                                stopAfterArrival: true
+                            });
                         }
                     }
                 },
-                requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'center-aligned'],
+                requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'center-aligned', "floating-combat-text", 'animation'],
                 messages: {
-                    'game-start': function(entity, data) {
+                    'init': function(entity, data) {
                         this.player = entity.engine.findEntityByTag("player")[0];
                         this.world = entity.engine.findEntityByTag("world")[0];
-                        this.baseMiss += _.random(this.player.data.character.level / 2, this.player.data.character.level);
+                    },
+                    "targets-in-range": function(entity, data) {
+                        if (!data.targets || !data.targets.length) {
+                            return;
+                        }
+                        
+                        var hit = _.random(0, 15 - this.player.data.character.skills / 4);
+                        
+                        if (hit < this.player.data.baseMiss) {
+                            return true;
+                        }
+                        
+                        data.targets[0].sendMessage("damage", {amount: chance.rpg(this.damage, {sum:true})});
+                        return true;
                     }
                 }
             },
@@ -856,7 +1016,7 @@ $(function() {
                     this.lastSpawnTime = entity.engine.gameTime;
                 },
                 update: function(dt, entity, component) {
-                    if (this.enemiesToSpawn <= 0 || (entity.engine.gameTime - this.lastSpawnTime) < this.spawnCooldown) {
+                    if (!this.world || this.enemiesToSpawn <= 0 || (this.lastSpawnTime !== null && entity.engine.gameTime - this.lastSpawnTime) < this.spawnCooldown) {
                         return;
                     }
                     
@@ -865,22 +1025,25 @@ $(function() {
                     
                     //create the enemy!
                     var patrolCenter = _.random(0, this.world.data.size.height);
-                    var patrolRange = _.random(0, this.world.data.size.height / this.enemiesToSpawn);
+                    var patrolRange = Math.max(_.random(100, this.world.data.size.height / this.enemiesToSpawn), 100);
                     
                     var patrolTop = patrolCenter - (patrolRange / 2);
                     var patrolBottom = patrolCenter + (patrolRange / 2);
                     var position = { y: patrolCenter, x: 0 };
                     
-                    var enemy = entity.engine.createEntity();
+                    var enemy = entity.engine.createEntity({ tags: ['enemy'] });
                     
                     if (this.spawnPosition !== null) {
                         position = this.spawnPosition;
                     }
                     
-                    enemy.addComponent("enemy", { position: position, icon: "skull", target: { y: 0 } });
+                    enemy.addComponent("enemy", { position: position, icon: "skull", target: { y: 0, x: 0 } });
                     
                     enemy.data.patrolTopTarget.y = patrolTop;
                     enemy.data.patrolBottomTarget.y = patrolBottom;
+                    enemy.data.position.y = patrolCenter;
+                    enemy.sendMessage("init");
+                    console.log("spawned at: " + enemy.data.position.x + " " + enemy.data.position.y);
                 },
                 messages: {
                     init: function(entity, data) {
@@ -890,18 +1053,15 @@ $(function() {
             },
             "world-entity": {
                 _: {
-                    worldY: 0
+                    
                 },
                 requiredComponents: ["movement"],
                 onAdd: function(){
-                    $("#game").keydown(function (e) {
-                        
-                    })
                 },
                 update: function(dt, entity, component) {
                     //get screen to world.
                     var translation = 50;
-                    this.position.y = this.worldY * translation;
+                   // this.position.y = this.worldY * translation;
                 }
             },
             "world": {
@@ -926,6 +1086,10 @@ $(function() {
                             self.lowestKnownY = entity.data.position.y;
                         }
                     });
+                    
+                    if (this.lowestKnownY > previousLowest) {
+                        
+                    }
                 },
                 messages: {
                     "set-dimensions": function(entity, data) {
@@ -936,7 +1100,13 @@ $(function() {
                         if ('y' in data) entity.data.size.y = data.y;
                         
                         if (this.size.height != previousHeight) {
-                            $("#game").css("height", this.size.height + "px");
+                            var $game = $("#game"),
+                            hidden = $game.css("display") === 'none';
+                            $game.show();
+                            $game.css("height", this.size.height + "px");
+                            if (hidden) {
+                                $game.hide();
+                            }
                         }
                     }
                 }
@@ -1021,7 +1191,7 @@ $(function() {
                         
                         var characterTemplate = Handlebars.compile($("#character-select-template").html());
                         
-                        $("#game").append($(characterTemplate({characters: characters})));
+                        $("#menu").append($(characterTemplate({characters: characters})));
                         
                         function setCharacterUi(selectedCharacter) {
                             //set the active on the character
@@ -1034,6 +1204,9 @@ $(function() {
                         }
                         
                         setCharacterUi(characters[0]);
+                        this.selectedCharacter = characters[0];
+                        $(".glyphicons-" + characters[0].icon).addClass("active");
+                        $(".character-selection .stats-container").show();
                         
                         var data = this;
                         $(".character-selection .character-portrait").click(function() {
@@ -1050,8 +1223,6 @@ $(function() {
                                 data.selectedCharacter = selectedCharacter;
                                 
                                 setCharacterUi(selectedCharacter);
-                                
-                                $(".character-selection .stats-container").show();
                             }
                         });
                         
@@ -1077,6 +1248,9 @@ $(function() {
                         this.gameState = "in-play";
                         
                         var selectedCharacter = data.character;
+                        $(".start-your-adventure").show();
+                        
+                        $("#game").show();
                         
                         var player = entity.engine.findEntityByTag("player")[0];
                         player.data.character = selectedCharacter;
@@ -1102,11 +1276,20 @@ $(function() {
                         //the player is going down a level! Good for them!
                         // we need to make it if we don't already have it.
                     },
+                    "game-over": function(entity, data) {
+                        //todo: handle game over. Show summary of play etc
+                    },
                     restart: function(entity, data) {
                         //cleanup
                         entity.engine.game.restart();
                         $(".character-selection").remove();
                     }
+                }
+            },
+            "text": {
+                requiredComponents: ['glyphicon-renderer'],
+                onAdd: function(entity, component) {
+                    this.$text = $("<span style='line-height: 30px; vertical-align:middle;' data-health-display='" + entity.id + "'></span>").appendTo(this.$renderedIcon);
                 }
             },
             "health-display": {
@@ -1115,19 +1298,16 @@ $(function() {
                     icon: "heart",
                     position: {
                         x: 50,
-                        y: 50
+                        y: 100
                     },
                     rotate: 45
                 },
-                requiredComponents: ['glyphicon-renderer'],
+                requiredComponents: ['text'],
                 onAdd: function(entity, component) {
-                    this.$renderedIcon.append($("<span style='line-height: 30px; vertical-align:middle;' data-health-display='" + entity.id + "'></span>"));
-                    this.$healthDisplay = $("span[data-health-display='" + entity.id + "']");
-                    
                     this.player = entity.engine.findEntityByTag("player")[0];
                 },
                 update: function(dt, entity, component) {
-                    this.$healthDisplay.text("Health " + this.player.data.health);
+                    this.$text.text("Health " + this.player.data.health);
                 }
             },
             "game-metrics-display": {
@@ -1137,17 +1317,20 @@ $(function() {
                     position: {
                         x: 50,
                         y: 250
-                    }
+                    },
+                    metricsFunction: null
                 },
-                requiredComponents: ['glyphicon-renderer'],
+                requiredComponents: ["text"],
                 onAdd: function(entity, component) {
-                    this.$renderedIcon.append($("<span style='line-height: 30px; vertical-align:middle;' data-health-display='" + entity.id + "'></span>"));
-                    this.$healthDisplay = $("span[data-health-display='" + entity.id + "']");
                     this.position.y = $(window).height() - 50;
                 },
                 update: function(dt, entity, component) {
-                    this.$healthDisplay.text("gameTime " + (entity.engine.gameTime / 1000).toFixed(4));
+                    if (typeof this.metricsFunction !== 'function') {
+                        this.$text.text("gameTime " + (entity.engine.gameTime / 1000).toFixed(4));
+                        return;
+                    }
                     
+                    this.$text.text(this.metricsFunction(entity, dt));
                 }
             },
             "hide-on-pause": {
@@ -1157,12 +1340,18 @@ $(function() {
                     },
                     "game-resume": function(entity, data) {
                         entity.sendMessage("show");
+                    },
+                    "game-start": function(entity, data) {
+                        if (!entity.engine.isPlaying) {
+                            entity.sendMessage("hide");
+                        }
                     }
                 }
             },
             "keyboard-events": {
                 onAdd: function(entity, component) {
                     if (!component.events) {
+                        component.events = true;
                         $(document).keydown(function(e) {
                             if (component.engine.isPlaying) {
                                 component.entities.getList().forEach(function(entity) {
@@ -1177,7 +1366,6 @@ $(function() {
                                 });
                             }
                         });
-                        component.events = true;
                     }
                 }
             }
@@ -1195,8 +1383,8 @@ $(function() {
                     },
                     position: {
                         position: {
-                            x: 0,
-                            y: 200
+                            x: $(document).width() / 2,
+                            y: -75
                         },
                         size: {
                             width: 50,
@@ -1267,7 +1455,46 @@ $(function() {
             {
                 tags: ['world'],
                 components: {
-                    'world': { }
+                    'world': {
+                    }
+                }
+            },
+            {
+                tags: ['player-metrics'],
+                components: {
+                    'game-metrics-display': {
+                        isStaticPosition: false,
+                        metricsFunction: function(entity) {
+                            return entity.data.position.x.toFixed(3) + " " + entity.data.position.y.toFixed(3);
+                        },
+                        icon: "global"
+                    },
+                    mounted: {
+                        mountTag: 'player',
+                        offset: {
+                            x: 100,
+                            y: 100
+                        }
+                    }
+                }
+            },
+            {
+                tags: ['player-metrics'],
+                components: {
+                    'game-metrics-display': {
+                        isStaticPosition: false,
+                        metricsFunction: function(entity) {
+                            return entity.data.position.x.toFixed(3) + " " + entity.data.position.y.toFixed(3);
+                        },
+                        icon: "global"
+                    },
+                    mounted: {
+                        mountTag: 'enemy',
+                        offset: {
+                            x: 100,
+                            y: 100
+                        }
+                    }
                 }
             },
             {
@@ -1278,6 +1505,21 @@ $(function() {
                     },
                     'sine-line': {}
                 }
-            }]
+            },
+            {
+                components: {
+                    "defensive-augment": {
+                        mountTag: 'player'
+                    }
+                }
+            },
+            {
+                components: {
+                    "offensive-augment": {
+                        mountTag: 'player'
+                    }
+                }
+            }
+            ]
     });
 });

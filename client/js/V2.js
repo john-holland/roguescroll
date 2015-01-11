@@ -3,6 +3,10 @@
   
   TODO: Make side effecting versions of the functions below for performance benefits.
 */
+var isVector2 = function (value) {
+    return value.constructor === V2 || value.constructor === ImmutableV2;
+};
+
 function V2(x, y) {
     if (typeof x === 'undefined' || typeof y === 'undefined') {
         this.X = 0;
@@ -15,39 +19,39 @@ function V2(x, y) {
     /*
       Checks the value passed in to make sure it's a Vector2.
     */
-    var IsVector2 = function (value) {
+    var isVector2 = function (value) {
         return value.constructor === V2 || value.constructor === ImmutableV2;
     };
     
-    this.IsVector2 = IsVector2;
+    this.isVector2 = isVector2;
     
     /*
-      Performs a Dot on this V2 and the V2 passed in.
+      Performs a dot on this V2 and the V2 passed in.
     */
-    this.Dot = function(vec2) {
+    this.dot = function(vec2) {
         return (this.X * vec2.X + this.Y * vec2.Y); 
     }
 
     /*
-      Returns the Length of the V2. It should be noted that LengthSqr should be used
+      Returns the length of the V2. It should be noted that lengthSqr should be used
       for greater performance.
     */
-    this.Length = function() {
-        return Math.sqrt(this.Dot(this)); 
+    this.length = function() {
+        return Math.sqrt(this.dot(this)); 
     }
 
     /*
-      Returns the length * length of the V2. Faster than V2.Length as it does not
+      Returns the length * length of the V2. Faster than V2.length as it does not
       make a Math.sqrt call.
     */
-    this.LengthSqr = function() { 
-        return this.Dot(this); 
+    this.lengthSqr = function() { 
+        return this.dot(this); 
     }
     
     /*
       Returns the Absolute value for this vector's X and Y in a new V2.
     */
-    this.Abs = function() {
+    this.abs = function() {
         this.X = Math.abs(this.X);
         this.Y = Math.abs(this.Y);
         return this;
@@ -56,8 +60,8 @@ function V2(x, y) {
     /*
       Returns the unit length V2 (vector components divided by length)
     */
-    this.Normalize = function() {
-        var vlen = this.Length();
+    this.normalize = function() {
+        var vlen = this.length();
         this.X = (this.X / vlen);
         this.Y = (this.Y / vlen);
         return this;
@@ -66,8 +70,8 @@ function V2(x, y) {
     /*
       Returns the product of this vector and either a scalar or a V2 passed in.
     */
-    this.Multiply = function (value) {
-        if (IsVector2(value)) {
+    this.multiply = function (value) {
+        if (isVector2(value)) {
             this.X = (this.X * value.X);
             this.Y = (this.Y * value.Y);
             return this;
@@ -81,7 +85,7 @@ function V2(x, y) {
     /*
       Returns the divisor of this vector and a scalar passed in.
     */
-    this.Divide = function(value) {
+    this.divide = function(value) {
         this.X = (this.X / value);
         this.Y = (this.Y / value);
         return this;
@@ -90,8 +94,8 @@ function V2(x, y) {
     /*
       Returns the sum of this vector and either a scalar or a V2 passed in.
     */
-    this.Add = function(value) {
-        if (IsVector2(value)) {
+    this.add = function(value) {
+        if (isVector2(value)) {
             this.X = (this.X + value.X);
             this.Y = (this.Y + value.Y);
             return this;
@@ -105,8 +109,8 @@ function V2(x, y) {
     /*
       Returns the difference of this vector and either a scalar or a V2 passed in.
     */
-    this.Sub = function(value) {
-        if (IsVector2(value)) { 
+    this.sub = function(value) {
+        if (isVector2(value)) { 
             this.X = (this.X - value.X);
             this.Y = (this.Y - value.Y);
             return this;
@@ -117,33 +121,41 @@ function V2(x, y) {
         }
     }
     
-    this.Init = function(_x, _y) {
-        this.X = _x;
-        this.Y = _y;
+    this.init = function(x, y) {
+        this.X = x;
+        this.Y = y;
         return this;
     }
     
-    this.InitFromV2 = function(vec2) {
+    this.initFromV2 = function(vec2) {
         this.X = vec2.X;
         this.Y = vec2.Y;
         return this;
     }
     
-    this.Copy = function() {
+    this.copy = function() {
         return new V2(this.X, this.Y);
     }
     
-    this.AsImmutable = function() {
+    this.asImmutable = function() {
         return new ImmutableV2(this.X, this.Y);
     }
     
-    this.ToRadians = function() {
+    this.toRadians = function() {
         return Math.atan2(this.Y, this.X);
     }
     
-    this.FromRadians = function(rads) {
+    this.fromRadians = function(rads) {
         this.X = Math.cos(rads);
         this.Y = Math.sin(rads);
+    }
+    
+    this.toDegrees = function() {
+        return Math.degrees(this.toRadians);
+    }
+    
+    this.fromDegrees = function(degrees) {
+        return this.fromRadians(Math.radians(degrees));
     }
 }
 
@@ -160,61 +172,61 @@ function ImmutableV2(x, y) {
     /*
       Checks the value passed in to make sure it's a Vector2.
     */
-    var IsVector2 = function (value) {
+    var isVector2 = function (value) {
         return value.constructor === V2 || value.constructor === ImmutableV2;
     };
     
     this.Equals = function(vec2) {
-        return IsVector2(vec2) && this.X == vec2.X && this.Y == vec2.Y;
+        return isVector2(vec2) && this.X == vec2.X && this.Y == vec2.Y;
     };
     
     /*
-      Performs a Dot on this V2 and the V2 passed in.
+      Performs a dot on this V2 and the V2 passed in.
     */
-    this.Dot = function(vec2) {
+    this.dot = function(vec2) {
         return (this.X * vec2.X + this.Y * vec2.Y); 
     }
 
     /*
-      Returns the Length of the V2. It should be noted that LengthSqr should be used
+      Returns the length of the V2. It should be noted that lengthSqr should be used
       for greater performance.
     */
-    this.Length = function() {
-        return Math.sqrt(this.Dot(this)); 
+    this.length = function() {
+        return Math.sqrt(this.dot(this)); 
     }
     
-    this.Perpindicular = function() {
+    this.perpendicular = function() {
         return new ImmutableV2(-this.Y, this.X);
     }
 
     /*
-      Returns the length * length of the V2. Faster than V2.Length as it does not
+      Returns the length * length of the V2. Faster than V2.length as it does not
       make a Math.sqrt call.
     */
-    this.LengthSqr = function() { 
-        return this.Dot(this); 
+    this.lengthSqr = function() { 
+        return this.dot(this); 
     }
     
     /*
       Returns the Absolute value for this vector's X and Y in a new V2.
     */
-    this.Abs = function() {
+    this.abs = function() {
         return new ImmutableV2(Math.abs(this.X), Math.abs(this.Y));
     }
 
     /*
       Returns the unit length V2 (vector components divided by length)
     */
-    this.Normalize = function() {
-        var vlen = this.Length();
+    this.normalize = function() {
+        var vlen = this.length();
         return new ImmutableV2(this.X / vlen, this.Y / vlen);
     }
     
     /*
       Returns the product of this vector and either a scalar or a V2 passed in.
     */
-    this.Multiply = function (value) {
-        if (IsVector2(value)) {
+    this.multiply = function (value) {
+        if (isVector2(value)) {
             return new ImmutableV2(this.X * value.X, this.Y * value.Y);
         } else {
             return new ImmutableV2(this.X * value, this.Y * value);   
@@ -224,15 +236,15 @@ function ImmutableV2(x, y) {
     /*
       Returns the divisor of this vector and a scalar passed in.
     */
-    this.Divide = function(value) {
+    this.divide = function(value) {
         return new ImmutableV2(this.X / value, this.Y / value); 
     }
     
     /*
       Returns the sum of this vector and either a scalar or a V2 passed in.
     */
-    this.Add = function(value) {
-        if (IsVector2(value)) {
+    this.add = function(value) {
+        if (isVector2(value)) {
             return new ImmutableV2(this.X + value.X, this.Y + value.Y); 
         } else {
             return new ImmutableV2(this.X + value, this.Y + value);
@@ -242,23 +254,41 @@ function ImmutableV2(x, y) {
     /*
       Returns the difference of this vector and either a scalar or a V2 passed in.
     */
-    this.Sub = function(value) {
-        if (IsVector2(value)) { 
+    this.sub = function(value) {
+        if (isVector2(value)) { 
             return new ImmutableV2(this.X - value.X, this.Y - value.Y);
         } else {
             return new ImmutableV2(this.X - value, this.Y - value); 
         }
     }
     
-    this.AsMutable = function() {
+    this.asMutable = function() {
         return new V2(this.X, this.Y);
     }
     
-    this.ToRadians = function() {
+    this.toRadians = function() {
         return Math.atan2(this.Y, this.X);
     }
     
-    this.FromRadians = function(rads) {
+    this.fromRadians = function(rads) {
         return new V2(Math.cos(rads), Math.sin(rads));
     }
+    
+    this.toDegrees = function() {
+        return Math.degrees(this.toRadians);
+    }
+    
+    this.fromDegrees = function(degrees) {
+        return this.fromRadians(Math.radians(degrees));
+    }
+}
+
+Math.degrees = function(rad)
+{
+    return rad*(180/Math.PI);
+}
+
+Math.radians = function(deg)
+{
+    return deg * (Math.PI/180);
 }

@@ -9,6 +9,7 @@ function Component(name, options) {
     this._update = options.update || null;
     this._aggregateUpdate = options.aggregateUpdate || null;
     this._render = options.render || null;
+    this.entityData = new ListMap();
 }
 
 Component.prototype.handleMessage = function (name, callback) {
@@ -51,6 +52,10 @@ Entity.prototype.addComponent = function(name, defaultData) {
 
 Entity.prototype.removeComponent = function(name) {
     this.engine.removeComponent(this, name);
+}
+
+Entity.prototype.destroy = function() {
+    this.engine.destroyEntity(this);
 }
 
 Entity.prototype.update = function(dt) {
@@ -98,6 +103,7 @@ function Engine(game) {
     this.isPlaying = false;
     this.entities = new ListMap();
     this.components = new ListMap();
+    this.entitiesToDestroy = [];
     
     this.play = function() {
         self.isPlaying = true;
@@ -180,15 +186,27 @@ function Engine(game) {
             throw new Error("Engine already destroyed.");
         }
         
-        self.entities.forEach(function(entity) {
-            entity.sendMessage("on-destroy");
+        self.entities.getList().forEach(function(entity) {
+            entity.destroy();
         });
         
-        self.stopUpdate();
+        self.pause();
         self.entities.clear();
         delete self.entities;
         self.components.clear();
         delete self.components;
+        self.isDestroyed = true;
+    }
+    
+    function _destroyEntity(entity) {
+        entity.components.getList().forEach(function(component) {
+            entity.removeComponent(component.name);
+        });
+        self.entities.remove(entity.id);
+    }
+    
+    this.destroyEntity = function(entity) {
+        self.entitiesToDestroy.push(entity);
     }
     
     this.update = function(dt, gameTime) {
@@ -209,7 +227,11 @@ function Engine(game) {
         
         for (i = 0; i < entities.length; i++) {
             entities[i].update(dt);
-        }   
+        }
+        
+        while (self.entitiesToDestroy.length) {
+            _destroyEntity(self.entitiesToDestroy.pop());
+        }
         
         return true;
     }

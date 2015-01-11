@@ -54,8 +54,10 @@ function ListMap(_map) {
             
             var index = list.indexOf();
             if (index > -1) {
-                list.splice(map[key], 1);
+                list.splice(index, 1);
             }
+            map[key] = null;
+            delete map[key];
             
             return value;
         }
