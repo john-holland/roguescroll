@@ -21,7 +21,6 @@
           }
           
           #scroll-container {
-            margin-top: -72px;
             padding-top: 0;
             padding-bottom: 0;
             overflow-y: auto;
@@ -39,22 +38,22 @@
             overflow: hidden;
           }
           
-          .portraits {
-            height: 150px;
-            margin: 5px;
+          .portraits > span {
+            overflow: wrap;
+            text-align: center;
           }
+          
           .centering-container {
-            position: absolute;
-            left: 50%;
+            position: relative;
+            margin-left: 50%;
           }
-          .portrait-container {
+          .centered-container {
             position: relative;
             margin-left: -50%;
           }
           
           .character-portrait {
-            display:block;
-            float: left;
+            display:inline-block;
             width: 60px;
             font-size: 40px;
             height: 60px;
@@ -109,6 +108,10 @@
           <h1>Welcome to Rogue Scroll!</h1>
           <h2 class="start-your-adventure" style="display: none; margin-top: 50px">Scroll down to start your adventure!</h2>
           <p class="start-your-adventure" style="display: none;">Return here to pause.</p>
+          <br/>
+          <p class="start-your-adventure" style="display: none;">You will automatically attack any enemies you come accross.</p>
+          <h3 class="start-your-adventure" style="display: none; margin-top: 50px">Watch your step! If you see a trap (<span class="glyphicons glyphicons-heat" style="font-size: 1em"></span> for example), click on the <span class="glyphicons glyphicons-warning-sign" style="font-size: 1em"></span> to disarm it...</h3>
+          <p class="start-your-adventure" style="display: none;">If you don't see a trap, that's too bad <span class="glyphicons glyphicons-thumbs-up"></span></p>
         </div>
         <div id="game" style="position: relative">
         </div>
@@ -153,14 +156,10 @@
       <script id="character-select-template" type="text/x-handlebars-template">
         <div class="character-selection text-center">
         <h2>Choose a character!</h2>
-        <div class="row portraits">
-        <div class="centering-container">
-          <div class="portrait-container center-block">
-          {{#each characters}}
-            <span class="pull-left character-portrait glyphicons glyphicons-{{icon}}" />
-          {{/each}}
-          </div>
-        </div>
+        <div class="row portraits portrait-container" style="text-align: center">
+            {{#each characters}}
+              <span class="character-portrait glyphicons glyphicons-{{icon}}" />
+            {{/each}}
         </div>
         
         <h3 class="character-name">Name</h3>
@@ -176,6 +175,16 @@
         <br/>
         <button class="character-select-button centered btn btn-primary">Select</button>
         </div>
+      </script>
+      <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      
+        ga('create', 'UA-58454755-1', 'auto');
+        ga('send', 'pageview');
+      
       </script>
   </body>
 </html>

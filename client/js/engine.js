@@ -55,10 +55,20 @@ Entity.prototype.removeComponent = function(name) {
 }
 
 Entity.prototype.destroy = function() {
+    this.sendMessage("destroyed");
     this.engine.destroyEntity(this);
+    this.__isDestroyed = true;
+}
+
+Entity.prototype.isDestroyed = function() {
+    return !!this.__isDestroyed;
 }
 
 Entity.prototype.update = function(dt) {
+    if (this.__isDestroyed) {
+        return;
+    }
+    
     if (!(this.isActive && this.shouldRender)) {
         //skip update if we're not active and we shouldn't render
         return;
