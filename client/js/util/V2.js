@@ -292,3 +292,13 @@ Math.radians = function(deg)
 {
     return deg * (Math.PI/180);
 }
+
+module.exports = {
+    V2: V2,
+    ImmutableV2: ImmutableV2
+};
+
+if (window) {
+    window.V2 = V2;
+    window.ImmutableV2 = ImmutableV2;
+}

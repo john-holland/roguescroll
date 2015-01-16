@@ -61,3 +61,7 @@ function animLoop( render, maximumUpdateMS) {
         }
     }
 }
+
+if (module && module.exports) {
+    module.exports = animLoop;
+}

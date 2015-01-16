@@ -79,3 +79,11 @@ function ListMap(_map) {
         };
     }
 }
+
+if (module && module.exports) {
+    module.exports = ListMap;
+}
+
+if (window) {
+    window.ListMap = ListMap;
+}

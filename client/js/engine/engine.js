@@ -1,108 +1,8 @@
-function Component(name, options) {
-    this.name = name;
-    this.requiredComponents = options.requiredComponents || [];
-    this.defaultData = (options.defaultData || options._) || {};
-    this.entities = new ListMap();
-    this.messageHandlers = { };
-    this._onAdd = options.onAdd || null;
-    this._onRemove = options.onRemove || null;
-    this._update = options.update || null;
-    this._aggregateUpdate = options.aggregateUpdate || null;
-    this._render = options.render || null;
-    this.entityData = new ListMap();
-}
-
-Component.prototype.handleMessage = function (name, callback) {
-    this.messageHandlers[name] = callback;
-}
-
-Component.prototype.update = function(callback) {
-    this._update = callback;
-}
-
-Component.prototype.onAdd = function(callback) {
-    this._onAdd = callback;
-}
-
-Component.prototype.onRemove = function(callback) {
-    this._onRemove = callback;
-}
-
-Component.prototype.render = function(callback) {
-    this._render = callback;
-}
-
-Component.prototype.aggregateUpdate = function(callback) {
-    this._aggregateUpdate = callback;
-}
-
-function Entity(id, engine) {
-    this.id = id;
-    
-    this.data = { };
-    this.components = new ListMap();
-    this.engine = engine;
-    this.isActive = true;
-    this.shouldRender = true;
-}
-
-Entity.prototype.addComponent = function(name, defaultData) {
-    this.engine.addComponentToEntity(this, name, defaultData || { });
-}
-
-Entity.prototype.removeComponent = function(name) {
-    this.engine.removeComponent(this, name);
-}
-
-Entity.prototype.destroy = function() {
-    this.sendMessage("destroyed");
-    this.engine.destroyEntity(this);
-    this.__isDestroyed = true;
-}
-
-Entity.prototype.isDestroyed = function() {
-    return !!this.__isDestroyed;
-}
-
-Entity.prototype.update = function(dt) {
-    if (this.__isDestroyed) {
-        return;
-    }
-    
-    if (!(this.isActive && this.shouldRender)) {
-        //skip update if we're not active and we shouldn't render
-        return;
-    }
-    
-    var components = this.components.getList();
-    
-    for (var i = 0; i < components.length; i++) {
-        var component = components[i],
-            update = component._update,
-            render = component._render;
-        
-        if (this.isActive && update) update.call(this.data, dt, this, component);
-        if (this.shouldRender && render) render.call(this.data, dt, this, component);
-    }
-}
-
-//todo: implement async messages with timeouts
-Entity.prototype.sendMessage = function(message, data, timeoutMS, callback) {
-    
-    var metadata = { handled: false, results: [] },
-    self = this;
-    this.components.getList().forEach(function(component) {
-        if (message in component.messageHandlers) {
-            metadata.handled = true;
-            var result = component.messageHandlers[message].call(self.data, self, data, component);
-            if (typeof result !== 'undefined') {
-                metadata.results.push(result);
-            }
-        }
-    });
-    
-    return metadata;
-}
+var ListMap = require("../util/listmap");
+var animLoop = require("../util/animLoop");
+var JSONfn = require("../util/JSONfn");
+var Entity = require("entity");
+var Component = require("component");
 
 function Engine(game) {
     var self = this,
@@ -305,34 +205,5 @@ function Engine(game) {
         return _.filter(self.entities.getList(), function(entity) {
             return entity.tags.indexOf(tag) > -1;
         });
-    }
-}
-
-function Game(options) {
-    var self = this;
-    this.name = options.name || "";
-    this.engine = new Engine(this);
-    this.engine.initialize(options.components || [], options.entities || []);
-    
-    this.pause = function() {
-        self.engine.pause();
-        self.engine.entities.getList().forEach(function(entity) {
-            entity.sendMessage("game-pause");
-        });
-    }
-    
-    this.play = function() {
-        self.engine.play();
-        self.engine.entities.getList().forEach(function(entity) {
-            entity.sendMessage("game-resume");
-        });
-    }
-    
-    this.restart = function() {
-        self.engine.pause();
-        self.engine.destroy();
-        self.engine = new Engine(self);
-        self.engine.initialize(options.components, options.entities);
-        self.play();
     }
 }
