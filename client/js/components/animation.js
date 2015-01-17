@@ -1,4 +1,4 @@
-var ListMap = require("../util/ListMap");
+var ListMap = require("../util/listmap");
 var _ = require("../util/underscore");
 
 module.exports = function Animation() {

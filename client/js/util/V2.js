@@ -1,7 +1,9 @@
+define(function() {
+
 /*
-  A simple vector2 class. Each operation returns a new vector2, so beware of garbage collection!
+  V2 is a mutable vector2 for performance
   
-  TODO: Make side effecting versions of the functions below for performance benefits.
+  ImmutableV2 is not mutable.
 */
 var isVector2 = function (value) {
     return value.constructor === V2 || value.constructor === ImmutableV2;
@@ -293,12 +295,14 @@ Math.radians = function(deg)
     return deg * (Math.PI/180);
 }
 
-module.exports = {
-    V2: V2,
-    ImmutableV2: ImmutableV2
-};
-
 if (window) {
     window.V2 = V2;
     window.ImmutableV2 = ImmutableV2;
 }
+
+return {
+    V2: V2,
+    ImmutableV2: ImmutableV2
+};
+ 
+});

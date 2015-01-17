@@ -12,47 +12,44 @@
  * Once use scrolls down, they start to descend. As they descend they the page will grow.
  * 
  **/
-
-var RogueScroll = null;
-
-$(function() {
-    var Game = require("engine/game");
+define(function() {
+    var Game = require("./engine/game"),
     RogueScroll = new Game({
         name: "Rogue Scroll",
         components: { 
-            health: require("health")(),
-            position: require("position")(),
-            animation: require("animation")(),
-            'glyphicon-renderer': require("glyphicon-renderer")(),
-            movement: require("movement")(),
-            "center-aligned": require("center-aligned")(),
-            combatant: require("combatant")(),
-            "health-potion": require("health-potion")(),
-            "scroll-chaser": require("scroll-chaser")(),
-            "floating-combat-text": require("floating-combat-text")(),
-            "timed-destroy": require("timed-destroy")(),
-            "weapon": require("weapon")(),
-            "shield": require("shield")(),
-            "augment": require("augment")(),
-            "defensive-augment": require("defensive-augment")(),
-            "offensive-augment": require("offensive-augment")(),
-            "player": require("player")(),
-            "enemy": require("enemy")(),
-            "mounted": require("mounted")(),
+            health: require("./components/health")(),
+            position: require("./components/position")(),
+            animation: require("./components/animation")(),
+            'glyphicon-renderer': require("./components/glyphicon-renderer")(),
+            movement: require("./components/movement")(),
+            "center-aligned": require("./components/center-aligned")(),
+            combatant: require("./components/combatant")(),
+            "health-potion": require("./components/health-potion")(),
+            "scroll-chaser": require("./components/scroll-chaser")(),
+            "floating-combat-text": require("./components/floating-combat-text")(),
+            "timed-destroy": require("./components/timed-destroy")(),
+            "weapon": require("./components/weapon")(),
+            "shield": require("./components/shield")(),
+            "augment": require("./components/augment")(),
+            "defensive-augment": require("./components/defensive-augment")(),
+            "offensive-augment": require("./components/offensive-augment")(),
+            "player": require("./components/player")(),
+            "enemy": require("./components/enemy")(),
+            "mounted": require("./components/mounted")(),
             "trap": {
                 //the trap should not be visible unless the player is within senseRange + (brains * 3)
                 //once the player sees it, it should show a icon: 'warning-sign' 
             },
-            "sine-line": require("sine-line")(),
-            "enemy-spawner": require("enemy-spawner")(),
-            "world-entity": require("world-entity")(),
-            "world": require("world")(),
-            "game-manager": require("game-manager")(),
-            "text": require("text")(),
-            "health-display": require("health-display")(),
-            "game-metrics-display": require("game-metrics-display")(),
-            "hide-on-pause": require("hide-on-pause")(),
-            "keyboard-events": require("keyboard-events")()
+            "sine-line": require("./components/sine-line")(),
+            "enemy-spawner": require("./components/enemy-spawner")(),
+            "world-entity": require("./components/world-entity")(),
+            "world": require("./components/world")(),
+            "game-manager": require("./components/game-manager")(),
+            "text": require("./components/text")(),
+            "health-display": require("./components/health-display")(),
+            "game-metrics-display": require("./components/game-metrics-display")(),
+            "hide-on-pause": require("./components/hide-on-pause")(),
+            "keyboard-events": require("./components/keyboard-events")()
         },
         entities: [
             {
@@ -243,10 +240,17 @@ $(function() {
             {
                 components: {
                     "glyphicon-renderer": {
-                        icon: "exit"
-                    }
+                        icon: "exit",
+                        position: {
+                            y: 2500,
+                            x: 0
+                        }
+                    },
+                    'center-aligned': { }
                 }
             }
             ]
     });
+
+    return RogueScroll;
 });

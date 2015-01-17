@@ -34,16 +34,16 @@ module.exports = function Movement() {
             }
             
             // A -> B :: B - A
-            var _x = this.target.x - this.position.x;
-            var _y = this.target.y - this.position.y;
-            var toTarget = new V2(_x, _y);
-            var length = toTarget.length();
-            var move = toTarget.normalize().multiply(this.speed * (dt/1000));
+            var _x = this.target.x - this.position.x
+                _y = this.target.y - this.position.y,
+                toTarget = new V2(_x, _y),
+                length = toTarget.length(),
+                move = toTarget.normalize().multiply(this.speed * (dt/1000)),
                 //if our move would put us passed our target, then we're there
                 //so if (target - position) · (move) < 0 we're there.
-            var target = new V2(this.target.x, this.target.y);
-            var position = new V2(this.position.x, this.position.y);
-            var reachedTarget = target.sub(position).dot(move) < 0;
+                target = new V2(this.target.x, this.target.y),
+                position = new V2(this.position.x, this.position.y),
+                 reachedTarget = target.sub(position).dot(move) <= 0;
             //or you know, if you're really close.
             if (reachedTarget || length < 1) {
                 this.position.x = this.target.x;
@@ -62,6 +62,7 @@ module.exports = function Movement() {
             
             if (!reachedTarget) {    
                 if (!this.centerAlign) this.position.x += move.X;
+                
                 this.position.y += move.Y;
                 this.rotation = move.toDegrees();
             }

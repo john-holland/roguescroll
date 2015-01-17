@@ -1,4 +1,4 @@
-var _ = require("underscore");
+var _ = require("expose?_!../util/underscore");
 
 module.exports = function() {
     return {

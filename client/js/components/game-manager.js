@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 module.exports = function() {
     return {
         _: {
@@ -77,7 +79,7 @@ module.exports = function() {
                     return char;
                 });
                 
-                var characterTemplate = Handlebars.compile($("#character-select-template").html());
+                var characterTemplate = require("../templates/characterSelection.hbs");
                 
                 $("#menu").append($(characterTemplate({characters: characters})));
                 

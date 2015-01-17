@@ -4,6 +4,8 @@
 // requestAnimationFrame polyfill by Erik Möller
 // fixes from Paul Irish and Tino Zijdel
  
+define(function() {
+   
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -62,6 +64,10 @@ function animLoop( render, maximumUpdateMS) {
     }
 }
 
-if (module && module.exports) {
-    module.exports = animLoop;
+if (window) {
+    window.animLoop = animLoop;
 }
+
+return animLoop;
+ 
+});

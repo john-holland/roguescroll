@@ -1,5 +1,6 @@
-var chance = require("chance");
-var _ = require("underscore");
+var Chance = require("../util/chance"),
+    chance = new Chance();
+var _ = require("../util/underscore");
 
 module.exports = function() {
     return {
