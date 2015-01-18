@@ -2,10 +2,22 @@ module.exports = function Health() {
     return {
         _: {
             health: 100,
-            maxHealth: 100
+            maxHealth: 100,
+            damagePredicates: []
         },
         messages: {
             "damage": function(entity, data) {
+                var attackDiverted = false;
+                this.damagePredicates.forEach(function() {
+                    if (!entity.data.damagePredicates.pop()(data)) {
+                        attackDiverted = true;
+                    }
+                });
+                
+                if (attackDiverted) {
+                    return;
+                }
+                
                 entity.data.health -= data.amount || 0;
                 
                 if (entity.data.health <= 0) {

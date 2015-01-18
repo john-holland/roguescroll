@@ -45,6 +45,9 @@ module.exports = function() {
             },
             "roll": function(entity, data) {
                 this.createTextEntity.call(this, entity, {icon:"dice", text: data.roll, iconColor:"red"});
+            },
+            "blocked": function(entity, data) {
+                this.createTextEntity.call(this, entity, {icon: "shield", text: data.amount, iconColor: "blue"})
             }
         }
     };

@@ -29,23 +29,30 @@ module.exports = function Movement() {
             this.previousPosition.x = this.position.x;
             this.previousPosition.y = this.position.y;
             
+            
+            if (!this.pursueTarget) {
+                return;
+            }
+            
             if (!this.isMobile) {
                 return;
             }
             
             // A -> B :: B - A
+            
+            //if our move would put us passed our target, then we're there
+            //so if (target - position) · (move) < 0 we're there.
             var _x = this.target.x - this.position.x
                 _y = this.target.y - this.position.y,
                 toTarget = new V2(_x, _y),
                 length = toTarget.length(),
                 move = toTarget.normalize().multiply(this.speed * (dt/1000)),
-                //if our move would put us passed our target, then we're there
-                //so if (target - position) · (move) < 0 we're there.
                 target = new V2(this.target.x, this.target.y),
                 position = new V2(this.position.x, this.position.y),
-                 reachedTarget = target.sub(position).dot(move) <= 0;
+                reachedTarget = target.sub(position).dot(move) <= 0;
+                 
             //or you know, if you're really close.
-            if (reachedTarget || length < 1) {
+            if (reachedTarget || length < 3) {
                 this.position.x = this.target.x;
                 this.position.y = this.target.y;
                 this.isMoving = false;
@@ -67,20 +74,20 @@ module.exports = function Movement() {
                 this.rotation = move.toDegrees();
             }
             
-            this.direction = this.position.y > this.target.y ? "down" : "up";
+            if (!reachedTarget) {
+                this.direction = this.position.y > this.target.y ? "down" : "up";   
+            }
             
             var wasMoving = this.isMoving;
             
             this.isMoving = !(this.position.x == this.previousPosition.x && this.position.y == this.previousPosition.y);
             
-            if (!this.isMoving && wasMoving) {
+            if (reachedTarget || (!this.isMoving && wasMoving)) {
                 entity.sendMessage("stop-animating", {animation: "walk"});
-                if (entity.components.contains("player")) console.log("isMoving " + this.isMoving);
             }
             
             if (this.isMoving && !wasMoving) {
                 entity.sendMessage("animate", {animation: "walk"});
-                if (entity.components.contains("player")) console.log("isMoving " + this.isMoving);
             }
         },
         requiredComponents: ["position"],

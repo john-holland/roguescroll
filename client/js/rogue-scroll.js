@@ -35,6 +35,7 @@ define(function() {
             "offensive-augment": require("./components/offensive-augment")(),
             "player": require("./components/player")(),
             "enemy": require("./components/enemy")(),
+            "drops-loot": require("./components/drops-loot")(),
             "mounted": require("./components/mounted")(),
             "trap": {
                 //the trap should not be visible unless the player is within senseRange + (brains * 3)
@@ -123,7 +124,8 @@ define(function() {
                         target: {
                             y: 500,
                             x: 0
-                        }
+                        },
+                        pursueTarget: false
                     }
                 }
             },
@@ -143,6 +145,8 @@ define(function() {
                 tags: ['player-metrics'],
                 components: {
                     'game-metrics-display': {
+                        shouldRender: false,
+                        isActive: false,
                         metricsTargetTag: "player",
                         isStaticPosition: true,
                         position: {
@@ -196,44 +200,6 @@ define(function() {
                 components: {
                     "offensive-augment": {
                         mountTag: 'player'
-                    }
-                }
-            },
-            {
-                components: {
-                    "glyphicon-renderer": {
-                        icon: "glasses",
-                        iconColor: "#eee"
-                    },
-                    animation: {},
-                    movement: {},
-                    mounted: {
-                        offset: {
-                            x: 1,
-                            y: -5
-                        },
-                        mountTag: "player"
-                    }
-                }
-            },
-            {
-                components: {
-                    "glyphicon-renderer": {
-                        icon: "education",
-                        iconColor: "#eee",
-                        size: {
-                            width: 35,
-                            height: 35
-                        }
-                    },
-                    animation: {},
-                    movement: {},
-                    mounted: {
-                        offset: {
-                            x: 1,
-                            y: -25
-                        },
-                        mountTag: "player"
                     }
                 }
             },

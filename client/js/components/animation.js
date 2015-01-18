@@ -124,6 +124,7 @@ module.exports = function Animation() {
                 component.stopCurrent = function(elem, component, data) {
                     if (elem) {
                         elem.removeClass("animated");
+                        elem.removeClass("infinite-animation");
                         component.animationMetadata.getList().forEach(function(metadata) {
                             elem.removeClass(metadata.name);
                         });
@@ -196,10 +197,10 @@ module.exports = function Animation() {
                     }
                     
                     if (this.animationQueue.length && _.any(this.animationQueue, function(animation) {
-                        return animation.metadata.name === data.name;
+                        return animation.metadata.name === data.animation;
                     })) {
                         this.animationQueue = _.filter(this.animationQueue, function(animation) {
-                            return animation.metadata.name !== data.name;
+                            return animation.metadata.name !== data.animation;
                         });
                     }
                     return;

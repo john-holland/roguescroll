@@ -1,7 +1,8 @@
 module.exports = function() {
     return {
         _: {
-            lowestKnownY: 0
+            lowestKnownY: 0,
+            lowestWallsGenerated: 0
         },
         requiredComponents: ["position"],
         onAdd: function(entity, component) {
@@ -41,6 +42,10 @@ module.exports = function() {
                     $game.css("height", this.size.height + "px");
                     if (hidden) {
                         $game.hide();
+                    }
+                    
+                    if (this.size.height > this.lowestWallsGenerated) {
+                        $("")
                     }
                 }
             }

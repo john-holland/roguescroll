@@ -54,7 +54,7 @@ module.exports = function() {
                 }
             }
         },
-        requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'center-aligned', "floating-combat-text", 'animation'],
+        requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'center-aligned', "floating-combat-text", 'animation', 'drops-loot'],
         messages: {
             'init': function(entity, data) {
                 this.player = entity.engine.findEntityByTag("player")[0];
@@ -71,7 +71,7 @@ module.exports = function() {
                     return true;
                 }
                 
-                data.targets[0].sendMessage("damage", {amount: chance.rpg(this.damage, {sum:true})});
+                data.targets[0].sendMessage("damage", {amount: chance.rpg(this.damage, {sum:true}), hitRoll: hit});
                 return true;
             }
         }

@@ -1,3 +1,6 @@
+var Chance = require("../util/chance"),
+    chance = new Chance();
+
 module.exports = function() {
     return {
         _: {
@@ -5,28 +8,23 @@ module.exports = function() {
                 x: 35, 
                 y: 35
             },
-            downOffset: {
-                x: 35,
-                y: 35
-            },
-            upOffset: {
-                x: -35,
-                y: -35
-            },
-            
             pursueTarget: false,
             icon: "shield"
         },
         onAdd: function(entity, component) {
             if (this.mountTarget) this.mountTarget.data.shield = entity;
-        },
-        update: function(dt, entity, component) {
-            if (this.target) {
-                if (this.target.direction == "down") {
-                    this.offset = this.downOffset;
-                } else {
-                    this.offset = this.upOffset;
-                }
+            if (this.mountTarget.data.damagePredicates) {
+                this.mountTarget.data.damagePredicates.push(function(damage) {
+                    var blockCheck = (entity.data.mountTarget.data.character.brawn + entity.data.mountTarget.data.character.skills) / 2 + chance.rpg("2d6", {sum: true});
+                    
+                    if (blockCheck > entity.data.mountTarget.data.baseMiss) {
+                        entity.data.mountTarget.sendMessage('blocked', { amount: damage.amount});
+                        entity.sendMessage('animate', { animation: 'take-damage' });
+                        return false;
+                    }
+                    
+                    return true;
+                });
             }
         },
         requiredComponents: ["mounted", "animation", "glyphicon-renderer"]

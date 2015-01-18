@@ -81,6 +81,10 @@
           .stats-container {
             display: none;
           }
+          
+          .wall-segment {
+            position: absolute;
+          }
         </style>
     </head>
     <body data-spy="scroll" data-target="#nav">
@@ -126,6 +130,10 @@
       
       <script>
       $(function() {
+        window.unload = function() {
+          
+        };
+        
         $("a[href='#menu']").click(function() {
           $("li a[href='#game']").parent().removeClass("active");
           $(this).parent().addClass('active');
