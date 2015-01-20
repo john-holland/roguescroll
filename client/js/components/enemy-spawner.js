@@ -21,7 +21,7 @@ module.exports = function() {
             this.enemiesToSpawn--;
             
             //create the enemy!
-            var patrolCenter = _.random($(window).height() / 2, this.world.data.size.height - $(window).height() / 2);
+            var patrolCenter = _.random($(window).height() / 2, this.world.data.currentLevel.height - $(window).height() / 2);
             var patrolRange = Math.max(_.random(100, this.world.data.size.height / this.enemiesToSpawn * 2), 100);
             
             var patrolTop = patrolCenter - (patrolRange / 2);

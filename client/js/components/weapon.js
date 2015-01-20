@@ -11,10 +11,14 @@ module.exports = function() {
             pursueTarget: false,
             icon: "ax",
             damage: "1d4",
-            ability: null //function(entity)
+            ability: null, //function(entity),
+            state: "not-held"
         },
         onAdd: function(entity, component) {
-            if (this.mountTarget) this.mountTarget.data.weapon = entity;
+            if (this.mountTarget) {
+                this.mountTarget.data.weapon = entity;
+            }
+            
         },
         requiredComponents: ["mounted", "animation", "glyphicon-renderer"],
         messages: {

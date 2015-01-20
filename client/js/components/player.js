@@ -8,7 +8,7 @@ module.exports = function() {
         },
         onAdd: function(entity, component) {
         },
-        requiredComponents: ["health", "scroll-chaser", "position", "glyphicon-renderer", "center-aligned", "animation", 'combatant', "floating-combat-text"],
+        requiredComponents: ["health", "scroll-chaser", "position", "glyphicon-renderer", "center-aligned", "animation", 'combatant', "floating-combat-text", "world-entity"],
         messages: {
             "targets-in-range": function(entity, data) {
                 //for now we'll just hit one at a time.

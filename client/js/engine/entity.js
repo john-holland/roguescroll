@@ -9,6 +9,10 @@ define(function() {
         this.engine = engine;
         this.isActive = true;
         this.shouldRender = true;
+        //entities for which we will send all messages we recieve.
+        this.forwardMessages = [];
+        // does not forward init message by default.
+        this.forwardInit = false;
     }
     
     Entity.prototype.addComponent = function(name, defaultData) {

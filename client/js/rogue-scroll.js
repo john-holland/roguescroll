@@ -52,9 +52,17 @@ define(function() {
             "hide-on-pause": require("./components/hide-on-pause")(),
             "keyboard-events": require("./components/keyboard-events")(),
             "html-renderer": require("./components/html-renderer")(),
-            vision: require("./components/vision")()
+            vision: require("./components/vision")(),
+            sensor: require("./components/sensor")(),
+            'level-door': require("./components/level-door")()
         },
         entities: [
+            {
+                tags: ['world'],
+                components: {
+                    'world': { }
+                }
+            },
             {
                 tags: ['player', 'hide-at-start'],
                 components: {
@@ -147,12 +155,6 @@ define(function() {
                 }
             },
             {
-                tags: ['world'],
-                components: {
-                    'world': { }
-                }
-            },
-            {
                 tags: ['player-metrics'],
                 components: {
                     'game-metrics-display': {
@@ -172,25 +174,6 @@ define(function() {
                     }
                 }
             },
-            // {
-            //     tags: ['player-metrics'],
-            //     components: {
-            //         'game-metrics-display': {
-            //             isStaticPosition: false,
-            //             metricsFunction: function(entity) {
-            //                 return entity.data.position.x.toFixed(3) + " " + entity.data.position.y.toFixed(3);
-            //             },
-            //             icon: "global"
-            //         },
-            //         mounted: {
-            //             mountTag: 'player',
-            //             offset: {
-            //                 x: 100,
-            //                 y: 100
-            //             }
-            //         }
-            //     }
-            // },
             // {
             //     tags: ['hide-at-start'],
             //     components: {

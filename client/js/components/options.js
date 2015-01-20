@@ -14,7 +14,7 @@ define(function() {
                     var options = _.filter(_.map(_.pairs(entity.data.options), function(pair) {
                         var option = pair[0],
                             value = pair[1],
-                            optionType = typeof value;
+                            optionType = typeof value,
                             optionMetadata = {
                                 isBoolean: optionType === 'boolean',
                                 isNumber: optionType === 'number',
@@ -34,6 +34,7 @@ define(function() {
                         
                         return optionMetadata;
                     }), function(metadata) { return metadata != null });
+                    entity.optionsMetadata = options;
                     return require("../templates/options.hbs")({ options: options });
                 }
             },

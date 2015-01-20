@@ -8,11 +8,12 @@ define(function() {
         this.$wallContainer = $("<div class='wall'>").appendTo(appendTo);
         this.$wallContainer.width(maxWidth);
         this.maxWidth = maxWidth;
+        this.direction = direction;
         this.length = 0;
         
         this.addSegment = function() {
             var topPoint = {
-                x: 0,
+                x: this.direction == Wall.Direction.RIGHT ? maxWidth : 0,
                 y: 0
             };
             
@@ -24,12 +25,11 @@ define(function() {
             
             //pick a new bottom point that's relative to the top point
             var bottomPoint = {
-                x: Math.min(Math.max(50, topPoint.x + _.random(-75, 75)), this.maxWidth),
+                x: Math.min(Math.max(50, topPoint.x + _.random(-75, 75)), this.direction == Wall.Direction.RIGHT ? this.maxWidth - 50 : this.maxWidth),
                 y: topPoint.y + _.random(50, 200)
             },
             length = Math.abs(bottomPoint.y - topPoint.y),
             segment = new WallSegment(this, bottomPoint, topPoint, length, color);
-            console.log(bottomPoint.y);
             this.length += length;
             this.$wallContainer.height(this.length);
             
@@ -37,9 +37,14 @@ define(function() {
             this.segments.push(segment);
         }
         
-        while (this.length < minLength) {
-            this.addSegment();
+        this.setMinLength = function(newMinLength) {
+            this.minLength = newMinLength;
+            while (this.length < this.minLength) {
+                this.addSegment();
+            }
         }
+        
+        this.setMinLength(minLength);
         
         //turn the walls outer container to change its direction
         this.$wallContainer.addClass(direction + '-wall');
