@@ -15,9 +15,6 @@ define(function() {
                 senseRange: 100,
                 leads: 'down'
             },
-            onAdd: function(entity, component) {
-                this.player = entity.engine.findEntityByTag('player')[0];
-            },
             requiredComponents: ['center-aligned', 'glyphicon-renderer', 'world-entity'],
             messages: {
                 sensed: function(entity, data) {

@@ -17,12 +17,9 @@ module.exports = function() {
         this.entityMetaData = [];
         
         this.doorDown = worldEntity.engine.createEntity({tags: ['vision-candidate', 'level-door']});
-        this.doorDown.addComponent('level-door', {
-            position: {
-                x: 0,
-                y: this.maxHeight - 500
-            }
-        });
+        this.doorDown.addComponent('level-door', {});
+        this.doorDown.sendMessage('init', {});
+        this.doorDown.data.position.y = this.maxHeight - 500;
         this.doorDown.data.level = this;
         
         this.activate = function() {

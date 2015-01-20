@@ -8,7 +8,7 @@ module.exports = function() {
             icon: 'skull',
             baseMiss: 10,
             side: 'baddies',
-            senseDistance: 100,
+            senseDistance: 150,
             patrolTopTarget: {
                 x: 0,
                 y: 0

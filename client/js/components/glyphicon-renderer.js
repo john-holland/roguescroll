@@ -5,8 +5,8 @@ module.exports = function GlyphiconRenderer() {
             iconColor: '#eee',
             htmlTemplateFactory: function(entity, component) {
                 return "<span style='position: " + (entity.data.isStaticPosition ? "fixed" : "absolute") + 
-                "; display: block; overflow: visible; color: " +  (entity.data.iconColor || "black") + "' class='go-faster-hack glyphicons glyphicons-"
-                + entity.data.icon + "' data-entity-id='" + entity.id + "'></span>";
+                    "; display: block; overflow: visible; color: " +  (entity.data.iconColor || "black") + "' class='go-faster-hack glyphicons glyphicons-"
+                    + entity.data.icon + "' data-entity-id='" + entity.id + "'></span>";
             }
         },
         requiredComponents: ['html-renderer'],
