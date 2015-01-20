@@ -28,13 +28,13 @@ module.exports = function() {
             var patrolBottom = patrolCenter + (patrolRange / 2);
             var position = { y: patrolCenter, x: 0 };
             
-            var enemy = entity.engine.createEntity({ tags: ['enemy'] });
+            var enemy = entity.engine.createEntity({ tags: ['enemy', 'vision-candidate'] });
             
             if (this.spawnPosition !== null) {
                 position = this.spawnPosition;
             }
             
-            enemy.addComponent("enemy", { position: position, icon: _.random(1, 10) > 6 ? "person" : "skull", target: { y: 0, x: 0 } });
+            enemy.addComponent("enemy", { iconColor:"#eee", position: position, icon: _.random(1, 10) > 6 ? "person" : "skull", target: { y: 0, x: 0 } });
             
             var healthTarget = entity.engine.createEntity({tags: ['enemy-health-display']});
             

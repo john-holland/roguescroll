@@ -2,6 +2,7 @@ module.exports = function GlyphiconRenderer() {
     return {
         _: {
             icon: "user",
+            iconColor: '#eee',
             htmlTemplateFactory: function(entity, component) {
                 return "<span style='position: " + (entity.data.isStaticPosition ? "fixed" : "absolute") + 
                 "; display: block; overflow: visible; color: " +  (entity.data.iconColor || "black") + "' class='go-faster-hack glyphicons glyphicons-"

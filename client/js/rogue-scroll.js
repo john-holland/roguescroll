@@ -51,7 +51,8 @@ define(function() {
             "game-metrics-display": require("./components/game-metrics-display")(),
             "hide-on-pause": require("./components/hide-on-pause")(),
             "keyboard-events": require("./components/keyboard-events")(),
-            "html-renderer": require("./components/html-renderer")()
+            "html-renderer": require("./components/html-renderer")(),
+            vision: require("./components/vision")()
         },
         entities: [
             {
@@ -60,7 +61,9 @@ define(function() {
                     health: {
                         health: 70
                     },
-                    player: { },
+                    player: {
+                        iconColor: '#eee'
+                    },
                     movement: {
                         speed: 150
                     },
@@ -74,7 +77,8 @@ define(function() {
                             height: 50
                         }
                     },
-                    "keyboard-events": { }
+                    "keyboard-events": { },
+                    vision: { }
                 },
                 //isActive: false,
                 shouldRender: false
@@ -105,7 +109,7 @@ define(function() {
                 tags:["health-display", 'hide-at-start'],
                 components: {
                     "health-display": {
-                        textColor: '#333',
+                        textColor: '#eee',
                         'z-index': 10000
                     },
                     "hide-on-pause": {}
@@ -115,7 +119,7 @@ define(function() {
                 tags: ['metrics'],
                 components: {
                     "game-metrics-display": {
-                        textColor: '#333',
+                        textColor: '#eee',
                         'z-index': 10000
                     }
                 }
@@ -164,7 +168,7 @@ define(function() {
                             return target.data.position.x.toFixed(3) + " " + target.data.position.y.toFixed(3);
                         },
                         icon: "global",
-                        
+                        textColor: '#eee'
                     }
                 }
             },

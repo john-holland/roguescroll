@@ -54,7 +54,14 @@ module.exports = function() {
                 this.position.y = this.mountTarget.data.position.y + this.offset.y;
             }
             
-            entity.shouldRender = this.mountTarget.shouldRender;
+            if (entity.shouldRender != this.mountTarget.shouldRender) {
+                if (this.mountTarget.shouldRender) {
+                    entity.sendMessage('show');
+                } else {
+                    entity.sendMessage('hide');
+                }
+            }
+            
             this.direction = this.mountTarget.data.direction;
         },
         requiredComponents: ["position"],

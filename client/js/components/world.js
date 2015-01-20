@@ -29,7 +29,6 @@ module.exports = function() {
             "game-start": function(entity, data) {
                 this.walls.push(new Wall($("#game"), 3000, $(window).width() / 3, Wall.Direction.LEFT, "transparent"));
                 this.walls.push(new Wall($("#game"), 3000, $(window).width() / 3, Wall.Direction.RIGHT, "transparent"));
-                this.walls.push(new Wall($("#game"), 3000, $(window).width() / 3, Wall.Direction.DOWN, "transparent"));
                 
                 entity.sendMessage("set-dimensions", {
                     width: 1000,

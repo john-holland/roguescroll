@@ -7,12 +7,20 @@ define(function() {
     return function Vision() {
         return {
             _: {
-                sightRange: 100,
+                sightRange: 400,
                 withinSight: []
             },
             update: function(dt, entity, component) {
-                this.withinSight = _.filter(entity.engine.entities.getList(), function(visionCandidate) {
-                    return V2.distanceBetween(entity.data.position, visionCandidate.data.position) < entity.data.sightRange;
+                this.withinSight = _.filter(entity.engine.findEntityByTag('vision-candidate'), function(visionCandidate) {
+                    var canSee = V2.distanceBetween(entity.data.position, visionCandidate.data.position) < entity.data.sightRange;
+                    
+                    if (canSee) {
+                        visionCandidate.sendMessage('show');
+                    } else {
+                        visionCandidate.sendMessage('hide');
+                    }
+                    
+                    return canSee;
                 });
             }
         };

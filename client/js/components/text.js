@@ -1,7 +1,7 @@
 module.exports = function() {
     return {
         _: {
-            textColor: 'black'
+            textColor: '#eee'
         },
         requiredComponents: ['html-renderer'],
         onAdd: function(entity, component) {

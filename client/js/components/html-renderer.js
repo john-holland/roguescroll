@@ -90,13 +90,13 @@ define(function() {
             messages: {
                 show: function(entity, data) {
                     if (entity.data.$el) {
-                        entity.data.$el.show();
+                        entity.data.$el.show(400);
                     }
                     entity.shouldRender = true;
                 },
                 hide: function(entity, data) {
                     if (entity.data.$el) {
-                        entity.data.$el.hide();
+                        entity.data.$el.hide(400);
                     }
                     entity.shouldRender = false;
                 },

@@ -42,7 +42,7 @@ module.exports = function Movement() {
             
             //if our move would put us passed our target, then we're there
             //so if (target - position) · (move) < 0 we're there.
-            var _x = this.target.x - this.position.x
+            var _x = this.target.x - this.position.x,
                 _y = this.target.y - this.position.y,
                 toTarget = new V2(_x, _y),
                 length = toTarget.length(),
