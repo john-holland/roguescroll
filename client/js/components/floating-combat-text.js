@@ -5,12 +5,13 @@ module.exports = function() {
         _: {
           createTextEntity: function(entity, options) {
                 var text = entity.engine.createEntity();
-                text.addComponent("text", {icon: options.icon ? options.icon : "globe", position: { x: this.position.x, y: this.position.y } });
+                text.addComponent("glyphicon-renderer", {icon: options.icon ? options.icon : "globe", position: { x: this.position.x, y: this.position.y } });
+                text.addComponent("text", {});
                 
                 if (!options.iconColor) {
-                    text.data.$renderedIcon.css("color", "green");
+                    text.data.$el.css("color", "green");
                 } else {
-                    text.data.$renderedIcon.css("color", options.iconColor);
+                    text.data.$el.css("color", options.iconColor);
                 }
                 
                 if (!options.textColor) {
@@ -18,11 +19,13 @@ module.exports = function() {
                 } else {
                     text.data.$text.css("color", options.textColor);
                 }
+                
                 if (options.html) {
                     text.data.$text.html(options.html);
                 } else {
                     text.data.$text.text(options.text);
                 }
+                
                 text.addComponent("movement", { speed: 100 });
                 text.sendMessage("go-to", {
                     x: this.position.x + _.random(-60, 60),
@@ -34,8 +37,6 @@ module.exports = function() {
                 })
             }  
         },
-        //should spit text out in arks.
-        //pick random point above, use lerp 
         messages: {
             "damage": function(entity, data) {
                 this.createTextEntity.call(this, entity, {icon: data.isCritical ? "dice" : "tint", text: data.amount, iconColor:"red"});

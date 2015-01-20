@@ -6,7 +6,7 @@ module.exports = function Combatant() {
         _: {
             lastAttackTime: null,
             attackCooldown: 1000,
-            range: 50,
+            range: 70,
             side: "baddies"
         },
         requiredComponents: ["health", "movement", "position"],

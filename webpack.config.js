@@ -10,7 +10,9 @@ module.exports = {
     externals: {
         // require("jquery") is external and available
         //  on the global var jQuery
-        "jquery": "jQuery"
+        //todo: I probably want to expose underscore as well.
+        "jquery": "jQuery",
+        "underscore": "_"
     },
      module: {
         loaders: [

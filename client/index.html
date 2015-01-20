@@ -30,10 +30,10 @@
             background: #333;
             padding-top: 50px;
             color: #eee;
-            height:1000px;
-            height:100vh;
+            min-height: 100vh;
           }
           #game {
+            background: linear-gradient(to bottom, #333 10%, white 90%)
             display: none;
             overflow: hidden;
           }
@@ -75,15 +75,60 @@
           }
           
           .navbar-brand {
-            font-family: font-family: 'Knewave', cursive;;
+            font-family: font-family: 'Knewave', cursive;
           }
           
           .stats-container {
             display: none;
           }
           
+          .wall {
+            position: absolute;
+            overflow: hidden;
+          }
+          
           .wall-segment {
             position: absolute;
+            border-color: transparent;
+            border-top-width: 4px;
+            border-top-style: solid;
+            border-top-color: #333;
+            border-radius: 3px;
+          }
+          
+          .left-wall {
+            top: 0;
+            left: 0%;
+          }
+          
+          .right-wall {
+              right: 0;
+              top: 0;
+              -webkit-transform: rotate(180deg);
+              -moz-transform: rotate(180deg);
+              -o-transform: rotate(180deg);
+              -ms-transform: rotate(180deg);
+              transform: rotate(180deg);
+          }
+          
+          .down-wall {
+              top: 0;
+              left: 0;
+              -webkit-transform: rotate(270deg);
+              -moz-transform: rotate(270deg);
+              -o-transform: rotate(270deg);
+              -ms-transform: rotate(270deg);
+              transform: rotate(270deg);
+          }
+          
+          .up-wall {
+              bottom: 0;
+              left: 0;
+              -webkit-transform: rotate(90deg);
+              -moz-transform: rotate(90deg);
+              -o-transform: rotate(90deg);
+              -ms-transform: rotate(90deg);
+              transform: rotate(90deg);
           }
         </style>
     </head>
@@ -124,6 +169,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
       <!--<script src="/socket.io/socket.io.js"></script>-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.9.12/jquery.transit.min.js"></script>
       <script src="game.js"></script>
@@ -148,9 +194,13 @@
             RogueScroll.pause();
           }
           if ($(".active [href='#game']").length) {
-            RogueScroll.play();
+            if (RogueScroll.engine.findEntityByTag('game-manager')[0].data.gameState === 'in-play') {
+                RogueScroll.play();
+            }
           }
         });
+        
+        RogueScroll.pause();
       });
       </script>
       <script>

@@ -4,7 +4,7 @@ define(function() {
         JSONfn = require("../util/JSONfn"),
         Entity = require("./entity"),
         Component = require("./component"),
-        _ = require("../util/underscore");
+        _ = require("underscore");
     
     function Engine(game) {
         var self = this,
@@ -16,6 +16,7 @@ define(function() {
         this.entities = new ListMap();
         this.components = new ListMap();
         this.entitiesToDestroy = [];
+        this.gameTime = 0;
         
         this.play = function() {
             self.isPlaying = true;
@@ -130,7 +131,7 @@ define(function() {
             entities = self.entities.getList(),
             i = 0;
             self.dt = dt;
-            self.gameTime = gameTime;
+            self.gameTime += dt;
             
             for (i = 0; i < components.length; i++) {
                 var component = components[i];

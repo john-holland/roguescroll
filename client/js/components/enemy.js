@@ -17,9 +17,14 @@ module.exports = function() {
                 x: 0,
                 y: 0
             },
+            size: {
+                height: 40,
+                width: 40
+            },
             patrolTo: "top",
             isPatrolling: false,
-            damage: "1d6"
+            damage: "1d6",
+            playerAttackOffset: 60
         },
         onAdd: function(entity, component) {
         },
@@ -30,7 +35,7 @@ module.exports = function() {
             
             if (Math.abs(this.position.y - this.player.data.position.y) < this.senseDistance) {
                 entity.isPatrolling = false;
-                this.target.y = this.player.data.position.y + 40;
+                this.target.y = this.player.data.position.y + this.playerAttackOffset;
             } else {
                 //partrol.
                 //todo: Implement smoke break
@@ -65,6 +70,7 @@ module.exports = function() {
                     return;
                 }
                 
+                entity.sendMessage("animate", { animation: 'attack-up' });
                 var hit = _.random(0, 15 - this.player.data.character.skills / 4);
                 
                 if (hit < this.player.data.baseMiss) {

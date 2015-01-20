@@ -21,7 +21,8 @@ module.exports = function CenterAligned() {
             this.target.x = component.getCenter(this);
         },
         update: function(dt, entity, component) {
-            if (this.alignCenter) this.target.x = component.getCenter(this);
+            if (this.alignCenter) this.target.x = component.getCenter(this) + this.xOccupancyOffset;
+            if (this.alignCenter) this.position.x = component.getCenter(this) + this.xOccupancyOffset;
         },
         aggregateUpdate: function(dt, entities, component) {
             //group the entities by their Math.floor(position.y / 10)

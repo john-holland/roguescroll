@@ -1,0 +1,21 @@
+<div>
+    <h1 class='options-header'><span class='glyphicons glyphicons-chevron-right'></span>Options</h1>
+    <script type='text/javascript'>
+        $(".options-header").click(function() {
+            if (!$(this).attr('data-hidden')) {
+                $(this).attr('data-hidden', true);
+                $('.options-list').hide();
+                $(this).find('.glyphicons').css({ rotate: '90deg' });
+            } else {
+                $(this).attr('data-hidden', false);
+                $('.options-list').show();
+                $(this).find('.glyphicons').css({ rotate: '0deg' });
+            }
+        });
+    </script>
+    <ul class='options-list' style='list-style-type: none'>
+    {{#each options}}
+        {{> option-list-item}}
+    {{/each}}
+    </ul>
+</div>

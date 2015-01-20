@@ -96,7 +96,7 @@ module.exports = function Animation() {
                     if (playCurrent) {
                         data.currentAnimation = animationWrapper;
                         
-                        component.playForElem(data.$renderedIcon, component, data, animationData)
+                        component.playForElem(data.$el, component, data, animationData)
                     } else {
                         data.animationQueue.push(animationWrapper);
                     }
@@ -147,7 +147,7 @@ module.exports = function Animation() {
                     this.currentAnimation.callback();
                 }
                 
-                component.stopCurrent(this.$renderedIcon, component, this);
+                component.stopCurrent(this.$el, component, this);
                 
                 this.currentAnimation = null;
             }
@@ -168,7 +168,7 @@ module.exports = function Animation() {
             
             if (playNext && this.animationQueue.length) {
                 this.currentAnimation = this.animationQueue.pop();
-                component.playForElem(this.$renderedIcon, component, this, this.currentAnimation.metadata);
+                component.playForElem(this.$el, component, this, this.currentAnimation.metadata);
             }
         },
         messages: {
@@ -185,10 +185,10 @@ module.exports = function Animation() {
             "stop-animating": function(entity, data, component) {
                 if (data.animation) {
                     if (this.currentAnimation && this.currentAnimation.metadata.name == data.animation) {
-                        if (this.$renderedIcon) {
-                            this.$renderedIcon.removeClass("animated");
-                            this.$renderedIcon.removeClass(data.animation);
-                            this.$renderedIcon.removeClass("infinite-animation");
+                        if (this.$el) {
+                            this.$el.removeClass("animated");
+                            this.$el.removeClass(data.animation);
+                            this.$el.removeClass("infinite-animation");
                         }
                         if (this.currentAnimation.callback) {
                             this.currentAnimation.callback();
@@ -207,16 +207,16 @@ module.exports = function Animation() {
                 }
                 
                 //stop the current animation
-                this.$renderedIcon.removeClass("animated");
+                this.$el.removeClass("animated");
                 component.animationMetadata.getList().forEach(function(metadata) {
-                    data.$renderedIcon.removeClass(metadata.name);
+                    data.$el.removeClass(metadata.name);
                 });
                 if (this.currentAnimation) {
-                    this.$renderedIcon.removeClass(this.currentAnimation.name);
+                    this.$el.removeClass(this.currentAnimation.name);
                 }
                     
                 if (this.currentAnimation) {
-                    this.$renderedIcon.removeClass(this.currentAnimation.name);
+                    this.$el.removeClass(this.currentAnimation.name);
                     if (this.currentAnimation.callback) {
                         this.currentAnimation.callback();
                     }

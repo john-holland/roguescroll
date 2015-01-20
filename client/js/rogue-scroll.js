@@ -50,7 +50,8 @@ define(function() {
             "health-display": require("./components/health-display")(),
             "game-metrics-display": require("./components/game-metrics-display")(),
             "hide-on-pause": require("./components/hide-on-pause")(),
-            "keyboard-events": require("./components/keyboard-events")()
+            "keyboard-events": require("./components/keyboard-events")(),
+            "html-renderer": require("./components/html-renderer")()
         },
         entities: [
             {
@@ -103,14 +104,20 @@ define(function() {
             {
                 tags:["health-display", 'hide-at-start'],
                 components: {
-                    "health-display": {},
+                    "health-display": {
+                        textColor: '#333',
+                        'z-index': 10000
+                    },
                     "hide-on-pause": {}
                 }
             },
             {
                 tags: ['metrics'],
                 components: {
-                    "game-metrics-display": {}
+                    "game-metrics-display": {
+                        textColor: '#333',
+                        'z-index': 10000
+                    }
                 }
             },
             {

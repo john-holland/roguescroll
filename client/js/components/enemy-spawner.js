@@ -21,7 +21,7 @@ module.exports = function() {
             this.enemiesToSpawn--;
             
             //create the enemy!
-            var patrolCenter = _.random(0, this.world.data.size.height);
+            var patrolCenter = _.random($(window).height() / 2, this.world.data.size.height - $(window).height() / 2);
             var patrolRange = Math.max(_.random(100, this.world.data.size.height / this.enemiesToSpawn * 2), 100);
             
             var patrolTop = patrolCenter - (patrolRange / 2);
@@ -34,7 +34,7 @@ module.exports = function() {
                 position = this.spawnPosition;
             }
             
-            enemy.addComponent("enemy", { position: position, icon: "skull", target: { y: 0, x: 0 } });
+            enemy.addComponent("enemy", { position: position, icon: _.random(1, 10) > 6 ? "person" : "skull", target: { y: 0, x: 0 } });
             
             var healthTarget = entity.engine.createEntity({tags: ['enemy-health-display']});
             

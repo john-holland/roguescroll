@@ -16,6 +16,12 @@ module.exports = function() {
                     return false;
                 }
                 
+                if (this.position.y - data.targets[0].data.position.y > 0) {
+                    this.direction = "up";
+                } else {
+                    this.direction = "down";
+                }
+                
                 if (this.direction == "down") {
                     entity.sendMessage("animate", { animation: "attack-down" });
                 } else {

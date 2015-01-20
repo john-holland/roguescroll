@@ -9,6 +9,22 @@ var isVector2 = function (value) {
     return value.constructor === V2 || value.constructor === ImmutableV2;
 };
 
+V2.coalesce = function(value) {
+    if (value.constructor === V2) {
+        return value;
+    } else {
+        return new V2(value.x || value.X || 0, value.y || value.Y || 0);
+    }
+}
+
+ImmutableV2.coalesce = function(value) {
+    if (value.constructor === ImmutableV2) {
+        return value;
+    } else {
+        return new ImmutableV2(value.x || value.X || 0, value.y || value.Y || 0);
+    }
+}
+
 function V2(x, y) {
     if (typeof x === 'undefined' || typeof y === 'undefined') {
         this.X = 0;
@@ -123,6 +139,16 @@ function V2(x, y) {
         }
     }
     
+    this.perpendicular = function() {
+        var y = -this.Y,
+        x = this.X;
+        
+        this.Y = y;
+        this.X = x;
+        
+        return this;
+    }
+    
     this.init = function(x, y) {
         this.X = x;
         this.Y = y;
@@ -153,11 +179,23 @@ function V2(x, y) {
     }
     
     this.toDegrees = function() {
-        return Math.degrees(this.toRadians);
+        return Math.degrees(this.toRadians());
     }
     
     this.fromDegrees = function(degrees) {
         return this.fromRadians(Math.radians(degrees));
+    }
+    
+    this.vectorTo = function(otherVector) {
+        return V2.coalesce(otherVector).sub(this);
+    }
+    
+    this.distanceTo = function(otherVector) {
+        return V2.coalesce(otherVector).sub(this).length();
+    }
+    
+    this.toString = function() {
+        return "x: " + this.X + " y: " + this.Y;
     }
 }
 
@@ -264,6 +302,14 @@ function ImmutableV2(x, y) {
         }
     }
     
+    this.vectorTo = function(otherVector) {
+        return ImmutableV2.coalesce(otherVector).sub(this);
+    }
+    
+    this.distanceTo = function(otherVector) {
+        return ImmutableV2.coalesce(otherVector).sub(this).length();
+    }
+    
     this.asMutable = function() {
         return new V2(this.X, this.Y);
     }
@@ -272,17 +318,41 @@ function ImmutableV2(x, y) {
         return Math.atan2(this.Y, this.X);
     }
     
-    this.fromRadians = function(rads) {
-        return new V2(Math.cos(rads), Math.sin(rads));
-    }
-    
     this.toDegrees = function() {
-        return Math.degrees(this.toRadians);
+        return Math.degrees(this.toRadians());
     }
     
     this.fromDegrees = function(degrees) {
         return this.fromRadians(Math.radians(degrees));
     }
+    
+    this.toString = function() {
+        return "x: " + this.X + " y: " + this.Y;
+    }
+}
+
+V2.distanceBetween = function(pointA, pointB) {
+    return V2.coalesce(pointA).distanceTo(V2.coalesce(pointB));
+}
+
+ImmutableV2.distanceBetween = function(pointA, pointB) {
+    return ImmutableV2.coalesce(pointA).distanceTo(ImmutableV2.coalesce(pointB));
+}
+
+ImmutableV2.fromTo = function(from, to) {
+    return ImmutableV2.coalesce(to).sub(ImmutableV2.coalesce(from));
+}
+
+ImmutableV2.fromRadians = function(rads) {
+    return new ImmutableV2(Math.cos(rads), Math.sin(rads));
+}
+
+V2.fromRadians = function(rads) {
+    return new V2(Math.cos(rads), Math.sin(rads));
+}
+
+V2.fromTo = function(from, to) {
+    return ImmutableV2.coalesce(to).sub(ImmutableV2.coalesce(from));
 }
 
 Math.degrees = function(rad)
