@@ -8,7 +8,7 @@ module.exports = function CenterAligned() {
             previousCenterAlignX: 0,
             previousXOccupancyOffset: 0
         },
-        requiredComponents: ["movement"],
+        requiredComponents: ["position"],
         onAdd: function(entity, component) {
             if (!component.getCenter) {
                 component.getCenter = function(data) {
@@ -18,10 +18,10 @@ module.exports = function CenterAligned() {
             
             this.$document = $(document);
             this.position.x = component.getCenter(this);
-            this.target.x = component.getCenter(this);
+            if (this.target) this.target.x = component.getCenter(this);
         },
         update: function(dt, entity, component) {
-            if (this.alignCenter) this.target.x = component.getCenter(this) + this.xOccupancyOffset;
+            if (this.target && this.alignCenter) this.target.x = component.getCenter(this) + this.xOccupancyOffset;
             if (this.alignCenter) this.position.x = component.getCenter(this) + this.xOccupancyOffset;
         },
         aggregateUpdate: function(dt, entities, component) {

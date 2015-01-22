@@ -200,16 +200,20 @@ define(function() {
             },
             {
                 components: {
-                    "glyphicon-renderer": {
-                        icon: "exit",
-                        position: {
-                            y: 2500,
-                            x: 0
-                        }
+                    'glyphicon-renderer': {
+                        icon: 'align-center'
                     },
-                    'center-aligned': { }
+                    mounted: {
+                        mountTag: 'level-door',
+                        offset: {
+                            x: 0,
+                            y: 25
+                        }
+                    }
                 }
-            }//,
+            }
+            
+            //,
             // {
             //     tags: ['options'],
             //     components: {

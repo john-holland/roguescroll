@@ -6,7 +6,7 @@ define(function() {
     return function LevelDoor() {
         return {
             _: {
-                icon: 'door',
+                icon: 'exit',
                 senseTag: 'player',
                 position: {
                     x: 0,

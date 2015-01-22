@@ -37,9 +37,12 @@ module.exports = function() {
                         amount: _.random(this.character.brains + this.character.level, this.character.brawn * 2 + this.character.level), 
                         isCritical: _.random(this.character.skills / 4, 20) > 18
                     });
-                    this.weapon.sendMessage("attack", {
-                        target: target
-                    });
+                    
+                    if (this.weapon) {
+                        this.weapon.sendMessage("attack", {
+                            target: target
+                        });
+                    }
                 }
                 
                 return true;

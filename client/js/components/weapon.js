@@ -17,18 +17,38 @@ module.exports = function() {
         onAdd: function(entity, component) {
             if (this.mountTarget) {
                 this.mountTarget.data.weapon = entity;
+                this.state = 'held';
             }
-            
         },
         requiredComponents: ["mounted", "animation", "glyphicon-renderer"],
         messages: {
             attack: function(entity, data) {
-                if (!data.target) {
+                if (!data.target || !this.state == 'held') {
                     return false;
                 }
                 
                 data.target.sendMessage("damage", {amount: chance.rpg(this.damage, {sum:true})});
                 entity.sendMessage("animate", { animation: "attack-down" });
+            },
+            equip: function(entity, data) {
+                if (!data.wielder) {
+                    return;
+                }
+                
+                if (this.state == 'held') {
+                    entity.sendMessage("drop");
+                }
+                
+                entity.sendMessage('mount', {target: data.wielder });
+                data.wielder.data.weapon = entity;
+                this.state = 'held';
+            },
+            drop: function(entity, data) {
+                if (this.state == 'held') {
+                    this.state = 'not-held';
+                    this.mountTarget.data.weapon = null;
+                    entity.sendMessage('dismount', {});
+                }
             }
         }
         

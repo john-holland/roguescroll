@@ -43,6 +43,11 @@ module.exports = function() {
         },
         update: function(dt, entity, component) {
             if (!this.mountTarget) {
+                entity.sendMessage("mount", { 
+                    target: this.mountTarget,
+                    mountId: this.mountId,
+                    mountTag: this.mountTag
+                });
                 return;
             }
             
@@ -71,6 +76,8 @@ module.exports = function() {
             },
             dismount: function(entity, data, component) {
                 this.mountTarget = null;
+                this.mountTag = null;
+                this.mountId = null;
             }
         }
     };
