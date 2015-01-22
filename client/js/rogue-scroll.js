@@ -54,7 +54,8 @@ define(function() {
             "html-renderer": require("./components/html-renderer")(),
             vision: require("./components/vision")(),
             sensor: require("./components/sensor")(),
-            'level-door': require("./components/level-door")()
+            'level-door': require("./components/level-door")(),
+            options: require("./components/options")()
         },
         entities: [
             {
@@ -208,7 +209,13 @@ define(function() {
                     },
                     'center-aligned': { }
                 }
-            }
+            }//,
+            // {
+            //     tags: ['options'],
+            //     components: {
+            //         options: { }
+            //     }
+            // }
             ]
     });
 

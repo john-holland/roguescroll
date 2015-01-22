@@ -12,7 +12,6 @@ module.exports = function() {
                 this.worldEntity.data.currentLevel.entities.push(entity);
                 this.level = this.worldEntity.data.currentLevel;
             }
-        },
-        requiredComponents: ["movement"]
+        }
     };
 }

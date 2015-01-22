@@ -23,7 +23,7 @@ module.exports = function Movement() {
             isMobile: true
         },
         onAdd: function(entity, component) {
-            this.target.callbacks = [];
+            if (!this.target.callbacks) this.target.callbacks = [];
         },
         update: function(dt, entity, component) {
             this.previousPosition.x = this.position.x;

@@ -1,14 +1,14 @@
-<div>
-    <h1 class='options-header'><span class='glyphicons glyphicons-chevron-right'></span>Options</h1>
+<div style='background: #eee; border: 4px solid #331; border-radius: 5px; position: fixed'>
+    <h1 class='options-header'><span class='glyphicons glyphicons-chevron-right'></span><span class='options-hide'>Options</span></h1>
     <script type='text/javascript'>
         $(".options-header").click(function() {
-            if (!$(this).attr('data-hidden')) {
+            if (!$(this).attr('data-hidden') || $(this).attr('data-hidden') == 'false') {
                 $(this).attr('data-hidden', true);
-                $('.options-list').hide();
+                $('.options-list, .options-hide').hide();
                 $(this).find('.glyphicons').css({ rotate: '90deg' });
             } else {
                 $(this).attr('data-hidden', false);
-                $('.options-list').show();
+                $('.options-list, .options-hide').show();
                 $(this).find('.glyphicons').css({ rotate: '0deg' });
             }
         });
