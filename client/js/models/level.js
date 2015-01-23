@@ -19,7 +19,7 @@ define(function() {
         
         if (this.number < 25) {
             this.doorDown = worldEntity.engine.createEntity({tags: ['vision-candidate', 'level-door']});
-            this.doorDown.addComponent('level-door', {});
+            this.doorDown.addComponent('level-door', { size: { width: 40, height: 40 }});
             this.doorDown.sendMessage('init', {});
             this.doorDown.data.position.y = this.maxHeight - 500;
             this.doorDown.data.level = this;
@@ -29,7 +29,7 @@ define(function() {
         
         if (number > 1) {
             this.doorUp = worldEntity.engine.createEntity({tags: ['vision-candidate', 'level-door']});
-            this.doorUp.addComponent('level-door', { leads: 'up' });
+            this.doorUp.addComponent('level-door', { leads: 'up', size: { width: 40, height: 40 } });
             this.doorUp.sendMessage('init', {});
             this.doorUp.data.position.y = 700;
             this.doorUp.data.level = this;
