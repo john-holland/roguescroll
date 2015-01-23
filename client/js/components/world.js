@@ -28,15 +28,15 @@ module.exports = function() {
                     return;
                 }
                 
-                while (!this.levels.length || this.levels.length < (data.level - 1)) {
-                    this.levels.push(new Level(entity));
+                while (!this.levels.length || this.levels.length < data.level) {
+                    this.levels.push(new Level(entity, this.levels.length + 1));
                 }
                 
                 if (this.currentLevel) {
                     this.currentLevel.deactivate();
                 }
                 
-                this.levels[data.level - 1].activate();
+                this.levels[data.level - 1].activate(data.direction);
                 this.level = data.level;
             },
             'go-down': function(entity, data) {
@@ -45,7 +45,8 @@ module.exports = function() {
                 }
                 
                 entity.sendMessage('go-to-level', {
-                    level: this.level + 1
+                    level: this.level + 1,
+                    direction: 'above'
                 })
             },
             'go-up': function(entity, data) {
@@ -54,7 +55,8 @@ module.exports = function() {
                 }
                 
                 entity.sendMessage('go-to-level', {
-                    level: this.level - 1
+                    level: this.level - 1,
+                    direction: 'below'
                 })
             }
         }

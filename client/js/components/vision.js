@@ -12,7 +12,7 @@ define(function() {
             },
             update: function(dt, entity, component) {
                 this.withinSight = _.filter(entity.engine.findEntityByTag('vision-candidate'), function(visionCandidate) {
-                    var canSee = V2.distanceBetween(entity.data.position, visionCandidate.data.position) < entity.data.sightRange;
+                    var canSee = visionCandidate.isActive && V2.distanceBetween(entity.data.position, visionCandidate.data.position) < entity.data.sightRange;
                     
                     if (canSee) {
                         visionCandidate.sendMessage('show');

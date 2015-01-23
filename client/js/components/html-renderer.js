@@ -59,14 +59,6 @@ define(function() {
                     return;
                 }
                 
-                if (this.renderBuffer.shouldRender != entity.shouldRender) {
-                    if (entity.shouldRender && !this.renderBuffer.shouldRender) {
-                        this.$el.show();
-                    } else if (!entity.shouldRender && this.renderBuffer.shouldRender) {
-                        this.$el.hide();
-                    }
-                }
-                
                 if (entity.shouldRender) {
                     this.$el.css({ 
                         left: this.position.x - (this.size.width / 2),
@@ -90,13 +82,13 @@ define(function() {
             messages: {
                 show: function(entity, data) {
                     if (entity.data.$el) {
-                        entity.data.$el.show(400);
+                        entity.data.$el.show(80);
                     }
                     entity.shouldRender = true;
                 },
                 hide: function(entity, data) {
                     if (entity.data.$el) {
-                        entity.data.$el.hide(400);
+                        entity.data.$el.hide(80);
                     }
                     entity.shouldRender = false;
                 },

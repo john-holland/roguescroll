@@ -12,10 +12,10 @@ define(function() {
                     x: 0,
                     y: 7300
                 },
-                senseRange: 100,
+                senseRange: 50,
                 leads: 'down'
             },
-            requiredComponents: ['center-aligned', 'glyphicon-renderer', 'world-entity'],
+            requiredComponents: ['center-aligned', 'glyphicon-renderer', 'world-entity', 'sensor'],
             messages: {
                 sensed: function(entity, data) {
                     if (this.leads == 'down') entity.engine.findEntityByTag('world')[0].sendMessage('go-down');

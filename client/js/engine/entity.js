@@ -38,7 +38,7 @@ define(function() {
             return;
         }
         
-        if (!(this.isActive && this.shouldRender)) {
+        if (!this.isActive && !this.shouldRender) {
             //skip update if we're not active and we shouldn't render
             return;
         }

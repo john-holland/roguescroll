@@ -2,12 +2,13 @@ define(function() {
     var _ = require("underscore");
     var Wall = require("../models/walls/walls");
     
-    function Level(worldEntity) {
+    function Level(worldEntity, number) {
         this.worldEntity = worldEntity;
+        this.active = false;
         this.height = 2000;
         this.maxHeight = 8000;
         this.lowestKnownY = 0;
-        this.number = 1;
+        this.number = number;
         this.entities = [];
         this.traps = [];
         this.walls = [];
@@ -16,15 +17,34 @@ define(function() {
         //a list of entities and their isactive and shouldrender states before the level was deactivated
         this.entityMetaData = [];
         
-        this.doorDown = worldEntity.engine.createEntity({tags: ['vision-candidate', 'level-door']});
-        this.doorDown.addComponent('level-door', {});
-        this.doorDown.sendMessage('init', {});
-        this.doorDown.data.position.y = this.maxHeight - 500;
-        this.doorDown.data.level = this;
+        if (this.number < 25) {
+            this.doorDown = worldEntity.engine.createEntity({tags: ['vision-candidate', 'level-door']});
+            this.doorDown.addComponent('level-door', {});
+            this.doorDown.sendMessage('init', {});
+            this.doorDown.data.position.y = this.maxHeight - 500;
+            this.doorDown.data.level = this;
+            this.doorDown.sendMessage('hide');
+            this.entities.push(this.doorDown);
+        }
         
-        this.activate = function() {
+        if (number > 1) {
+            this.doorUp = worldEntity.engine.createEntity({tags: ['vision-candidate', 'level-door']});
+            this.doorUp.addComponent('level-door', { leads: 'up' });
+            this.doorUp.sendMessage('init', {});
+            this.doorUp.data.position.y = 700;
+            this.doorUp.data.level = this;
+            this.doorUp.sendMessage('hide');
+            this.entities.push(this.doorUp);
+        }
+        
+        this.activate = function(enteredFrom) {
             var player = this.worldEntity.engine.findEntityByTag('player')[0];
-            if (player) player.data.position.y = 0;
+            if (enteredFrom == 'below') {
+                if (player) player.data.position.y = this.doorDown.data.position.y - 150;
+            } else {
+                if (player && this.number > 1) player.data.position.y = 1000;
+                else if (player) player.data.position.y = 0;
+            }
             
             this.worldEntity.data.currentLevel = this;
             
@@ -36,8 +56,15 @@ define(function() {
             
             this.entityMetaData.forEach(function(metadata) {
                 metadata.entity.isActive = metadata.isActive;
+                
+                if (metadata.shouldRender) {
+                    metadata.entity.sendMessage('show');
+                }
+                
                 metadata.entity.shouldRender = metadata.shouldRender;
             });
+            
+            this.active = true;
         }
         
         this.deactivate = function() {
@@ -54,22 +81,37 @@ define(function() {
             this.entityMetaData = this.entities.filter(function(entity) {
                 return !!player ? entity != player : true;
             }).map(function(entity) {
-               return {
+                var metadata = {
                    isActive: entity.isActive,
                    shouldRender: entity.shouldRender,
                    entity: entity
                };
+               
+               entity.isActive = false;
+               entity.sendMessage('hide');
+               entity.shouldRender = false;
+               return metadata;
             });
+            
+            this.active = false;
         }
         
         this.update = function(dt) {
             var self = this;
             var previousLowest = self.lowestKnownY;
             this.entities.forEach(function(entity) {
-                if (entity.data.position.y + 1000 > self.lowestKnownY) {
-                    self.lowestKnownY = entity.data.position.y + 1000;
+                if (entity.data.position.y + 3000 > self.lowestKnownY) {
+                    self.lowestKnownY = entity.data.position.y + 3000;
                 }
             });
+            
+            if (!this.player) {
+                this.player = this.worldEntity.engine.findEntityByTag('player')[0];
+            }
+            
+            if (this.player && this.player.data.position.y + 1000 > this.lowestKnownY) {
+                this.lowestKnownY = this.player.data.position.y + 3000;
+            }
             
             if (this.lowestKnownY > previousLowest) {
                 if (this.height > this.lowestKnownY || this.height >= this.maxHeight) {

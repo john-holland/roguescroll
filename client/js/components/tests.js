@@ -15,12 +15,19 @@ define(function() {
                 this.integrationTestResults = _.map(this.integrationTests, function(test) { return test(); });
             },
             update: function (dt, entity, component) {
-                this.testResultFrames.push(_.map(this.continuityTests, function(test) { return test(); }))
+                if (this.testResultFrames.length > this.keepFrames) {
+                    this.testResultFrames.unshift();
+                }
+                this.testResultFrames.push(_.map(this.continuityTests, function(test) { return { results: test(), gameTime: entity.engine.gameTime }; }))
             },
             messages: {
                 'set-keep-frames': function(entity, data) {
-                    if (data.keepFrames) {
-                        while (testResultFrames.length > )
+                    if ('keepFrames' in data) {
+                        while (testResultFrames.length > data.keepFrames) {
+                            testResultFrames.unshift();
+                        }
+                        
+                        this.keepFrames = data.keepFrames;
                     }
                 }
             }

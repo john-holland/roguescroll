@@ -5,7 +5,7 @@ module.exports = function() {
             icon: "lab",
             useRange: 100
         },
-        requiredComponents: ["glyphicon-renderer", "center-aligned"],
+        requiredComponents: ["glyphicon-renderer", "center-aligned", "world-entity"],
         // requiredComponents: {
         //     'glyphicon-renderer': {
         //         icon: 'lab',

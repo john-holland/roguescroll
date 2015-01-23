@@ -15,7 +15,7 @@ module.exports = function Combatant() {
                 if (this.lastAttackTime === null || (entity.engine.gameTime - this.attackCooldown) > this.lastAttackTime) {
                     var data = this;
                     var targets = _.filter(entity.engine.entities.getList(), function(entity) {
-                        return "side" in entity.data && "position" in entity.data && "health" in entity.data &&
+                        return entity.isActive && "side" in entity.data && "position" in entity.data && "health" in entity.data &&
                                entity.data.health > 0 &&
                                entity.data.side !== data.side && 
                                Math.abs(entity.data.position.y - data.position.y) < data.range;
