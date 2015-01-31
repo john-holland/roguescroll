@@ -49,7 +49,10 @@ define(function() {
             duration: 0,
             queue: false
         });
-        this.$el.css('background', this.color);
+        this.$el.css({ 
+            background: 'transparent',
+            'border-top-color': this.color
+        });
     }
 
     return WallSegment;

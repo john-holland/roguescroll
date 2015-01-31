@@ -1,5 +1,7 @@
 var _ = require("../util/underscore");
 var ListMap = require("../util/listmap");
+var Chance = require("../util/chance");
+var chance = new Chance();
 
 module.exports = function() {
     return {
@@ -34,7 +36,7 @@ module.exports = function() {
                 position = this.spawnPosition;
             }
             
-            enemy.addComponent("enemy", { iconColor:"#eee", position: position, icon: _.random(1, 10) > 6 ? "person" : "skull", target: { y: 0, x: 0 } });
+            enemy.addComponent("enemy", { iconColor:"#eee", position: position, icon: chance.pick(["person", "skull", 'bug']), target: { y: 0, x: 0 } });
             
             var healthTarget = entity.engine.createEntity({tags: ['enemy-health-display']});
             

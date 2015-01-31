@@ -7,6 +7,7 @@ module.exports = function() {
                 var text = entity.engine.createEntity();
                 text.addComponent("glyphicon-renderer", {icon: options.icon ? options.icon : "globe", position: { x: this.position.x, y: this.position.y } });
                 text.addComponent("text", {});
+                text.data.levelSetsIconColor = false;
                 
                 if (!options.iconColor) {
                     text.data.$el.css("color", "green");
@@ -15,7 +16,7 @@ module.exports = function() {
                 }
                 
                 if (!options.textColor) {
-                    text.data.$text.css("color", "black");
+                    text.data.$text.css("color", "#eee");
                 } else {
                     text.data.$text.css("color", options.textColor);
                 }

@@ -37,10 +37,7 @@ define(function() {
             "enemy": require("./components/enemy")(),
             "drops-loot": require("./components/drops-loot")(),
             "mounted": require("./components/mounted")(),
-            "trap": {
-                //the trap should not be visible unless the player is within senseRange + (brains * 3)
-                //once the player sees it, it should show a icon: 'warning-sign' 
-            },
+            "trap": require("./components/trap")(),
             "sine-line": require("./components/sine-line")(),
             "enemy-spawner": require("./components/enemy-spawner")(),
             "world-entity": require("./components/world-entity")(),
@@ -55,7 +52,8 @@ define(function() {
             vision: require("./components/vision")(),
             sensor: require("./components/sensor")(),
             'level-door': require("./components/level-door")(),
-            options: require("./components/options")()
+            options: require("./components/options")(),
+            minimap: require("./components/minimap")()
         },
         entities: [
             {
@@ -74,7 +72,7 @@ define(function() {
                         iconColor: '#eee'
                     },
                     movement: {
-                        speed: 150
+                        speed: 400
                     },
                     position: {
                         position: {
@@ -109,12 +107,6 @@ define(function() {
                 }
             },
             {
-                tags:["enemy-spawner"],
-                components: {
-                    'enemy-spawner': {}
-                }
-            },
-            {
                 tags:["health-display", 'hide-at-start'],
                 components: {
                     "health-display": {
@@ -130,7 +122,8 @@ define(function() {
                     "game-metrics-display": {
                         textColor: '#eee',
                         'z-index': 10000
-                    }
+                    },
+                    "hide-on-pause": {}
                 }
             },
             {
@@ -165,14 +158,15 @@ define(function() {
                         isStaticPosition: true,
                         position: {
                             x: $(window).width() - 250,
-                            y: $(window) - 200
+                            y: $(window).height() - 200
                         },
                         metricsFunction: function(entity, dt, target) {
                             return target.data.position.x.toFixed(3) + " " + target.data.position.y.toFixed(3);
                         },
                         icon: "global",
                         textColor: '#eee'
-                    }
+                    },
+                    "hide-on-pause": {}
                 }
             },
             // {
@@ -211,8 +205,13 @@ define(function() {
                         }
                     }
                 }
+            },
+            {
+                tags: ['miniap'],
+                components: {
+                    minimap: { }
+                }
             }
-            
             //,
             // {
             //     tags: ['options'],

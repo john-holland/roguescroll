@@ -17,6 +17,7 @@ define(function() {
     
     Entity.prototype.addComponent = function(name, defaultData) {
         this.engine.addComponentToEntity(this, name, defaultData || { });
+        return this;
     }
     
     Entity.prototype.removeComponent = function(name) {

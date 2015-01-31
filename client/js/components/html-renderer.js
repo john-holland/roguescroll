@@ -19,7 +19,8 @@ define(function() {
                     width: 0,
                     height: 0,
                     shouldRender: false
-                }
+                },
+                levelSetsColor: true
             },
             requiredComponents: ['position'],
             onAdd: function(entity, component) {

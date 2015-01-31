@@ -18,6 +18,11 @@ module.exports = function() {
 
             this.target.y = top;
         },
-        requiredComponents: ["movement"]
+        requiredComponents: ["movement"],
+        messages: {
+            'set-scroll-to-position': function() {
+                this.$document.scrollTop(this.position.y + this.topMargin - $('nav').height());
+            }
+        }
     };
 }
