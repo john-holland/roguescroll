@@ -72,7 +72,7 @@ define(function() {
                         iconColor: '#eee'
                     },
                     movement: {
-                        speed: 400
+                        speed: 150
                     },
                     position: {
                         position: {
