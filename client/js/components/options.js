@@ -4,6 +4,10 @@ define(function() {
     return function Options() {
         return {
             _: {
+                size: {
+                    width: null,
+                    height: null
+                },
                 options: {
                     //if you provide an object, you must provide an function optionsTemplate(option, value, entity, component)
                     // setup sensible data-attributes and use find() selectors on $el to setup callbacks
@@ -38,7 +42,7 @@ define(function() {
                             value = pair[1];
                         return entity.data.metadataFactory(entity, component, option, value);
                     }), function(metadata) { return metadata != null });
-                    entity.optionsMetadata = options;
+                    entity.data.optionsMetadata = options;
                     return require("../templates/options.hbs")({ options: options });
                 }
             },

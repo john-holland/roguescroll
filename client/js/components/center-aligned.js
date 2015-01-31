@@ -5,6 +5,7 @@ module.exports = function CenterAligned() {
         _: {
             alignCenter: true,
             xOccupancyOffset: 0,
+            xOffsetOverride: 0,
             previousCenterAlignX: 0,
             previousXOccupancyOffset: 0
         },
@@ -21,8 +22,8 @@ module.exports = function CenterAligned() {
             if (this.target) this.target.x = component.getCenter(this);
         },
         update: function(dt, entity, component) {
-            if (this.target && this.alignCenter) this.target.x = component.getCenter(this) + this.xOccupancyOffset;
-            if (this.alignCenter) this.position.x = component.getCenter(this) + this.xOccupancyOffset;
+            if (this.target && this.alignCenter) this.target.x = component.getCenter(this) + (this.xOffsetOverride || this.xOccupancyOffset);
+            if (this.alignCenter) this.position.x = component.getCenter(this) + (this.xOffsetOverride || this.xOccupancyOffset);
         },
         aggregateUpdate: function(dt, entities, component) {
             //group the entities by their Math.floor(position.y / 10)

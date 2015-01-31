@@ -9,7 +9,12 @@ module.exports = function() {
                 y: 35
             },
             pursueTarget: false,
-            icon: "shield"
+            icon: "shield",
+            shields: [{
+                name: 'Wooden Shield',
+                color: 'brown',
+                power: null
+            }]
         },
         onAdd: function(entity, component) {
             if (this.mountTarget) this.mountTarget.data.shield = entity;

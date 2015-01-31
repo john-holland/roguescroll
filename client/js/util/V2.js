@@ -197,6 +197,12 @@ function V2(x, y) {
     this.toString = function() {
         return "x: " + this.X + " y: " + this.Y;
     }
+    
+    this.toFixed = function(decimalPlaces) {
+        this.X = parseFloat(this.X.toFixed(decimalPlaces));
+        this.Y = parseFloat(this.Y.toFixed(decimalPlaces));
+        return this;
+    }
 }
 
 
@@ -328,6 +334,10 @@ function ImmutableV2(x, y) {
     
     this.toString = function() {
         return "x: " + this.X + " y: " + this.Y;
+    }
+    
+    this.toFixed = function(decimalPlaces) {
+        return new ImmutableV2(parseFloat(this.X.toFixed(decimalPlaces)), parseFloat(this.Y.toFixed(decimalPlaces)));
     }
 }
 

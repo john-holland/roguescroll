@@ -22,7 +22,7 @@ module.exports = function GlyphiconRenderer() {
                 this.world = entity.engine.findEntityByTag('world')[0];
             } else {
                 if (this.levelSetsIconColor && this.iconColor !== this.world.data.currentLevel.colors.font.toHexString()) {
-                    entity.sendMessage('set-icon-color', { color: this.world.data.currentLevel.colors.accent.toHexString() })
+                    entity.sendMessage('set-icon-color', { color: this.world.data.currentLevel.colors.accent.toHexString() });
                 }
             }
         },

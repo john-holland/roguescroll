@@ -212,7 +212,7 @@ define(function() {
                     minimap: { }
                 }
             }
-            //,
+            // ,
             // {
             //     tags: ['options'],
             //     components: {

@@ -30,8 +30,8 @@ define(function() {
                     left: this.position.x - (this.size.width / 2) + (this.xOccupancyOffset || 0),
                     top: this.position.y - (this.size.height / 2),
                     "font-size": ((this.size.height + this.size.width) / 2) + "px",
-                    width: this.size.width,
-                    height: this.size.height
+                    width: this.size.width === null ? 'initial' : this.size.width,
+                    height: this.size.height === null ? 'initial' : this.size.height
                 });
                 
                 this.$el.css('z-index', entity.data['z-index']);
@@ -64,6 +64,8 @@ define(function() {
                     this.$el.css({ 
                         left: this.position.x - (this.size.width / 2),
                         top: this.position.y - (this.size.height / 2),
+                        width: this.size.width === null ? 'initial' : this.size.width,
+                        height: this.size.height === null ? 'initial' : this.size.height,
                         "font-size": ((this.size.height + this.size.width) / 2) + "px",
                         'z-index': entity.data['z-index']
                     });   

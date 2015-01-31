@@ -21,7 +21,7 @@ module.exports = function() {
             'set-text-color': function(entity, data) {
                 if (data.textColor) {
                     this.textColor = data.textColor;
-                    this.$text.animate({'color': data.textColor}, 1000);
+                    this.$text.css({'color': data.textColor});
                 }
             }
         }

@@ -12,7 +12,7 @@ define(function() {
         this.worldEntity = worldEntity;
         this.active = false;
         this.height = 2000;
-        this.maxHeight = 8000;
+        this.maxHeight = _.random(8000, Math.min(8000 + (number * 1000), 14000));
         this.lowestKnownY = 0;
         this.number = number;
         
@@ -23,14 +23,21 @@ define(function() {
                 accent: tinycolor("#eee")
             };
         } else {
-            var colors = tinycolor(tinyColors[_.random(0, tinyColors.length)]).triad();
-            var fontColor = tinycolor.mostReadable(colors[0], [colors[1], colors[2]]);
-            var accent = _.find(colors, function(color) {return color != fontColor && color != colors[0]; });
-            
-            while (!tinycolor.isReadable(colors[0], fontColor)) {
+            var colors = tinycolor(tinyColors[_.random(0, tinyColors.length)]).splitcomplement(),
+                fontColor = tinycolor.mostReadable(colors[0], [colors[1], colors[2]]),
+                accent = _.find(colors, function(color) {return color != fontColor && color != colors[0]; }),
+                backgroundHsl = colors[0].toHsl(),
+                previousBackgroundHsl = worldEntity.data.levels[worldEntity.data.levels.length - 1].colors.background.toHsl(),
+                avghue = (backgroundHsl.h + previousBackgroundHsl.h)/2,
+                distance = Math.abs(backgroundHsl.h-avghue);
+                
+            while (distance < 100 || !tinycolor.isReadable(colors[0], fontColor)) {
                 colors = tinycolor(tinyColors[_.random(0, tinyColors.length)]).splitcomplement();
                 fontColor = tinycolor.mostReadable(colors[0], [colors[1], colors[2]]);
                 accent = _.find(colors, function(color) {return color != fontColor && color != colors[0]; });
+                backgroundHsl = colors[0].toHsl();
+                avghue = (backgroundHsl.h + previousBackgroundHsl.h)/2;
+                distance = Math.abs(backgroundHsl.h-avghue);
             }
             
             this.colors = {

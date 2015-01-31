@@ -5,8 +5,8 @@ module.exports = function() {
             this.$menu = $("#menu");
             this.$scrollContainer = $("#scroll-container");
             this.$document = $(document);
-            this.topMargin = $(document).height() / 2;
             this.$window = $(window);
+            this.topMargin = this.$window.height() / 2;
             var self = this;
             this.$window.resize(function() {
                 //maybe debounce this?
