@@ -14,7 +14,7 @@ define(function() {
                 damage: '2d6',
                 icon: 'heat'
             },
-            requiredComponents: ['sensor', 'glyphicon-renderer', 'center-aligned', 'world-entity', 'animation'],
+            requiredComponents: ['sensor', 'glyphicon-renderer', 'sine-wave-movement', 'world-entity', 'animation'],
             onRemove: function(entity, component) {
                 if (this.disarmer) {
                     this.disarmer.destroy();

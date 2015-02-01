@@ -53,7 +53,8 @@ define(function() {
             sensor: require("./components/sensor")(),
             'level-door': require("./components/level-door")(),
             options: require("./components/options")(),
-            minimap: require("./components/minimap")()
+            minimap: require("./components/minimap")(),
+            'sine-wave-movement': require("./components/sine-wave-movement")()
         },
         entities: [
             {
@@ -72,7 +73,7 @@ define(function() {
                         iconColor: '#eee'
                     },
                     movement: {
-                        speed: 150
+                        speed: 200
                     },
                     position: {
                         position: {

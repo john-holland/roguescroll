@@ -24,7 +24,9 @@ module.exports = function() {
             patrolTo: "top",
             isPatrolling: false,
             damage: "1d6",
-            playerAttackOffset: 60
+            playerAttackOffset: 60,
+            sineWaveRange: 50,
+            sineWaveSpeed: 500
         },
         onAdd: function(entity, component) {
         },
@@ -36,10 +38,12 @@ module.exports = function() {
             if (Math.abs(this.position.y - this.player.data.position.y) < this.senseDistance) {
                 entity.isPatrolling = false;
                 this.target.y = this.player.data.position.y + this.playerAttackOffset;
+                this.sineWaveMovementEnabled = false;
             } else {
                 //partrol.
                 //todo: Implement smoke break
                 if (!this.isPatrolling) {
+                    this.sineWaveMovementEnabled = true;
                     this.isPatrolling = true;
                     entity.sendMessage("go-to", {
                         x: this.patrolTo === "top" ? this.patrolTopTarget.x : this.patrolBottomTarget.x,
@@ -59,7 +63,7 @@ module.exports = function() {
                 }
             }
         },
-        requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'center-aligned', "floating-combat-text", 'animation', 'drops-loot'],
+        requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'sine-wave-movement', "floating-combat-text", 'animation', 'drops-loot'],
         messages: {
             'init': function(entity, data) {
                 this.player = entity.engine.findEntityByTag("player")[0];

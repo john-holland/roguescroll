@@ -29,15 +29,29 @@ define(function() {
                 backgroundHsl = colors[0].toHsl(),
                 previousBackgroundHsl = worldEntity.data.levels[worldEntity.data.levels.length - 1].colors.background.toHsl(),
                 avghue = (backgroundHsl.h + previousBackgroundHsl.h)/2,
-                distance = Math.abs(backgroundHsl.h-avghue);
+                distance = Math.abs(backgroundHsl.h-avghue),
+                tries = 0,
+                maxTries = 20;
                 
             while (distance < 100 || !tinycolor.isReadable(colors[0], fontColor)) {
+                if (tinycolor.isReadable(colors[0], fontColor)) {
+                    tries++;
+                }
+                
+                if (tries > maxTries) {
+                    break;
+                }
+                
                 colors = tinycolor(tinyColors[_.random(0, tinyColors.length)]).splitcomplement();
                 fontColor = tinycolor.mostReadable(colors[0], [colors[1], colors[2]]);
                 accent = _.find(colors, function(color) {return color != fontColor && color != colors[0]; });
                 backgroundHsl = colors[0].toHsl();
                 avghue = (backgroundHsl.h + previousBackgroundHsl.h)/2;
                 distance = Math.abs(backgroundHsl.h-avghue);
+            }
+            
+            if (colors[0].getLuminance() > 0.6) {
+                colors[0].darken(20);
             }
             
             this.colors = {
@@ -82,7 +96,7 @@ define(function() {
         
                 
         +function() {
-            for (var i = 0; i < _.random(1, Math.ceil(number / 3)); i++) {
+            for (var i = 0; i < _.random(1, Math.min(8, Math.ceil(number / 2))); i++) {
                 var trapY = _.random('doorUp' in self ? self.doorUp.data.position.y + 300 : 600,
                                      'doorDown' in self ? self.doorDown.data.position.y - 300 : self.maxHeight - 400);
                 console.log('spawned trap at: ' + trapY);
