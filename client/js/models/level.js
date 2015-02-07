@@ -110,7 +110,7 @@ define(function() {
         }();
         
         this.activate = function(enteredFrom) {
-            var player = this.worldEntity.engine.findEntityByTag('player')[0];
+            var player = this.worldEntity.engine.findEntityByTag('player');
             if (enteredFrom == 'below') {
                 if (player) player.data.position.y = this.doorDown.data.position.y - 150;
             } else {
@@ -156,7 +156,7 @@ define(function() {
         }
         
         this.deactivate = function() {
-            var player = this.worldEntity.engine.findEntityByTag('player')[0];
+            var player = this.worldEntity.engine.findEntityByTag('player');
             
             if (this.worldEntity.data.currentLevel == this) {
                 this.worldEntity.data.currentLevel = null;
@@ -194,7 +194,7 @@ define(function() {
             });
             
             if (!this.player) {
-                this.player = this.worldEntity.engine.findEntityByTag('player')[0];
+                this.player = this.worldEntity.engine.findEntityByTag('player');
             }
             
             if (this.player && this.player.data.position.y + 1000 > this.lowestKnownY) {

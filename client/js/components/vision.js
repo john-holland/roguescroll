@@ -13,12 +13,12 @@ define(function() {
                 circleColor: null
             },
             onAdd: function(entity, component) {
-                this.world = entity.engine.findEntityByTag('world')[0];
+                this.world = entity.engine.findEntityByTag('world');
                 var world = this.world;
                 this.visionCircle = entity.engine.createEntity({tags: ['vision-circle']})
                     .addComponent('html-renderer', {
                         htmlTemplateFactory: function(entity, component) {
-                            return "<div style='position:absolute;border:2px dashed " + entity.engine.findEntityByTag('world')[0].data.currentLevel.colors.accent.toHexString() + "'></div>";
+                            return "<div style='position:absolute;border:2px dashed " + entity.engine.findEntityByTag('world').data.currentLevel.colors.accent.toHexString() + "'></div>";
                         }
                     })
                     .addComponent('mounted', {
@@ -44,7 +44,7 @@ define(function() {
                     this.visionCircle.data.$el.css({'border-color': this.circleColor });
                 }
                 
-                this.withinSight = _.filter(entity.engine.findEntityByTag('vision-candidate'), function(visionCandidate) {
+                this.withinSight = _.filter(entity.engine.findEntitiesByTag('vision-candidate'), function(visionCandidate) {
                     var canSee = visionCandidate.isActive && V2.distanceBetween(entity.data.position, visionCandidate.data.position) < entity.data.sightRange;
                     
                     if (canSee) {

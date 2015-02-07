@@ -48,7 +48,7 @@ module.exports = function() {
                 return true;
             },
             death: function(entity, component) {
-                entity.engine.findEntityByTag("game-manager")[0].sendMessage("game-over");
+                entity.engine.findEntityByTag("game-manager").sendMessage("game-over");
             }
         }
     };

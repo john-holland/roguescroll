@@ -26,7 +26,7 @@ module.exports = function() {
                     }
                     
                     if (mountTag) {
-                        data.mountTarget = entity.engine.findEntityByTag(data.mountTag)[0];
+                        data.mountTarget = entity.engine.findEntityByTag(data.mountTag);
                         
                         if (data.mountTarget) {
                             return;

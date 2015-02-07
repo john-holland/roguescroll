@@ -66,8 +66,8 @@ module.exports = function() {
         requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'sine-wave-movement', "floating-combat-text", 'animation', 'drops-loot'],
         messages: {
             'init': function(entity, data) {
-                this.player = entity.engine.findEntityByTag("player")[0];
-                this.world = entity.engine.findEntityByTag("world")[0];
+                this.player = entity.engine.findEntityByTag("player");
+                this.world = entity.engine.findEntityByTag("world");
             },
             "targets-in-range": function(entity, data) {
                 if (!data.targets || !data.targets.length) {

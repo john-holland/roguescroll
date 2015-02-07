@@ -13,7 +13,7 @@ module.exports = function() {
         requiredComponents: ["position"],
         onAdd: function(entity, component) {
             if (!component.worldEntity) component.worldEntity = entity.engine.components.get('world-entity');
-            if (!component.worldEntity) component.player = entity.engine.findEntityByTag(['player'])[0];
+            if (!component.player) component.player = entity.engine.findEntityByTag('player');
             
             entity.sendMessage("go-to-level", { level: 1 });
         },

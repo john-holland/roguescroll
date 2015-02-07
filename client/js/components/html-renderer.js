@@ -1,5 +1,45 @@
 define(function() {
+
+    function applyCss() {
+        this.$el.css({
+            "font-size": ((this.size.height + this.size.width) / 2) + "px",
+            width: this.size.width === null ? 'initial' : this.size.width,
+            height: this.size.height === null ? 'initial' : this.size.height,
+            'z-index': this['z-index']
+        });
+            
+        if (!this.positionAnchor || this.positionAnchor === 'top-left') {
+            this.$el.css({
+                bottom: 'initial',
+                right: 'initial',
+                left: this.position.x - (this.size.width / 2),
+                top: this.position.y - (this.size.height / 2)
+            });
+        } else if (this.positionAnchor === 'top-right') {
+            this.$el.css({
+                bottom: 'initial',
+                left: 'initial',
+                right: this.position.x - (this.size.width / 2),
+                top: this.position.y - (this.size.height / 2)     
+            });
+        } else if (this.positionAnchor === 'bottom-left') {
+            this.$el.css({
+                top: 'initial',
+                right: 'initial',
+                left: this.position.x - (this.size.width / 2),
+                bottom: this.position.y - (this.size.height / 2)     
+            });
+        } else if (this.positionAnchor === 'bottom-right') {
+            this.$el.css({
+                top: 'initial',
+                left: 'initial',
+                right: this.position.x + (this.size.width / 2),
+                bottom: this.position.y + (this.size.height / 2)
+            });
+        }
+    }
     
+    //todo: Should add anchors for isStaticPosition, then use right, left, top, bottom accordingly with x and y
     return function HtmlRenderer() {
         return {
             _: {
@@ -20,21 +60,14 @@ define(function() {
                     height: 0,
                     shouldRender: false
                 },
-                levelSetsColor: true
+                levelSetsColor: true,
+                positionAnchor: 'top-left' //'top-right', 'bottom-left', 'bottom-right'
             },
             requiredComponents: ['position'],
             onAdd: function(entity, component) {
                 this.$el = $(this.htmlTemplateFactory(entity, component)).appendTo($(this.selector));
                     
-                this.$el.css({
-                    left: this.position.x - (this.size.width / 2) + (this.xOccupancyOffset || 0),
-                    top: this.position.y - (this.size.height / 2),
-                    "font-size": ((this.size.height + this.size.width) / 2) + "px",
-                    width: this.size.width === null ? 'initial' : this.size.width,
-                    height: this.size.height === null ? 'initial' : this.size.height
-                });
-                
-                this.$el.css('z-index', entity.data['z-index']);
+                applyCss.call(this);
                 
                 if (!entity.shouldRender) {
                     this.$el.hide();
@@ -61,14 +94,7 @@ define(function() {
                 }
                 
                 if (entity.shouldRender) {
-                    this.$el.css({ 
-                        left: this.position.x - (this.size.width / 2),
-                        top: this.position.y - (this.size.height / 2),
-                        width: this.size.width === null ? 'initial' : this.size.width,
-                        height: this.size.height === null ? 'initial' : this.size.height,
-                        "font-size": ((this.size.height + this.size.width) / 2) + "px",
-                        'z-index': entity.data['z-index']
-                    });   
+                    applyCss.call(this);
                 }
                 
                 this.renderBuffer.position.x = this.position.x;

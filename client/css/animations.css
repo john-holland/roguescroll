@@ -271,3 +271,19 @@ which is great */
     -webkit-animation-name: walk; 
     animation-name: walk; 
 }
+
+
+@-webkit-keyframes explode { 
+    0% { -webkit-transform: translate(-15%) scale(1, 1); } 
+    50% { -webkit-transform: translate(15%) scale(1.2, 1.2); } 
+    100% { -webkit-transform: translate(-35%) scale(3, 3); } 
+} 
+@keyframes explode { 
+    0% { transform: translate(-15%) scale(1, 1); } 
+    50% { transform: translate(15%) scale(1.2, 1.2); } 
+    100% { transform: translate(-35%) scale(3, 3); } 
+} 
+.explode { 
+    -webkit-animation-name: explode; 
+    animation-name: explode; 
+}

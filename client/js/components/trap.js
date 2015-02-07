@@ -12,7 +12,8 @@ define(function() {
                 senseRange: 100,
                 senseTag: 'player',
                 damage: '2d6',
-                icon: 'heat'
+                icon: 'heat',
+                sineWaveSpeed: _.random(3000, 2000)
             },
             requiredComponents: ['sensor', 'glyphicon-renderer', 'sine-wave-movement', 'world-entity', 'animation'],
             onRemove: function(entity, component) {
@@ -32,7 +33,7 @@ define(function() {
                             var hit = _.random(10, 25 - sensedEntity.data.character.skills / 4);
                             sensedEntity.sendMessage('damage', { amount: chance.rpg(self.damage, {sum:true}) + chance.integer({max: self.level.number, min: 0}), hitRoll: hit });
                             self.hasTriggered = true;
-                            entity.sendMessage('animate', { animation: 'attack-up', callback: function() {
+                            entity.sendMessage('animate', { animation: 'explode', callback: function() {
                                 entity.destroy();
                             }});
                         }

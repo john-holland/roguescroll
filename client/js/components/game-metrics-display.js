@@ -15,7 +15,7 @@ module.exports = function() {
         onAdd: function(entity, component) {
             this.position.y = $(window).height() - 50;
             if (this.metricsTargetTag) {
-                this.metricsTarget = entity.engine.findEntityByTag(this.metricsTargetTag)[0];
+                this.metricsTarget = entity.engine.findEntityByTag(this.metricsTargetTag);
             }
         },
         update: function(dt, entity, component) {

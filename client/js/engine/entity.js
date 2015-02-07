@@ -15,6 +15,28 @@ define(function() {
         this.forwardInit = false;
     }
     
+    Object.defineProperty(Entity.prototype, 'isActive', {
+        get: function() { return this.engine.updateEntities.contains(this.id); },
+        set: function(value) {
+            if (value) {
+                this.engine.updateEntities.add(this.id, this);
+            } else {
+                this.engine.updateEntities.remove(this.id);
+            }
+        }
+    });
+    
+    Object.defineProperty(Entity.prototype, 'shouldRender', {
+        get: function() { return this.engine.renderEntities.contains(this.id); },
+        set: function(value) {
+            if (value) {
+                this.engine.renderEntities.add(this.id, this);
+            } else {
+                this.engine.renderEntities.remove(this.id);
+            }
+        }
+    });
+    
     Entity.prototype.addComponent = function(name, defaultData) {
         this.engine.addComponentToEntity(this, name, defaultData || { });
         return this;
@@ -39,8 +61,18 @@ define(function() {
             return;
         }
         
-        if (!this.isActive && !this.shouldRender) {
-            //skip update if we're not active and we shouldn't render
+        var components = this.components.getList();
+        
+        for (var i = 0; i < components.length; i++) {
+            var component = components[i],
+                update = component._update;
+            
+            if (this.isActive && update) update.call(this.data, dt, this, component);
+        }
+    }
+    
+    Entity.prototype.render = function(dt) {
+        if (this.__isDestroyed) {
             return;
         }
         
@@ -48,10 +80,8 @@ define(function() {
         
         for (var i = 0; i < components.length; i++) {
             var component = components[i],
-                update = component._update,
                 render = component._render;
             
-            if (this.isActive && update) update.call(this.data, dt, this, component);
             if (this.shouldRender && render) render.call(this.data, dt, this, component);
         }
     }

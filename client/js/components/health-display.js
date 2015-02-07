@@ -13,7 +13,7 @@ module.exports = function() {
         },
         requiredComponents: ['text'],
         onAdd: function(entity, component) {
-            this.healthTarget = this.player = entity.engine.findEntityByTag("player")[0];
+            this.healthTarget = this.player = entity.engine.findEntityByTag("player");
         },
         update: function(dt, entity, component) {
             if (this.destroyOnTargetDestroy && this.healthTarget.isDestroyed()) {

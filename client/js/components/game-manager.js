@@ -18,7 +18,7 @@ module.exports = function() {
                 
                 this.gameState = "character-selection";
                 
-                entity.engine.findEntityByTag('hide-at-start').forEach(function(entity) {
+                entity.engine.findEntitiesByTag('hide-at-start').forEach(function(entity) {
                     entity.sendMessage("hide");
                 });
                 
@@ -142,16 +142,16 @@ module.exports = function() {
                 
                 $("#game").show();
                 
-                var player = entity.engine.findEntityByTag("player")[0];
+                var player = entity.engine.findEntityByTag("player");
                 player.data.character = selectedCharacter;
                 player.isActive = true;
                 player.sendMessage("change-icon", {icon: selectedCharacter.icon });
                 
-                entity.engine.findEntityByTag('hide-at-start').forEach(function(entity) {
+                entity.engine.findEntitiesByTag('hide-at-start').forEach(function(entity) {
                     entity.sendMessage("show");
                 });
                 
-                var world = entity.engine.findEntityByTag("world")[0];
+                var world = entity.engine.findEntityByTag("world");
                 world.sendMessage("generate", { seed: selectedCharacter.name + +new Date() });
                 
                 entity.engine.entities.getList().forEach(function(entity) {
@@ -159,15 +159,12 @@ module.exports = function() {
                 })
                 
                 //start the enemy spawner going
-                //var enemySpawner = entity.engine.findEntityByTag("enemy-spawner")[0];
+                //var enemySpawner = entity.engine.findEntityByTag("enemy-spawner");
                 //enemySpawner.sendMessage("start");
-            },
-            downLevel: function(entity, data) {
-                //the player is going down a level! Good for them!
-                // we need to make it if we don't already have it.
             },
             "game-over": function(entity, data) {
                 //todo: handle game over. Show summary of play etc
+                $('<div style="position static">Restart</div> ').appendTo($("#game"));
             },
             restart: function(entity, data) {
                 //cleanup

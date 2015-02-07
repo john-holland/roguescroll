@@ -67,16 +67,16 @@
             margin-right: 20px;
           }
           
+          input[type='text'] {
+            color: #333;
+          }
+          
           .character-portrait.active {
             border-color: gray;
           }
           
           .character-select-button {
             margin-top: 13px;
-          }
-          
-          .navbar-brand {
-            font-family: font-family: 'Knewave', cursive;
           }
           
           .stats-container {
@@ -172,8 +172,8 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
       <!--<script src="/socket.io/socket.io.js"></script>-->
-      <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+      <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>-->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.9.12/jquery.transit.min.js"></script>
       <script src="game.js"></script>
@@ -198,7 +198,7 @@
             RogueScroll.pause();
           }
           if ($(".active [href='#game']").length) {
-            if (RogueScroll.engine.findEntityByTag('game-manager')[0].data.gameState === 'in-play') {
+            if (RogueScroll.engine.findEntityByTag('game-manager').data.gameState === 'in-play') {
                 RogueScroll.play();
             }
           }

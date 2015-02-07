@@ -51,6 +51,11 @@ module.exports = function Animation() {
                         duration: 750,
                         looping: false,
                         defferable: false
+                    },
+                    explode: {
+                        duration: 1000,
+                        looping: false,
+                        defferable: false
                     }
                 };
                 

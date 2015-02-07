@@ -157,9 +157,10 @@ define(function() {
                         isActive: false,
                         metricsTargetTag: "player",
                         isStaticPosition: true,
+                        positionAnchor: 'bottom-right',
                         position: {
-                            x: $(window).width() - 250,
-                            y: $(window).height() - 200
+                            x: 250,
+                            y: 200
                         },
                         metricsFunction: function(entity, dt, target) {
                             return target.data.position.x.toFixed(3) + " " + target.data.position.y.toFixed(3);

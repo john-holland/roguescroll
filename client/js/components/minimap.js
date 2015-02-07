@@ -17,9 +17,9 @@ define(function() {
             },
             update: function(dt, entity, component) {
                 if (!this.world) {
-                    this.world = entity.engine.findEntityByTag('world')[0];
+                    this.world = entity.engine.findEntityByTag('world');
                 } else if (!this.player) {
-                    this.player = entity.engine.findEntityByTag('player')[0];
+                    this.player = entity.engine.findEntityByTag('player');
                     entity.sendMessage("change-icon", {icon: this.player.data.icon });
                 } else {
                     this.position.y = (this.player.data.position.y / this.world.data.currentLevel.maxHeight) * $(window).height()

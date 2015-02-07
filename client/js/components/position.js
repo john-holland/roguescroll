@@ -10,11 +10,11 @@ module.exports = function Position() {
                 height: 24
             },
             rotation: 0,
-            isFixedPosition: false
+            isStaticPosition: false
         },
         messages: {
             'set-position-type': function(entity, data) {
-                this.isFixedPosition = (data || { }).isFixedPosition || false;
+                this.isStaticPosition = (data || { }).isStaticPosition || false;
             }
         }
     };

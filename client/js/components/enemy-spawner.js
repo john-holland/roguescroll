@@ -24,7 +24,7 @@ module.exports = function() {
             
             //create the enemy!
             var patrolCenter = _.random($(window).height() / 2, this.world.data.currentLevel.height - $(window).height() / 2);
-            var patrolRange = Math.max(_.random(100, this.world.data.size.height / this.enemiesToSpawn * 2), 100);
+            var patrolRange = Math.max(_.random(100, this.world.data.size.height / Math.max(4, this.enemiesToSpawn / 4)), 200);
             
             var patrolTop = patrolCenter - (patrolRange / 2);
             var patrolBottom = patrolCenter + (patrolRange / 2);
@@ -59,7 +59,7 @@ module.exports = function() {
         },
         messages: {
             init: function(entity, data) {
-                this.world = entity.engine.findEntityByTag("world")[0];
+                this.world = entity.engine.findEntityByTag("world");
             }
         }
     };

@@ -19,7 +19,7 @@ module.exports = function GlyphiconRenderer() {
         },
         update: function(dt, entity, component) {
             if (!this.world) {
-                this.world = entity.engine.findEntityByTag('world')[0];
+                this.world = entity.engine.findEntityByTag('world');
             } else {
                 if (this.levelSetsIconColor && this.iconColor !== this.world.data.currentLevel.colors.font.toHexString()) {
                     entity.sendMessage('set-icon-color', { color: this.world.data.currentLevel.colors.accent.toHexString() });

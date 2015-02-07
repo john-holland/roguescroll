@@ -10,7 +10,7 @@ module.exports = function() {
         },
         update: function(dt, entity, component) {
             if (!this.world) {
-                this.world = entity.engine.findEntityByTag('world')[0];
+                this.world = entity.engine.findEntityByTag('world');
             } else {
                 if (this.levelSetsColor && this.textColor !== this.world.data.currentLevel.colors.font.toHexString()) {
                     entity.sendMessage('set-text-color', { textColor: this.world.data.currentLevel.colors.font.toHexString() })

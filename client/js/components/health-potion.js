@@ -13,7 +13,7 @@ module.exports = function() {
         //     'center-aligned': { }
         // },
         onAdd: function(entity, component) {
-            this.player = entity.engine.findEntityByTag("player")[0];  
+            this.player = entity.engine.findEntityByTag("player"); 
         },
         update: function(dt, entity, component) {
             if (Math.abs(this.player.data.position.y - this.position.y) < this.useRange) {

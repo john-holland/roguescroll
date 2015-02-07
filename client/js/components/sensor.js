@@ -10,7 +10,7 @@ define(function() {
                 var currentPosition = ImmutableV2.coalesce(this.position),
                     data = this;
                 if (this.senseTag) {
-                    var sensed = entity.engine.findEntityByTag(this.senseTag).filter(function(entity) {
+                    var sensed = entity.engine.findEntitiesByTag(this.senseTag).filter(function(entity) {
                         return currentPosition.distanceTo(entity.data.position) < data.senseRange;
                     });
                     

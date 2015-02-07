@@ -14,6 +14,8 @@ define(function() {
         this.game = game;
         this.isPlaying = false;
         this.entities = new ListMap();
+        this.updateEntities = new ListMap();
+        this.renderEntities = new ListMap();
         this.components = new ListMap();
         this.entitiesToDestroy = [];
         this.gameTime = 0;
@@ -128,10 +130,11 @@ define(function() {
             }
             
             var components = self.components.getList(),
-            entities = self.entities.getList(),
-            i = 0;
-            self.dt = dt;
-            self.gameTime += dt;
+                entities = self.updateEntities.getList(),
+                renderEntities = self.renderEntities.getList(),
+                i = 0;
+                self.dt = dt;
+                self.gameTime += dt;
             
             for (i = 0; i < components.length; i++) {
                 var component = components[i];
@@ -140,6 +143,10 @@ define(function() {
             
             for (i = 0; i < entities.length; i++) {
                 entities[i].update(dt);
+            }
+            
+            for (i = 0; i < renderEntities.length; i++) {
+                renderEntities[i].render(dt);
             }
             
             while (self.entitiesToDestroy.length) {
@@ -205,9 +212,15 @@ define(function() {
         
         this.findEntityByTag = function(tag) {
             
-            return _.filter(self.entities.getList(), function(entity) {
+            return _.find(self.entities.getList(), function(entity) {
                 return entity.tags.indexOf(tag) > -1;
             });
+        }
+        
+        this.findEntitiesByTag = function(tag) {
+            return _.filter(self.entities.getList(), function(entity) {
+                return entity.tags.indexOf(tag) > -1;
+            })
         }
     }
     

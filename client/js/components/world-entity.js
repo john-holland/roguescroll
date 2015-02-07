@@ -8,7 +8,7 @@ module.exports = function() {
             if (!this.level) {
                 //we don't do this in onAdd, because we want to be able to make them while the currentLevel is being constructed,
                 // and doing it this way avoids any unnecessary uglieness at the cost of an extra update
-                this.worldEntity = entity.engine.findEntityByTag("world")[0];
+                this.worldEntity = entity.engine.findEntityByTag("world");
                 
                 if (this.worldEntity.data.currentLevel.entities.indexOf(entity) < 0) {
                     this.worldEntity.data.currentLevel.entities.push(entity);

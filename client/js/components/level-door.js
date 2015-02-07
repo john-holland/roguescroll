@@ -18,8 +18,8 @@ define(function() {
             requiredComponents: ['center-aligned', 'glyphicon-renderer', 'world-entity', 'sensor'],
             messages: {
                 sensed: function(entity, data) {
-                    if (this.leads == 'down') entity.engine.findEntityByTag('world')[0].sendMessage('go-down');
-                    else if (this.leads == 'up') entity.engine.findEntityByTag('world')[0].sendMessage('go-up');
+                    if (this.leads == 'down') entity.engine.findEntityByTag('world').sendMessage('go-down');
+                    else if (this.leads == 'up') entity.engine.findEntityByTag('world').sendMessage('go-up');
                 }
             }
         };
