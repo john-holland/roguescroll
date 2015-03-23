@@ -35,9 +35,13 @@ module.exports = function() {
                 if (this.currentLevel) {
                     this.currentLevel.deactivate();
                 }
-                
+                var previousLevel = this.level;
                 this.levels[data.level - 1].activate(data.direction);
                 this.level = data.level;
+                
+                entity.engine.findEntitiesByTag('level-change-subscriber').forEach(function(entity) {
+                    entity.sendMessage('level-change', { level: data.level, previousLevel: previousLevel });
+                });
             },
             'go-down': function(entity, data) {
                 if (this.level == 25) {

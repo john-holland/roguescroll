@@ -54,7 +54,8 @@ define(function() {
             'level-door': require("./components/level-door")(),
             options: require("./components/options")(),
             minimap: require("./components/minimap")(),
-            'sine-wave-movement': require("./components/sine-wave-movement")()
+            'sine-wave-movement': require("./components/sine-wave-movement")(),
+            music: require('./components/music')()
         },
         entities: [
             {
@@ -64,16 +65,23 @@ define(function() {
                 }
             },
             {
+                tags: ['music', 'level-change-subscriber'],
+                components: {
+                    'music': { }
+                }
+            },
+            {
                 tags: ['player', 'hide-at-start'],
                 components: {
                     health: {
-                        health: 70
+                        health: 70,
+                        maxHealth: 100
                     },
                     player: {
                         iconColor: '#eee'
                     },
                     movement: {
-                        speed: 200
+                        speed: 100
                     },
                     position: {
                         position: {
