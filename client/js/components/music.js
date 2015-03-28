@@ -10,7 +10,8 @@
  
  define(function() {
     var ListMap = require("../util/listmap"),
-        Howl = require("../util/howler").Howl,
+        buzz = require("../util/buzz"),
+        sound = buzz.sound,
         tinyColor = require('../util/tinycolor'),
         _ = require('../util/underscore'),
         conversions = require('../util/colorconversions');
@@ -22,25 +23,31 @@
         return {
             _: {
                 baseDir: '/audio/',
-                formats: ['.m4a', '.mp3'],
+                formats: ['m4a', 'mp3'],
                 tracks: {
                     drums: {
-                        blue: 'tracks_DRUMS 2',
-                        red: 'tracks_DRUMS 3',
-                        yellow: 'tracks_DRUMS'
+                        blue: 'OUTRO_DRUMS 2',
+                        red: 'OUTRO_DRUMS 3',
+                        yellow: 'OUTRO_DRUMS'
                     },
                     byColor: {
                         blue: [
-                            'tracks_COWBELL BASS',
-                            'tracks_FRACTAL BASS'
+                            'OUTRO_COWBELL'
+                        ],
+                        purple: [
+                            'OUTRO_FRACTAL BASS'
                         ],
                         red: [
-                            'tracks_CHIPPY ARP',
-                            'tracks_MELODY'
+                            'OUTRO_CHIPPY ARP'
+                        ],
+                        orange: [
+                            'OUTRO_MELODY'
                         ],
                         yellow: [
-                            'tracks_PADS',
-                            'tracks_SINE'
+                            'OUTRO_PADS'
+                        ],
+                        green: [
+                            'OUTRO_SINES'
                         ]
                     }
                 },
@@ -56,19 +63,21 @@
                 
                 if (this.timeSinceLastQuantization > msPerQuantization) {
                     this.timeSinceLastQuantization -= msPerQuantization;
-                    this.tracksToPlay.forEach(function(track) {
-                        if (self.loadedTracks.contains(track)) {
-                            self.loadedTracks.get(track).play();
-                        }
-                    });
-                    this.tracksToPlay = [];
+                    
                     
                     this.tracksToStop.forEach(function(track) {
                         if (self.loadedTracks.contains(track)) {
                             self.loadedTracks.get(track).stop();
                         }
-                    })
+                    });
                     this.tracksToStop = [];
+                    
+                    this.tracksToPlay.forEach(function(track) {
+                        if (self.loadedTracks.contains(track)) {
+                            self.loadedTracks.get(track).play().loop();
+                        }
+                    });
+                    this.tracksToPlay = [];
                 }
             },
             messages: {
@@ -112,6 +121,22 @@
                     loadLevel(levelMusic, self.loadedTracks, self.baseDir, self.formats);
 
                     playLevel(levelMusic, self.tracksToPlay);
+                },
+                'loaded-level': function(entity, data) {
+                    var self = this,
+                        level = data.level;
+                        
+                    if (this.levelToTracks.length < data.level) {
+                        var levels = entity.engine.findEntityByTag('world').data.levels;
+                        while (this.levelToTracks.length < data.level) {
+                            this.levelToTracks.push(getTracksForLevel(this, levels[this.levelToTracks.length - 1]));
+                        }
+                    }
+                    
+                    var levelMusic = this.levelToTracks[level - 1];
+
+                    loadLevel(levelMusic, self.loadedTracks, self.baseDir, self.formats);
+                    console.log('loaded music for next level');
                 }
             }
         };
@@ -122,11 +147,10 @@
 
         tracksToPlay.forEach(function(track) {
             if (!loadedTracks.contains(track)) {
-                loadedTracks.add(track, new Howl({
-                    urls: formats.map(function(format) { return baseDir + track + format; }),
-                    loop: true,
-                    buffer: true
+                loadedTracks.add(track, new sound(baseDir + track, {
+                    formats: formats
                 }));
+                loadedTracks.get(track).load();
             }
         });
     }
@@ -162,9 +186,14 @@
     }
     
     function getTracksForLevel(self, level) {
+        /*
+        - Pads
+        - Drums 1
+        - Melody
+        */
         var tracks = {},
-            background = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.background : tinyColor("red"))),
-            font = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.font : tinyColor("red"))),
+            background = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.background : tinyColor("yellow"))),
+            font = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.font : tinyColor("orange"))),
             accent = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.accent : tinyColor("yellow"))),
             closestBackground, closestFont, closestAccent;
             

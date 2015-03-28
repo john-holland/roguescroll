@@ -28,8 +28,15 @@ module.exports = function() {
                     return;
                 }
                 
-                while (!this.levels.length || this.levels.length < data.level) {
-                    this.levels.push(new Level(entity, this.levels.length + 1));
+                //create however many levels we need to reach the level we want to go to + 3 for buffering music.
+                while (!this.levels.length || (this.levels.length < data.level + 2 && data.level + 2 < this.maxLevel)) {
+                    var loadedLevel = new Level(entity, this.levels.length + 1);
+                    loadedLevel.deactivate();
+                    this.levels.push(loadedLevel);
+                    
+                    entity.engine.findEntitiesByTag('level-change-subscriber').forEach(function(entity) {
+                        entity.sendMessage('loaded-level', { level: this.levels.length });
+                    }.bind(this));
                 }
                 
                 if (this.currentLevel) {
