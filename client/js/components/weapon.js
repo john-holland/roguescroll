@@ -19,6 +19,9 @@ module.exports = function() {
                 this.mountTarget.data.weapon = entity;
                 this.state = 'held';
             }
+            this.$el.mouseenter(function() {
+                
+            })
         },
         requiredComponents: ["mounted", "animation", "glyphicon-renderer"],
         messages: {
@@ -29,6 +32,7 @@ module.exports = function() {
                 
                 data.target.sendMessage("damage", {amount: chance.rpg(this.damage, {sum:true})});
                 entity.sendMessage("animate", { animation: "attack-down" });
+                return true;
             },
             equip: function(entity, data) {
                 if (!data.wielder) {

@@ -23,8 +23,36 @@
         return {
             _: {
                 baseDir: '/audio/',
-                formats: ['m4a', 'mp3'],
+                formats: ['m4a', 'ogg', 'mp3', 'wav'],
                 tracks: {
+                    unsorted: [
+                        "DRUMS 1", 
+                        "DRUMS 2", 
+                        "DRUMS 3", 
+                        "DRUMS 4", 
+                        "DRUMS 5",
+                        "DRUMS 6", 
+                        "HARMONY1", 
+                        "HARMONY2", 
+                        "HARMONY3", 
+                        "HARMONY4", 
+                        "HARMONY5", 
+                        "HARMONY6",
+                        "MELODY1",
+                        "MELODY2", 
+                        "MELODY3", 
+                        "MELODY4",
+                        "MELODY5",
+                        "MELODY6"
+                    ],
+                    colors: [
+                        'blue',
+                        'purple',
+                        'red',
+                        'orange',
+                        'yellow',
+                        'green'
+                    ],
                     drums: {
                         blue: 'OUTRO_DRUMS 2',
                         red: 'OUTRO_DRUMS 3',
@@ -56,6 +84,37 @@
                 tracksToStop: []
             },
             tags: ['level-change-subscriber'],
+            onAdd: function(entity, component) {
+                
+                this.tracks.byGroup = _.groupBy(this.tracks.unsorted, function(track) { return track.replace(/\d/ig, '').trim(); });
+                this.tracks.groups = _.pairs(this.tracks.byGroup).map(function(groupPair) {
+                    return {
+                        name: groupPair[0],
+                        tracks: groupPair[1]
+                    };
+                });
+                
+                var groupsToPop = _.pairs(this.tracks.byGroup).map(function(groupPair) {
+                    return {
+                        name: groupPair[0],
+                        tracks: groupPair[1].slice(0)
+                    };
+                }),
+                self = this;
+                
+                //turn the colors into their group 
+                this.tracks.byColor = _.object(this.tracks.colors.map(function(color) {
+                    return [color, []];
+                }))
+                
+                while (_.any(groupsToPop, function(group) { return group.tracks.length; })) {
+                    this.tracks.colors.forEach(function(color) {
+                        groupsToPop.forEach(function(group) {
+                            self.tracks.byColor[color].push(group.tracks.pop());
+                        });
+                    })
+                }
+            },
             update: function(dt, entity, component) {
                 //increment the 
                 var self = this;
@@ -99,7 +158,10 @@
                     
                     loadLevel(this.levelToTracks[0], this.loadedTracks, this.baseDir, this.formats);
                     playLevel(this.levelToTracks[0], self.tracksToPlay);
-                    //loadLevel(this.levelToTracks[1], this.loadedTracks, this.baseDir, this.formats);
+                    setTimeout(function() {
+                        loadLevel(this.levelToTracks[1], this.loadedTracks, this.baseDir, this.formats);
+                        loadLevel(this.levelToTracks[2], this.loadedTracks, this.baseDir, this.formats);
+                    }.bind(this), 5000);
                 },
                 'level-change': function(entity, data) {
                     var self = this,
@@ -197,19 +259,24 @@
             accent = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.accent : tinyColor("yellow"))),
             closestBackground, closestFont, closestAccent;
             
-        //get the closest sound to each of the colors
-        closestBackground = _.sortBy(_.pairs(self.tracks.drums).map(convertToLab),
-            colorDistance.bind(null, background))[0][1]; //a pair is returned
-            
         var tracksByColor = _.flatten(_.pairs(self.tracks.byColor).map(function(colorToTrack) {
             return colorToTrack[1].map(function(track) {
                 return [colorToTrack[0], track];
             });
         }), true);
         
+        closestBackground = _.sortBy(tracksByColor.map(convertToLab),
+            colorDistance.bind(null, background))[0][1]; //a pair is returned
+        var strippedBackground = closestBackground.replace(/\d/ig, '').trim();
+        
+        tracksByColor = _.filter(tracksByColor, function(colorTrack) { return colorTrack[1].indexOf(strippedBackground) < 0; });
+        
         //map the accent and colors out into pairs and pass them into this...
         closestFont = _.sortBy(tracksByColor.map(convertToLab),
             colorDistance.bind(null, font))[0][1]; //a pair is returned
+        var strippedFont = closestFont.replace(/\d/ig, '').trim();
+        
+        tracksByColor = _.filter(tracksByColor, function(colorTrack) { return colorTrack[1].indexOf(strippedFont) < 0; });
         
         closestAccent = _.sortBy(tracksByColor.map(convertToLab),
             colorDistance.bind(null, accent))[0][1]; //a pair is returned
