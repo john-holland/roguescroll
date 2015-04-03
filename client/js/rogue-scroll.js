@@ -81,7 +81,7 @@ define(function() {
                         iconColor: '#eee'
                     },
                     movement: {
-                        speed: 100
+                        speed: 250
                     },
                     position: {
                         position: {
@@ -171,7 +171,7 @@ define(function() {
                             y: 200
                         },
                         metricsFunction: function(entity, dt, target) {
-                            return target.data.position.x.toFixed(3) + " " + target.data.position.y.toFixed(3);
+                            return target.data.position.x.toFixed(3) + " " + target.engine.updateEntities.getList().length;
                         },
                         icon: "global",
                         textColor: '#eee'

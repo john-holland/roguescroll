@@ -1,4 +1,6 @@
 define(function() {
+    //todo: explore a MVC entity architecture, include message passing and propegation.
+    
     var ListMap = require("../util/listmap"),
         animLoop = require("../util/animLoop"),
         JSONfn = require("../util/JSONfn"),

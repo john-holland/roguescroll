@@ -58,26 +58,7 @@
                         red: 'OUTRO_DRUMS 3',
                         yellow: 'OUTRO_DRUMS'
                     },
-                    byColor: {
-                        blue: [
-                            'OUTRO_COWBELL'
-                        ],
-                        purple: [
-                            'OUTRO_FRACTAL BASS'
-                        ],
-                        red: [
-                            'OUTRO_CHIPPY ARP'
-                        ],
-                        orange: [
-                            'OUTRO_MELODY'
-                        ],
-                        yellow: [
-                            'OUTRO_PADS'
-                        ],
-                        green: [
-                            'OUTRO_SINES'
-                        ]
-                    }
+                    byColor: undefined
                 },
                 timeSinceLastQuantization: 0,
                 tracksToPlay: [],
@@ -151,13 +132,16 @@
                     /*background
                     font
                     accent*/
-                    this.levelToTracks = levels.map(getTracksForLevel.bind(null, this));
+                    this.levelToTracks = levels.map(getTracksForLevel.bind(null, entity, this));
                     
                     //now that we have all the tracks decided for each of the levels,
                     //  we should load the first level
                     
-                    loadLevel(this.levelToTracks[0], this.loadedTracks, this.baseDir, this.formats);
-                    playLevel(this.levelToTracks[0], self.tracksToPlay);
+                    loadLevel(this.levelToTracks[0], this.loadedTracks, this.baseDir, this.formats)
+                        .then(function() {
+                            playLevel(this.levelToTracks[0], self.tracksToPlay);
+                        }.bind(this));
+                        
                     setTimeout(function() {
                         loadLevel(this.levelToTracks[1], this.loadedTracks, this.baseDir, this.formats);
                         loadLevel(this.levelToTracks[2], this.loadedTracks, this.baseDir, this.formats);
@@ -170,7 +154,7 @@
                     if (this.levelToTracks.length < data.level) {
                         var levels = entity.engine.findEntityByTag('world').data.levels;
                         while (this.levelToTracks.length < data.level) {
-                            this.levelToTracks.push(getTracksForLevel(this, levels[this.levelToTracks.length - 1]));
+                            this.levelToTracks.push(getTracksForLevel(entity, this, levels[this.levelToTracks.length - 1]));
                         }
                     }
                     
@@ -180,9 +164,9 @@
                         stopLevel(this.levelToTracks[data.previousLevel - 1], self.tracksToStop);
                     }
 
-                    loadLevel(levelMusic, self.loadedTracks, self.baseDir, self.formats);
-
-                    playLevel(levelMusic, self.tracksToPlay);
+                    loadLevel(levelMusic, self.loadedTracks, self.baseDir, self.formats).then(function() {
+                        playLevel(levelMusic, self.tracksToPlay); 
+                    });
                 },
                 'loaded-level': function(entity, data) {
                     var self = this,
@@ -191,7 +175,7 @@
                     if (this.levelToTracks.length < data.level) {
                         var levels = entity.engine.findEntityByTag('world').data.levels;
                         while (this.levelToTracks.length < data.level) {
-                            this.levelToTracks.push(getTracksForLevel(this, levels[this.levelToTracks.length - 1]));
+                            this.levelToTracks.push(getTracksForLevel(entity, this, levels[this.levelToTracks.length - 1]));
                         }
                     }
                     
@@ -213,8 +197,22 @@
                     formats: formats
                 }));
                 loadedTracks.get(track).load();
+                
             }
         });
+        
+        return Promise.all(tracksToPlay.map(function(track) { 
+            return new Promise(function(resolve, reject) { 
+                var sound = loadedTracks.get(track);
+                sound.bind('canplay', function() {
+                    resolve(sound);
+                });
+                
+                sound.bind('error', function(e) {
+                    reject(e);
+                });
+            });
+        }));
     }
     
     function playLevel(levelMusic, tracksToPlay) {
@@ -247,21 +245,32 @@
         return [rgb.r, rgb.g, rgb.b];
     }
     
-    function getTracksForLevel(self, level) {
+    var world = null;
+    function getTracksForLevel(entity, self, level) {
         /*
         - Pads
         - Drums 1
         - Melody
         */
         var tracks = {},
+            world = world || entity.engine.findEntityByTag('world'),
             background = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.background : tinyColor("yellow"))),
             font = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.font : tinyColor("orange"))),
             accent = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.accent : tinyColor("yellow"))),
-            closestBackground, closestFont, closestAccent;
+            closestBackground, 
+            closestFont, 
+            closestAccent,
+            previousLevel = level.number > 1 ? world.data.levels[level.number - 2] : null,
+            tracksToRemove = previousLevel ? _.values(getTracksForLevel(entity, self, world.data.levels[previousLevel.number - 1])) : [];
             
-        var tracksByColor = _.flatten(_.pairs(self.tracks.byColor).map(function(colorToTrack) {
-            return colorToTrack[1].map(function(track) {
-                return [colorToTrack[0], track];
+        var tracksByColor = _.flatten(_.pairs(self.tracks.byColor).map(function(colorToTracks) {
+            return colorToTracks[1].map(function(track) {
+                return [colorToTracks[0], track];
+            })
+            .filter(function(colorToTrack) {
+                return _.all(tracksToRemove, function(track) { 
+                    return colorToTrack[1].indexOf(track) < 0;
+                });
             });
         }), true);
         
@@ -269,14 +278,20 @@
             colorDistance.bind(null, background))[0][1]; //a pair is returned
         var strippedBackground = closestBackground.replace(/\d/ig, '').trim();
         
-        tracksByColor = _.filter(tracksByColor, function(colorTrack) { return colorTrack[1].indexOf(strippedBackground) < 0; });
+        //take out any colors that were picked in the last level?
+        
+        tracksByColor = _.filter(tracksByColor, function(colorTrack) { 
+            return colorTrack[1].indexOf(strippedBackground) < 0; 
+        });
         
         //map the accent and colors out into pairs and pass them into this...
         closestFont = _.sortBy(tracksByColor.map(convertToLab),
             colorDistance.bind(null, font))[0][1]; //a pair is returned
         var strippedFont = closestFont.replace(/\d/ig, '').trim();
         
-        tracksByColor = _.filter(tracksByColor, function(colorTrack) { return colorTrack[1].indexOf(strippedFont) < 0; });
+        tracksByColor = _.filter(tracksByColor, function(colorTrack) { 
+            return colorTrack[1].indexOf(strippedFont) < 0;
+        });
         
         closestAccent = _.sortBy(tracksByColor.map(convertToLab),
             colorDistance.bind(null, accent))[0][1]; //a pair is returned

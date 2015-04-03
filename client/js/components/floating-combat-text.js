@@ -36,6 +36,11 @@ module.exports = function() {
                         text.destroy();
                     }
                 })
+                
+                setTimeout(function() {
+                    //in two seconds destroy the entity
+                    text.destroy();
+                }, 3000);
             }  
         },
         messages: {

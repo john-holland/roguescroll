@@ -53,7 +53,7 @@ define(function() {
             if (key in map) {
                 var value = map[key];
                 
-                var index = list.indexOf();
+                var index = list.indexOf(value);
                 if (index > -1) {
                     list.splice(index, 1);
                 }

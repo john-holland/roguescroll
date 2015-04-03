@@ -47,6 +47,9 @@ define(function() {
     }
     
     Entity.prototype.destroy = function() {
+        this.components.getList().forEach(function(component) {
+            component._onRemove && component._onRemove.call(this.data);
+        }.bind(this));
         this.sendMessage("destroyed");
         this.engine.destroyEntity(this);
         this.__isDestroyed = true;

@@ -105,6 +105,7 @@ define(function() {
             },
             onRemove: function(entity, component) {
                 if (this.$el) {
+                    this.$el.hide();
                     this.$el.remove();
                 }
             },
