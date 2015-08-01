@@ -4,21 +4,23 @@ define(function() {
         var list = [];
         
         var map = {};
+        this.map = map;
+        this.list = list;
         
         this.get = function(key) {
-            if (!(key in map)) {
+            if (!(key in this.map)) {
                 return null;
             }
-            return map[key];
+            return this.map[key];
         }
         
         this.contains = function(key) {
-            return key in map;
+            return key in this.map;
         }
         
         this.tryGet = function(key, out) {
             if (!out) {
-                throw TypedError("IllegalArgument", "out must be an object");
+                throw TypedError('IllegalArgument', 'out must be an object');
             }
             
             out.out = self.get(key);
@@ -26,39 +28,39 @@ define(function() {
         }
         
         this.getList = function() {
-            return list;
+            return this.list;
         }
         
         this.clear = function() {
-            list = [];
-            map = {};
+            this.list = [];
+            this.map = {};
         }
         
         this.add = function(key, value) {
             if (typeof key === 'undefined' || key === null || typeof value === 'undefined' || value === null) {
-                throw TypedError("IllegalArgument", "Must have both a key and value!");
+                throw TypedError('IllegalArgument', 'Must have both a key and value!');
             }
             //adds to list map with the same key should overwrite the value, and as such remove it from the list if it existed before
             self.remove(key);
             
-            list.push(value);
-            map[key] = value;
+            this.list.push(value);
+            this.map[key] = value;
         }
         
         this.copy = function() {
-            return new ListMap(map);
+            return new ListMap(this.map);
         }
         
         this.remove = function(key) {
-            if (key in map) {
-                var value = map[key];
+            if (key in this.map) {
+                var value = this.map[key];
                 
-                var index = list.indexOf(value);
+                var index = this.list.indexOf(value);
                 if (index > -1) {
-                    list.splice(index, 1);
+                    this.list.splice(index, 1);
                 }
-                map[key] = null;
-                delete map[key];
+                this.map[key] = null;
+                delete this.map[key];
                 
                 return value;
             }
@@ -76,7 +78,7 @@ define(function() {
             return {
                 type: type,
                 message: message,
-                toString: function() { return type + ": " + message; }
+                toString: function() { return type + ': ' + message; }
             };
         }
     }

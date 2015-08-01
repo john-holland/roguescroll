@@ -28,7 +28,7 @@
 *                 is converted into a Date object; otherwise, it is left as a String.
 */
 
-"use strict";
+'use strict';
 
 (function (exports) {
 

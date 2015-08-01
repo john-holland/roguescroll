@@ -1,5 +1,5 @@
-var ListMap = require("../util/listmap");
-var _ = require("../util/underscore");
+var ListMap = require('../util/listmap');
+var _ = require('../util/underscore');
 
 module.exports = function Animation() {
     return {
@@ -17,27 +17,27 @@ module.exports = function Animation() {
                         looping: true,
                         defferable: true
                     },
-                    "attack-down": {
+                    'attack-down': {
                         duration: 1000,
                         looping: false,
                         defferable: false
                     },
-                    "attack-up": {
+                    'attack-up': {
                         duration: 1000,
                         looping: false,
                         defferable: false
                     },
-                    "walk-down-steps": {
+                    'walk-down-steps': {
                         duration: 3000,
                         looping: false,
                         defferable: false
                     },
-                    "take-damage": {
+                    'take-damage': {
                         duration: 750,
                         looping: false,
                         defferable: false
                     },
-                    "fall-down-pit": {
+                    'fall-down-pit': {
                         duration: 1000,
                         looping: false,
                         defferable: false
@@ -47,7 +47,7 @@ module.exports = function Animation() {
                         looping: false,
                         defferable: false
                     },
-                    "take-critical-damage": {
+                    'take-critical-damage': {
                         duration: 750,
                         looping: false,
                         defferable: false
@@ -71,7 +71,7 @@ module.exports = function Animation() {
                 
                 component.playAnimation = function(data, entity, animation, callback) {
                     if (!component.animationMetadata.contains(animation)) {
-                        console.error("tried to play a bad animation");
+                        console.error('tried to play a bad animation');
                     }
                     
                     if (data.currentAnimation && data.currentAnimation.metadata.name == animation && data.currentAnimation.metadata.looping) {
@@ -109,16 +109,16 @@ module.exports = function Animation() {
             
                 component.playForElem = function(elem, component, data, metadata) {
                     //remove all the other animation classes.
-                    if (elem && elem.hasClass("animated")) {
+                    if (elem && elem.hasClass('animated')) {
                         component.animationMetadata.getList().forEach(function(metadata) {
                             elem.removeClass(metadata.name);
                         });
                     } else if (elem) {
-                        elem.addClass("animated");
+                        elem.addClass('animated');
                     }
                     
                     if (metadata.looping) {
-                        elem.addClass("infinite-animation");
+                        elem.addClass('infinite-animation');
                     }
                     
                     if (elem) {
@@ -128,8 +128,8 @@ module.exports = function Animation() {
                 
                 component.stopCurrent = function(elem, component, data) {
                     if (elem) {
-                        elem.removeClass("animated");
-                        elem.removeClass("infinite-animation");
+                        elem.removeClass('animated');
+                        elem.removeClass('infinite-animation');
                         component.animationMetadata.getList().forEach(function(metadata) {
                             elem.removeClass(metadata.name);
                         });
@@ -187,13 +187,13 @@ module.exports = function Animation() {
                     
                 component.playAnimation(this, entity, animation, callback);
             },
-            "stop-animating": function(entity, data, component) {
+            'stop-animating': function(entity, data, component) {
                 if (data.animation) {
                     if (this.currentAnimation && this.currentAnimation.metadata.name == data.animation) {
                         if (this.$el) {
-                            this.$el.removeClass("animated");
+                            this.$el.removeClass('animated');
                             this.$el.removeClass(data.animation);
-                            this.$el.removeClass("infinite-animation");
+                            this.$el.removeClass('infinite-animation');
                         }
                         if (this.currentAnimation.callback) {
                             this.currentAnimation.callback();
@@ -212,7 +212,7 @@ module.exports = function Animation() {
                 }
                 
                 //stop the current animation
-                this.$el.removeClass("animated");
+                this.$el.removeClass('animated');
                 component.animationMetadata.getList().forEach(function(metadata) {
                     data.$el.removeClass(metadata.name);
                 });

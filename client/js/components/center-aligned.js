@@ -1,4 +1,4 @@
-var _ = require("../util/underscore");
+var _ = require('../util/underscore');
 
 module.exports = function CenterAligned() {
     return {
@@ -9,7 +9,7 @@ module.exports = function CenterAligned() {
             previousCenterAlignX: 0,
             previousXOccupancyOffset: 0
         },
-        requiredComponents: ["position"],
+        requiredComponents: ['position'],
         onAdd: function(entity, component) {
             if (!component.getCenter) {
                 component.getCenter = function(data) {

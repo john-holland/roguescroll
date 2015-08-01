@@ -13,49 +13,51 @@
  * 
  **/
 define(function() {
-    var Game = require("./engine/game"),
+    var Game = require('./engine/game'),
     RogueScroll = new Game({
-        name: "Rogue Scroll",
+        name: 'Rogue Scroll',
         components: { 
-            health: require("./components/health")(),
-            position: require("./components/position")(),
-            animation: require("./components/animation")(),
-            'glyphicon-renderer': require("./components/glyphicon-renderer")(),
-            movement: require("./components/movement")(),
-            "center-aligned": require("./components/center-aligned")(),
-            combatant: require("./components/combatant")(),
-            "health-potion": require("./components/health-potion")(),
-            "scroll-chaser": require("./components/scroll-chaser")(),
-            "floating-combat-text": require("./components/floating-combat-text")(),
-            "timed-destroy": require("./components/timed-destroy")(),
-            "weapon": require("./components/weapon")(),
-            "shield": require("./components/shield")(),
-            "augment": require("./components/augment")(),
-            "defensive-augment": require("./components/defensive-augment")(),
-            "offensive-augment": require("./components/offensive-augment")(),
-            "player": require("./components/player")(),
-            "enemy": require("./components/enemy")(),
-            "drops-loot": require("./components/drops-loot")(),
-            "mounted": require("./components/mounted")(),
-            "trap": require("./components/trap")(),
-            "sine-line": require("./components/sine-line")(),
-            "enemy-spawner": require("./components/enemy-spawner")(),
-            "world-entity": require("./components/world-entity")(),
-            "world": require("./components/world")(),
-            "game-manager": require("./components/game-manager")(),
-            "text": require("./components/text")(),
-            "health-display": require("./components/health-display")(),
-            "game-metrics-display": require("./components/game-metrics-display")(),
-            "hide-on-pause": require("./components/hide-on-pause")(),
-            "keyboard-events": require("./components/keyboard-events")(),
-            "html-renderer": require("./components/html-renderer")(),
-            vision: require("./components/vision")(),
-            sensor: require("./components/sensor")(),
-            'level-door': require("./components/level-door")(),
-            options: require("./components/options")(),
-            minimap: require("./components/minimap")(),
-            'sine-wave-movement': require("./components/sine-wave-movement")(),
-            music: require('./components/music')()
+            health: require('./components/health')(),
+            position: require('./components/position')(),
+            animation: require('./components/animation')(),
+            'glyphicon-renderer': require('./components/glyphicon-renderer')(),
+            movement: require('./components/movement')(),
+            'center-aligned': require('./components/center-aligned')(),
+            combatant: require('./components/combatant')(),
+            'health-potion': require('./components/health-potion')(),
+            'scroll-chaser': require('./components/scroll-chaser')(),
+            'floating-combat-text': require('./components/floating-combat-text')(),
+            'timed-destroy': require('./components/timed-destroy')(),
+            'weapon': require('./components/weapon')(),
+            'shield': require('./components/shield')(),
+            'augment': require('./components/augment')(),
+            'defensive-augment': require('./components/defensive-augment')(),
+            'offensive-augment': require('./components/offensive-augment')(),
+            'player': require('./components/player')(),
+            'enemy': require('./components/enemy')(),
+            'drops-loot': require('./components/drops-loot')(),
+            'mounted': require('./components/mounted')(),
+            'trap': require('./components/trap')(),
+            'sine-line': require('./components/sine-line')(),
+            'enemy-spawner': require('./components/enemy-spawner')(),
+            'world-entity': require('./components/world-entity')(),
+            'world': require('./components/world')(),
+            'game-manager': require('./components/game-manager')(),
+            'text': require('./components/text')(),
+            'health-display': require('./components/health-display')(),
+            'game-metrics-display': require('./components/game-metrics-display')(),
+            'hide-on-pause': require('./components/hide-on-pause')(),
+            'keyboard-events': require('./components/keyboard-events')(),
+            'html-renderer': require('./components/html-renderer')(),
+            vision: require('./components/vision')(),
+            sensor: require('./components/sensor')(),
+            'level-door': require('./components/level-door')(),
+            options: require('./components/options')(),
+            minimap: require('./components/minimap')(),
+            'sine-wave-movement': require('./components/sine-wave-movement')(),
+            music: require('./components/music')(),
+            'spell-container': require('./components/spell-container')(),
+            'spell': require('./components/spell')()
         },
         entities: [
             {
@@ -93,46 +95,46 @@ define(function() {
                             height: 50
                         }
                     },
-                    "keyboard-events": { },
+                    'keyboard-events': { },
                     vision: { }
                 },
                 //isActive: false,
                 shouldRender: false
             },
             {
-                tags:["shield", 'hide-at-start'],
+                tags:['shield', 'hide-at-start'],
                 components: {
                     shield: {
-                        mountTag: "player"
+                        mountTag: 'player'
                     }
                 }
             },
             {
-                tags:["weapon", 'hide-at-start'],
+                tags:['weapon', 'hide-at-start', 'level-change-subscriber'],
                 components: {
                     weapon: {
-                        mountTag: "player"
+                        mountTag: 'player'
                     }
                 }
             },
             {
-                tags:["health-display", 'hide-at-start'],
+                tags:['health-display', 'hide-at-start'],
                 components: {
-                    "health-display": {
+                    'health-display': {
                         textColor: '#eee',
                         'z-index': 10000
                     },
-                    "hide-on-pause": {}
+                    'hide-on-pause': {}
                 }
             },
             {
                 tags: ['metrics'],
                 components: {
-                    "game-metrics-display": {
+                    'game-metrics-display': {
                         textColor: '#eee',
                         'z-index': 10000
                     },
-                    "hide-on-pause": {}
+                    'hide-on-pause': {}
                 }
             },
             {
@@ -163,7 +165,7 @@ define(function() {
                     'game-metrics-display': {
                         shouldRender: false,
                         isActive: false,
-                        metricsTargetTag: "player",
+                        metricsTargetTag: 'player',
                         isStaticPosition: true,
                         positionAnchor: 'bottom-right',
                         position: {
@@ -171,33 +173,33 @@ define(function() {
                             y: 200
                         },
                         metricsFunction: function(entity, dt, target) {
-                            return target.data.position.x.toFixed(3) + " " + target.engine.updateEntities.getList().length;
+                            return target.data.position.x.toFixed(3) + ' ' + target.engine.updateEntities.getList().length;
                         },
-                        icon: "global",
+                        icon: 'global',
                         textColor: '#eee'
                     },
-                    "hide-on-pause": {}
+                    'hide-on-pause': {}
                 }
             },
             // {
             //     tags: ['hide-at-start'],
             //     components: {
             //         'glyphicon-renderer': {
-            //             icon: "clock"
+            //             icon: 'clock'
             //         },
             //         'sine-line': {}
             //     }
             // },
             {
                 components: {
-                    "defensive-augment": {
+                    'defensive-augment': {
                         mountTag: 'player'
                     }
                 }
             },
             {
                 components: {
-                    "offensive-augment": {
+                    'offensive-augment': {
                         mountTag: 'player'
                     }
                 }
@@ -217,19 +219,23 @@ define(function() {
                 }
             },
             {
-                tags: ['miniap'],
+                tags: ['minimap'],
                 components: {
                     minimap: { }
                 }
-            }
-            // ,
-            // {
-            //     tags: ['options'],
-            //     components: {
-            //         options: { }
-            //     }
-            // }
-            ]
+            },
+            {
+                tags: ['options'],
+                components: {
+                    options: { }
+                }
+            },
+            {
+                tags: ['spell-container'],
+                components: {
+                    'spell-container': { }
+                }
+            }]
     });
 
     return RogueScroll;

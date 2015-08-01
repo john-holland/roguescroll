@@ -1,12 +1,15 @@
 define(function() {
 
     function applyCss() {
-        this.$el.css({
-            "font-size": ((this.size.height + this.size.width) / 2) + "px",
-            width: this.size.width === null ? 'initial' : this.size.width,
-            height: this.size.height === null ? 'initial' : this.size.height,
-            'z-index': this['z-index']
-        });
+        if (this.size.height != null && this.size.width != null) {
+            this.$el.css({
+                'font-size': (this.size.height != null && this.size.width != null) ? ((this.size.height + this.size.width) / 2) + 'px' : this.$el.css('font-size'),
+                width: this.size.width === null ? this.$el.css('width') : this.size.width,
+                height: this.size.height === null ? this.$el.css('height') : this.size.height,
+            });
+        }
+        
+        this.$el.css('z-index', this['z-index']);
             
         if (!this.positionAnchor || this.positionAnchor === 'top-left') {
             this.$el.css({
@@ -44,11 +47,11 @@ define(function() {
         return {
             _: {
                 htmlTemplateFactory: function(entity, component) {
-                    return "<span style='position: " + (entity.data.isStaticPosition ? "fixed" : "absolute") + 
-                            "; display: block; overflow: visible; color: " +  (entity.data.iconColor || "black") +
-                            " z-index:" + entity.data['z-index'] + ";' class='go-faster-hack glyphicons' data-entity-id='" + entity.id + "'></span>";
+                    return '<span style="position: ' + (entity.data.isStaticPosition ? 'fixed' : 'absolute') + 
+                            '; display: block; overflow: visible; color: ' +  (entity.data.iconColor || 'black') +
+                            ' z-index:' + entity.data['z-index'] + ';" class="go-faster-hack glyphicons" data-entity-id="' + entity.id + '"></span>';
                 },
-                selector: "#game",
+                selector: '#game',
                 'z-index': 0,
                 renderBuffer: {
                     position: {
@@ -125,9 +128,9 @@ define(function() {
                 'set-position-type': function(entity, data) {
                     if (data.isStaticPosition) {
                         this.isStaticPosition = true;
-                        this.$el.css("position", "fixed");
+                        this.$el.css('position', 'fixed');
                     } else {
-                        this.$el.css("position", "absolute");
+                        this.$el.css('position', 'absolute');
                         this.isStaticPosition = false;
                     }
                 }

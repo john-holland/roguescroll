@@ -1,5 +1,5 @@
 define(function() {
-    var V2 = require("../../util/V2"),
+    var V2 = require('../../util/V2'),
         ImmutableV2 = V2.ImmutableV2,
         V2 = V2.V2,
         height = 50;
@@ -35,7 +35,7 @@ define(function() {
         middlePoint = this.topPoint.add(edge.normalize().multiply(edge.length() / 2)), //find the middle point on that edge
         position = middlePoint.add(edge.normalize().perpendicular().multiply(height / 2)).sub(new ImmutableV2(edge.length() / 2, height / 2)); //slide the middle point back to half the height of the box, and add that to the topPoint
         
-        this.$el = (this.wall.direction == "left") ? $("<div class='wall-segment'>").appendTo(this.wall.$wallContainer) : $("<div class='wall-segment'>").prependTo(this.wall.$wallContainer);
+        this.$el = (this.wall.direction == 'left') ? $('<div class="wall-segment">').appendTo(this.wall.$wallContainer) : $('<div class="wall-segment">').prependTo(this.wall.$wallContainer);
         this.$el.transition({
             width: edge.length() + 2 + 'px',
             height: height + 'px',

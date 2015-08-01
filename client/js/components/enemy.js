@@ -1,6 +1,6 @@
-var Chance = require("../util/chance"),
+var Chance = require('../util/chance'),
     chance = new Chance();
-var _ = require("../util/underscore");
+var _ = require('../util/underscore');
 
 module.exports = function() {
     return {
@@ -21,9 +21,9 @@ module.exports = function() {
                 height: 40,
                 width: 40
             },
-            patrolTo: "top",
+            patrolTo: 'top',
             isPatrolling: false,
-            damage: "1d6",
+            damage: '1d6',
             playerAttackOffset: 60,
             sineWaveRange: 50,
             sineWaveSpeed: 500
@@ -45,9 +45,9 @@ module.exports = function() {
                 if (!this.isPatrolling) {
                     this.sineWaveMovementEnabled = true;
                     this.isPatrolling = true;
-                    entity.sendMessage("go-to", {
-                        x: this.patrolTo === "top" ? this.patrolTopTarget.x : this.patrolBottomTarget.x,
-                        y: this.patrolTo === "top" ? this.patrolTopTarget.y : this.patrolBottomTarget.y,
+                    entity.sendMessage('go-to', {
+                        x: this.patrolTo === 'top' ? this.patrolTopTarget.x : this.patrolBottomTarget.x,
+                        y: this.patrolTo === 'top' ? this.patrolTopTarget.y : this.patrolBottomTarget.y,
                         callback: function() {
                             if (entity.data.isPatrolling) {
                                 entity.data.isPatrolling = false;
@@ -63,25 +63,25 @@ module.exports = function() {
                 }
             }
         },
-        requiredComponents: ["health", "movement", "world-entity", "combatant", 'glyphicon-renderer', 'sine-wave-movement', "floating-combat-text", 'animation', 'drops-loot'],
+        requiredComponents: ['health', 'movement', 'world-entity', 'combatant', 'glyphicon-renderer', 'sine-wave-movement', 'floating-combat-text', 'animation', 'drops-loot'],
         messages: {
             'init': function(entity, data) {
-                this.player = entity.engine.findEntityByTag("player");
-                this.world = entity.engine.findEntityByTag("world");
+                this.player = entity.engine.findEntityByTag('player');
+                this.world = entity.engine.findEntityByTag('world');
             },
-            "targets-in-range": function(entity, data) {
+            'targets-in-range': function(entity, data) {
                 if (!data.targets || !data.targets.length) {
                     return;
                 }
                 
-                entity.sendMessage("animate", { animation: 'attack-up' });
+                entity.sendMessage('animate', { animation: 'attack-up' });
                 var hit = _.random(0, 15 - this.player.data.character.skills / 4);
                 
                 if (hit < this.player.data.baseMiss) {
                     return true;
                 }
                 
-                data.targets[0].sendMessage("damage", {amount: chance.rpg(this.damage, {sum:true}), hitRoll: hit});
+                data.targets[0].sendMessage('damage', {amount: chance.rpg(this.damage, {sum:true}), hitRoll: hit});
                 return true;
             }
         }

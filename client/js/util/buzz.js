@@ -9,16 +9,16 @@
  // ----------------------------------------------------------------------------
 
 (function(context, factory) {
-    "use strict";
-    if (typeof module !== "undefined" && module.exports) {
+    'use strict';
+    if (typeof module !== 'undefined' && module.exports) {
         module.exports = factory();
-    } else if (typeof define === "function" && define.amd) {
+    } else if (typeof define === 'function' && define.amd) {
         define([], factory);
     } else {
         context.buzz = factory();
     }
 })(this, function() {
-    "use strict";
+    'use strict';
     var AudioContext = window.AudioContext || window.webkitAudioContext;
     var buzz = {
         defaults: {
@@ -26,21 +26,21 @@
             duration: 5e3,
             formats: [],
             loop: false,
-            placeholder: "--",
-            preload: "metadata",
+            placeholder: '--',
+            preload: 'metadata',
             volume: 80,
             webAudioApi: false,
             document: window.document
         },
         types: {
-            mp3: "audio/mpeg",
-            ogg: "audio/ogg",
-            wav: "audio/wav",
-            aac: "audio/aac",
-            m4a: "audio/x-m4a"
+            mp3: 'audio/mpeg',
+            ogg: 'audio/ogg',
+            wav: 'audio/wav',
+            aac: 'audio/aac',
+            m4a: 'audio/x-m4a'
         },
         sounds: [],
-        el: document.createElement("audio"),
+        el: document.createElement('audio'),
         getAudioContext: function() {
             if (this.audioCtx === undefined) {
                 try {
@@ -111,8 +111,8 @@
                 if (!supported) {
                     return this;
                 }
-                this.sound.loop = "loop";
-                this.bind("ended.buzzloop", function() {
+                this.sound.loop = 'loop';
+                this.bind('ended.buzzloop', function() {
                     this.currentTime = 0;
                     this.play();
                 });
@@ -122,8 +122,8 @@
                 if (!supported) {
                     return this;
                 }
-                this.sound.removeAttribute("loop");
-                this.unbind("ended.buzzloop");
+                this.sound.removeAttribute('loop');
+                this.unbind('ended.buzzloop');
                 return this;
             };
             this.mute = function() {
@@ -262,16 +262,16 @@
                 }
                 switch (this.getErrorCode()) {
                   case 1:
-                    return "MEDIA_ERR_ABORTED";
+                    return 'MEDIA_ERR_ABORTED';
 
                   case 2:
-                    return "MEDIA_ERR_NETWORK";
+                    return 'MEDIA_ERR_NETWORK';
 
                   case 3:
-                    return "MEDIA_ERR_DECODE";
+                    return 'MEDIA_ERR_DECODE';
 
                   case 4:
-                    return "MEDIA_ERR_SRC_NOT_SUPPORTED";
+                    return 'MEDIA_ERR_SRC_NOT_SUPPORTED';
 
                   default:
                     return null;
@@ -289,19 +289,19 @@
                 }
                 switch (this.getStateCode()) {
                   case 0:
-                    return "HAVE_NOTHING";
+                    return 'HAVE_NOTHING';
 
                   case 1:
-                    return "HAVE_METADATA";
+                    return 'HAVE_METADATA';
 
                   case 2:
-                    return "HAVE_CURRENT_DATA";
+                    return 'HAVE_CURRENT_DATA';
 
                   case 3:
-                    return "HAVE_FUTURE_DATA";
+                    return 'HAVE_FUTURE_DATA';
 
                   case 4:
-                    return "HAVE_ENOUGH_DATA";
+                    return 'HAVE_ENOUGH_DATA';
 
                   default:
                     return null;
@@ -319,16 +319,16 @@
                 }
                 switch (this.getNetworkStateCode()) {
                   case 0:
-                    return "NETWORK_EMPTY";
+                    return 'NETWORK_EMPTY';
 
                   case 1:
-                    return "NETWORK_IDLE";
+                    return 'NETWORK_IDLE';
 
                   case 2:
-                    return "NETWORK_LOADING";
+                    return 'NETWORK_LOADING';
 
                   case 3:
-                    return "NETWORK_NO_SOURCE";
+                    return 'NETWORK_NO_SOURCE';
 
                   default:
                     return null;
@@ -351,13 +351,13 @@
                 if (!supported) {
                     return this;
                 }
-                types = types.split(" ");
+                types = types.split(' ');
                 var self = this, efunc = function(e) {
                     func.call(self, e);
                 };
                 for (var t = 0; t < types.length; t++) {
                     var type = types[t], idx = type;
-                    type = idx.split(".")[0];
+                    type = idx.split('.')[0];
                     events.push({
                         idx: idx,
                         func: efunc
@@ -370,12 +370,12 @@
                 if (!supported) {
                     return this;
                 }
-                types = types.split(" ");
+                types = types.split(' ');
                 for (var t = 0; t < types.length; t++) {
-                    var idx = types[t], type = idx.split(".")[0];
+                    var idx = types[t], type = idx.split('.')[0];
                     for (var i = 0; i < events.length; i++) {
-                        var namespace = events[i].idx.split(".");
-                        if (events[i].idx === idx || namespace[1] && namespace[1] === idx.replace(".", "")) {
+                        var namespace = events[i].idx.split('.');
+                        if (events[i].idx === idx || namespace[1] && namespace[1] === idx.replace('.', '')) {
                             this.sound.removeEventListener(type, events[i].func, true);
                             events.splice(i, 1);
                         }
@@ -389,12 +389,12 @@
                 }
                 var self = this;
                 eventsOnce[pid++] = false;
-                this.bind(type + "." + pid, function() {
+                this.bind(type + '.' + pid, function() {
                     if (!eventsOnce[pid]) {
                         eventsOnce[pid] = true;
                         func.call(self);
                     }
-                    self.unbind(type + "." + pid);
+                    self.unbind(type + '.' + pid);
                 });
                 return this;
             };
@@ -402,13 +402,13 @@
                 if (!supported) {
                     return this;
                 }
-                types = types.split(" ");
+                types = types.split(' ');
                 for (var t = 0; t < types.length; t++) {
                     var idx = types[t];
                     for (var i = 0; i < events.length; i++) {
-                        var eventType = events[i].idx.split(".");
-                        if (events[i].idx === idx || eventType[0] && eventType[0] === idx.replace(".", "")) {
-                            var evt = doc.createEvent("HTMLEvents");
+                        var eventType = events[i].idx.split('.');
+                        if (events[i].idx === idx || eventType[0] && eventType[0] === idx.replace('.', '')) {
+                            var evt = doc.createEvent('HTMLEvents');
                             evt.initEvent(eventType[0], false, true);
                             evt.originalEvent = detail;
                             this.sound.dispatchEvent(evt);
@@ -475,7 +475,7 @@
                 }
                 var self = this;
                 if (this.sound.readyState === 0) {
-                    this.bind("canplay.buzzwhenready", function() {
+                    this.bind('canplay.buzzwhenready', function() {
                         func.call(self);
                     });
                 } else {
@@ -483,15 +483,15 @@
                 }
             };
             this.addSource = function(src) {
-                var self = this, source = doc.createElement("source");
+                var self = this, source = doc.createElement('source');
                 source.src = src;
                 if (buzz.types[getExt(src)]) {
                     source.type = buzz.types[getExt(src)];
                 }
                 this.sound.appendChild(source);
-                source.addEventListener("error", function(e) {
+                source.addEventListener('error', function(e) {
                     self.sound.networkState = 3;
-                    self.trigger("sourceerror", e);
+                    self.trigger('sourceerror', e);
                 });
                 return source;
             };
@@ -506,7 +506,7 @@
                 return array;
             }
             function getExt(filename) {
-                return filename.split(".").pop();
+                return filename.split('.').pop();
             }
             if (supported && src) {
                 for (var i in buzz.defaults) {
@@ -516,7 +516,7 @@
                         }
                     }
                 }
-                this.sound = doc.createElement("audio");
+                this.sound = doc.createElement('audio');
                 if (options.webAudioApi) {
                     var audioCtx = buzz.getAudioContext();
                     if (audioCtx) {
@@ -533,7 +533,7 @@
                 } else if (options.formats.length) {
                     for (var k in options.formats) {
                         if (options.formats.hasOwnProperty(k)) {
-                            this.addSource(src + "." + options.formats[k]);
+                            this.addSource(src + '.' + options.formats[k]);
                         }
                     }
                 } else {
@@ -543,12 +543,12 @@
                     this.loop();
                 }
                 if (options.autoplay) {
-                    this.sound.autoplay = "autoplay";
+                    this.sound.autoplay = 'autoplay';
                 }
                 if (options.preload === true) {
-                    this.sound.preload = "auto";
+                    this.sound.preload = 'auto';
                 } else if (options.preload === false) {
-                    this.sound.preload = "none";
+                    this.sound.preload = 'none';
                 } else {
                     this.sound.preload = options.preload;
                 }
@@ -579,95 +579,95 @@
                 }
             };
             this.load = function() {
-                fn("load");
+                fn('load');
                 return this;
             };
             this.play = function() {
-                fn("play");
+                fn('play');
                 return this;
             };
             this.togglePlay = function() {
-                fn("togglePlay");
+                fn('togglePlay');
                 return this;
             };
             this.pause = function(time) {
-                fn("pause", time);
+                fn('pause', time);
                 return this;
             };
             this.stop = function() {
-                fn("stop");
+                fn('stop');
                 return this;
             };
             this.mute = function() {
-                fn("mute");
+                fn('mute');
                 return this;
             };
             this.unmute = function() {
-                fn("unmute");
+                fn('unmute');
                 return this;
             };
             this.toggleMute = function() {
-                fn("toggleMute");
+                fn('toggleMute');
                 return this;
             };
             this.setVolume = function(volume) {
-                fn("setVolume", volume);
+                fn('setVolume', volume);
                 return this;
             };
             this.increaseVolume = function(value) {
-                fn("increaseVolume", value);
+                fn('increaseVolume', value);
                 return this;
             };
             this.decreaseVolume = function(value) {
-                fn("decreaseVolume", value);
+                fn('decreaseVolume', value);
                 return this;
             };
             this.loop = function() {
-                fn("loop");
+                fn('loop');
                 return this;
             };
             this.unloop = function() {
-                fn("unloop");
+                fn('unloop');
                 return this;
             };
             this.setSpeed = function(speed) {
-                fn("setSpeed", speed);
+                fn('setSpeed', speed);
                 return this;
             };
             this.setTime = function(time) {
-                fn("setTime", time);
+                fn('setTime', time);
                 return this;
             };
             this.set = function(key, value) {
-                fn("set", key, value);
+                fn('set', key, value);
                 return this;
             };
             this.bind = function(type, func) {
-                fn("bind", type, func);
+                fn('bind', type, func);
                 return this;
             };
             this.unbind = function(type) {
-                fn("unbind", type);
+                fn('unbind', type);
                 return this;
             };
             this.bindOnce = function(type, func) {
-                fn("bindOnce", type, func);
+                fn('bindOnce', type, func);
                 return this;
             };
             this.trigger = function(type) {
-                fn("trigger", type);
+                fn('trigger', type);
                 return this;
             };
             this.fade = function(from, to, duration, callback) {
-                fn("fade", from, to, duration, callback);
+                fn('fade', from, to, duration, callback);
                 return this;
             };
             this.fadeIn = function(duration, callback) {
-                fn("fadeIn", duration, callback);
+                fn('fadeIn', duration, callback);
                 return this;
             };
             this.fadeOut = function(duration, callback) {
-                fn("fadeOut", duration, callback);
+                fn('fadeOut', duration, callback);
                 return this;
             };
             function fn() {
@@ -693,23 +693,23 @@
             return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/wav; codecs="1"');
         },
         isMP3Supported: function() {
-            return !!buzz.el.canPlayType && buzz.el.canPlayType("audio/mpeg;");
+            return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/mpeg;');
         },
         isAACSupported: function() {
-            return !!buzz.el.canPlayType && (buzz.el.canPlayType("audio/x-m4a;") || buzz.el.canPlayType("audio/aac;"));
+            return !!buzz.el.canPlayType && (buzz.el.canPlayType('audio/x-m4a;') || buzz.el.canPlayType('audio/aac;'));
         },
         toTimer: function(time, withHours) {
             var h, m, s;
             h = Math.floor(time / 3600);
-            h = isNaN(h) ? "--" : h >= 10 ? h : "0" + h;
+            h = isNaN(h) ? '--' : h >= 10 ? h : '0' + h;
             m = withHours ? Math.floor(time / 60 % 60) : Math.floor(time / 60);
-            m = isNaN(m) ? "--" : m >= 10 ? m : "0" + m;
+            m = isNaN(m) ? '--' : m >= 10 ? m : '0' + m;
             s = Math.floor(time % 60);
-            s = isNaN(s) ? "--" : s >= 10 ? s : "0" + s;
-            return withHours ? h + ":" + m + ":" + s : m + ":" + s;
+            s = isNaN(s) ? '--' : s >= 10 ? s : '0' + s;
+            return withHours ? h + ':' + m + ':' + s : m + ':' + s;
         },
         fromTimer: function(time) {
-            var splits = time.toString().split(":");
+            var splits = time.toString().split(':');
             if (splits && splits.length === 3) {
                 time = parseInt(splits[0], 10) * 3600 + parseInt(splits[1], 10) * 60 + parseInt(splits[2], 10);
             }

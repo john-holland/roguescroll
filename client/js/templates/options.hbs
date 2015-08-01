@@ -1,21 +1,60 @@
-<div style='background-color: #eee; border: 4px solid #331; border-radius: 5px; position: fixed'>
-    <h1 class='options-header'><span class='glyphicons glyphicons-chevron-right'></span><span class='options-hide'>Options</span></h1>
+<div class='options-container' style='background-color: #eee; border: 4px solid #331; border-radius: 5px; position: fixed; font-size: 0.8em'>
+    <style type='text/css'>
+        .options-container * {
+            font-size: 1.2em;
+        }
+        
+        .options-container {
+            padding-right: 10px;
+            overflow-y: scroll;
+            height: 200px;
+        }
+        
+        .options-container p {
+            font-size: 0.8em;
+        }
+        
+        .hidden-options {
+            height: 100px;
+        }
+        
+        .options-header {
+            margin-top: 0;
+            padding-top: 10px;
+            padding-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+    <h3 class='options-header'><span class='glyphicons glyphicons-chevron-right'></span><span class='options-hide'>Options</span></h3>
     <script type='text/javascript'>
-        $(".options-header").click(function() {
+    $(function() {
+        var $optionsHeader = $('.options-header');
+        
+        function hideHeader() {
+            $optionsHeader.attr('data-hidden', true);
+            $('.options-list, .options-hide').hide();
+            $('.options-container').addClass('hidden-options');
+            $optionsHeader.find('.glyphicons').css({ rotate: '90deg' });
+        }
+        
+        function showHeader() {
+            $optionsHeader.attr('data-hidden', false);
+            $('.options-list, .options-hide').show();
+            $('.options-container').removeClass('hidden-options');
+            $optionsHeader.find('.glyphicons').css({ rotate: '0deg' });
+        }
+        
+        $optionsHeader.click(function() {
             if (!$(this).attr('data-hidden') || $(this).attr('data-hidden') == 'false') {
-                $(this).attr('data-hidden', true);
-                $('.options-list, .options-hide').hide();
-                $(this).find('.glyphicons').css({ rotate: '90deg' });
+                hideHeader();
             } else {
-                $(this).attr('data-hidden', false);
-                $('.options-list, .options-hide').show();
-                $(this).find('.glyphicons').css({ rotate: '0deg' });
+                showHeader();
             }
-        });
+        });  
+        
+        hideHeader();
+    });
     </script>
     <ul class='options-list' style='list-style-type: none'>
-    {{#each options}}
-        {{> option-list-item}}
-    {{/each}}
     </ul>
 </div>

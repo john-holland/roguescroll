@@ -6,14 +6,14 @@ module.exports = function() {
                 $(document).keydown(function(e) {
                     if (component.engine.isPlaying) {
                         component.entities.getList().forEach(function(entity) {
-                             entity.sendMessage("keydown", { which: e.which });
+                             entity.sendMessage('keydown', { which: e.which });
                         });
                     }
                 });
                 $(document).keyup(function(e) {
                     if (component.engine.isPlaying) {
                         component.entities.getList().forEach(function(entity) {
-                             entity.sendMessage("keyup", { which: e.which });
+                             entity.sendMessage('keyup', { which: e.which });
                         });
                     }
                 });

@@ -1,5 +1,5 @@
 define(function() { 
-    var V2 = require("../util/V2"),
+    var V2 = require('../util/V2'),
         ImmutableV2 = V2.ImmutableV2,
         V2 = V2.V2;
         

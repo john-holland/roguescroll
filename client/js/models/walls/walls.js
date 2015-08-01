@@ -1,11 +1,11 @@
 define(function() {
-    var _ = require("underscore");
-    var WallSegment = require("./wall-segment");
+    var _ = require('underscore');
+    var WallSegment = require('./wall-segment');
     
     //build a wall
     function Wall(appendTo, minLength, maxWidth, direction, color) {
         this.segments = [];
-        this.$wallContainer = $("<div class='wall'>").appendTo(appendTo);
+        this.$wallContainer = $('<div class="wall">').appendTo(appendTo);
         this.$wallContainer.width(maxWidth);
         this.maxWidth = maxWidth;
         this.direction = direction;
@@ -51,10 +51,10 @@ define(function() {
     }
     
     Wall.Direction = {
-        UP: "up",
-        DOWN: "down",
-        RIGHT: "right",
-        LEFT: "left",
+        UP: 'up',
+        DOWN: 'down',
+        RIGHT: 'right',
+        LEFT: 'left',
         fromString: function(string) {
             var lowered = string.toLowerCase().trim();
             

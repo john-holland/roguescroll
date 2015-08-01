@@ -1,12 +1,12 @@
 define(function() {
     //todo: explore a MVC entity architecture, include message passing and propegation.
     
-    var ListMap = require("../util/listmap"),
-        animLoop = require("../util/animLoop"),
-        JSONfn = require("../util/JSONfn"),
-        Entity = require("./entity"),
-        Component = require("./component"),
-        _ = require("underscore");
+    var ListMap = require('../util/listmap'),
+        animLoop = require('../util/animLoop'),
+        JSONfn = require('../util/JSONfn'),
+        Entity = require('./entity'),
+        Component = require('./component'),
+        _ = require('underscore');
     
     function Engine(game) {
         var self = this,
@@ -94,13 +94,13 @@ define(function() {
             
             //send the init message
             self.entities.getList().forEach(function(entity) {
-                entity.sendMessage("init", {});
+                entity.sendMessage('init', {});
             });
         }
         
         this.destroy = function() {
             if (self.isDestroyed) {
-                throw new Error("Engine already destroyed.");
+                throw new Error('Engine already destroyed.');
             }
             
             self.entities.getList().forEach(function(entity) {
@@ -128,7 +128,7 @@ define(function() {
         
         this.update = function(dt, gameTime) {
             if (self.isDestroyed) {
-                throw new Error("Engine destroyed, cannot update.");
+                throw new Error('Engine destroyed, cannot update.');
             }
             
             var components = self.components.getList(),
@@ -161,18 +161,26 @@ define(function() {
         function addComponent(entity, componentName) {
             var component = self.components.get(componentName);
             if (!component) {
-                throw new Error("Cannot find component for name: " + componentName);
+                throw new Error('Cannot find component for name: ' + componentName);
             }
             
             if (!entity.components.get(componentName)) {
                 entity.components.add(componentName, component);
                 component.entities.add(entity.id, entity);
                 //take a deep clone of the component defaults, enforces onAdd mentality and should help prevent reference sharing accross entities.
-                var defaultDataClone = JSONfn.clone(component.defaultData);
+                var defaultDataClone = typeof component.defaultData === 'function' ? component.defaultData() : JSONfn.clone(component.defaultData);
                 for (var prop in defaultDataClone) {
                     if (defaultDataClone.hasOwnProperty(prop) && !(prop in entity.data)) {
                         entity.data[prop] = defaultDataClone[prop];
                     }
+                }
+                
+                if (component.tags) {
+                    component.tags.forEach(function(tag) {
+                        if (entity.tags.indexOf(tag) < 0) {
+                            entity.tags.push(tag);
+                        }
+                    })
                 }
                 
                 component.requiredComponents.forEach(function(component) {
@@ -186,7 +194,7 @@ define(function() {
         }
         
         this.addComponentToEntity = function(entity, componentName, defaultData) {
-            var defaultDataClone = JSONfn.clone(defaultData);
+            var defaultDataClone = defaultData;
             for (var prop in defaultDataClone) {
                 if (defaultDataClone.hasOwnProperty(prop)) {
                     entity.data[prop] = defaultDataClone[prop];

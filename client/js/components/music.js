@@ -9,8 +9,8 @@
  */
  
  define(function() {
-    var ListMap = require("../util/listmap"),
-        buzz = require("../util/buzz"),
+    var ListMap = require('../util/listmap'),
+        buzz = require('../util/buzz'),
         sound = buzz.sound,
         tinyColor = require('../util/tinycolor'),
         _ = require('../util/underscore'),
@@ -26,24 +26,24 @@
                 formats: ['m4a', 'ogg', 'mp3', 'wav'],
                 tracks: {
                     unsorted: [
-                        "DRUMS 1", 
-                        "DRUMS 2", 
-                        "DRUMS 3", 
-                        "DRUMS 4", 
-                        "DRUMS 5",
-                        "DRUMS 6", 
-                        "HARMONY1", 
-                        "HARMONY2", 
-                        "HARMONY3", 
-                        "HARMONY4", 
-                        "HARMONY5", 
-                        "HARMONY6",
-                        "MELODY1",
-                        "MELODY2", 
-                        "MELODY3", 
-                        "MELODY4",
-                        "MELODY5",
-                        "MELODY6"
+                        'DRUMS 1', 
+                        'DRUMS 2', 
+                        'DRUMS 3', 
+                        'DRUMS 4', 
+                        'DRUMS 5',
+                        'DRUMS 6', 
+                        'HARMONY1', 
+                        'HARMONY2', 
+                        'HARMONY3', 
+                        'HARMONY4', 
+                        'HARMONY5', 
+                        'HARMONY6',
+                        'MELODY1',
+                        'MELODY2', 
+                        'MELODY3', 
+                        'MELODY4',
+                        'MELODY5',
+                        'MELODY6'
                     ],
                     colors: [
                         'blue',
@@ -62,7 +62,8 @@
                 },
                 timeSinceLastQuantization: 0,
                 tracksToPlay: [],
-                tracksToStop: []
+                tracksToStop: [],
+                volume: 50
             },
             tags: ['level-change-subscriber'],
             onAdd: function(entity, component) {
@@ -149,10 +150,11 @@
                 },
                 'level-change': function(entity, data) {
                     var self = this,
-                        level = data.level;
+                        level = data.level,
+                        world = entity.engine.findEntityByTag('world');
                         
                     if (this.levelToTracks.length < data.level) {
-                        var levels = entity.engine.findEntityByTag('world').data.levels;
+                        var levels = world.data.levels;
                         while (this.levelToTracks.length < data.level) {
                             this.levelToTracks.push(getTracksForLevel(entity, this, levels[this.levelToTracks.length - 1]));
                         }
@@ -165,7 +167,9 @@
                     }
 
                     loadLevel(levelMusic, self.loadedTracks, self.baseDir, self.formats).then(function() {
-                        playLevel(levelMusic, self.tracksToPlay); 
+                        if (world.data.level === level) {
+                            playLevel(levelMusic, self.tracksToPlay); 
+                        }
                     });
                 },
                 'loaded-level': function(entity, data) {
@@ -183,6 +187,13 @@
 
                     loadLevel(levelMusic, self.loadedTracks, self.baseDir, self.formats);
                     console.log('loaded music for next level');
+                },
+                'set-volume': function(entity, data) {
+                    if (!data.volume) {
+                        throw new Error('volume requied');
+                    }
+                    
+                    buzz.all().setVolume(data.volume);
                 }
             }
         };
@@ -204,6 +215,11 @@
         return Promise.all(tracksToPlay.map(function(track) { 
             return new Promise(function(resolve, reject) { 
                 var sound = loadedTracks.get(track);
+                
+                if (sound.getStateCode() === 4) {
+                    resolve(sound);
+                }
+                
                 sound.bind('canplay', function() {
                     resolve(sound);
                 });
@@ -254,9 +270,9 @@
         */
         var tracks = {},
             world = world || entity.engine.findEntityByTag('world'),
-            background = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.background : tinyColor("yellow"))),
-            font = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.font : tinyColor("orange"))),
-            accent = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.accent : tinyColor("yellow"))),
+            background = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.background : tinyColor('yellow'))),
+            font = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.font : tinyColor('orange'))),
+            accent = conversions.rgb2lab(tinyColorToRgbArray(level.number !== 1 ? level.colors.accent : tinyColor('yellow'))),
             closestBackground, 
             closestFont, 
             closestAccent,
@@ -277,8 +293,6 @@
         closestBackground = _.sortBy(tracksByColor.map(convertToLab),
             colorDistance.bind(null, background))[0][1]; //a pair is returned
         var strippedBackground = closestBackground.replace(/\d/ig, '').trim();
-        
-        //take out any colors that were picked in the last level?
         
         tracksByColor = _.filter(tracksByColor, function(colorTrack) { 
             return colorTrack[1].indexOf(strippedBackground) < 0; 

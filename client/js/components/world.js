@@ -1,7 +1,7 @@
 module.exports = function() {
-    var _ = require("underscore"),
-        Wall = require("../models/walls/walls"),
-        Level = require("../models/level");
+    var _ = require('underscore'),
+        Wall = require('../models/walls/walls'),
+        Level = require('../models/level');
     
     return {
         _: {
@@ -10,18 +10,25 @@ module.exports = function() {
             levels: [],
             maxLevel: 25
         },
-        requiredComponents: ["position"],
+        requiredComponents: ['position'],
         onAdd: function(entity, component) {
             if (!component.worldEntity) component.worldEntity = entity.engine.components.get('world-entity');
             if (!component.player) component.player = entity.engine.findEntityByTag('player');
             
-            entity.sendMessage("go-to-level", { level: 1 });
+            entity.sendMessage('go-to-level', { level: 1 });
+        },
+        onRemove: function() {
+            this.levels.forEach(function(level) {
+                level.walls.forEach(function(wall) {
+                    wall.$wallContainer.remove();
+                })
+            });
         },
         update: function(dt, entity, component) {
             if (this.currentLevel) this.currentLevel.update(dt);
         },
         messages: {
-            "go-to-level": function(entity, data) {
+            'go-to-level': function(entity, data) {
                 //check if the level to go to exists, and if not, create the interveening levels.
                 // also check if the level is < 0 or > max levels, bail if so
                 if (data.level < 1 || data.level > this.maxLevel) {
@@ -45,6 +52,7 @@ module.exports = function() {
                 var previousLevel = this.level;
                 this.levels[data.level - 1].activate(data.direction);
                 this.level = data.level;
+                this.currentLevel = this.levels[data.level - 1];
                 
                 entity.engine.findEntitiesByTag('level-change-subscriber').forEach(function(entity) {
                     entity.sendMessage('level-change', { level: data.level, previousLevel: previousLevel });

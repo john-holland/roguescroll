@@ -1,15 +1,2 @@
-<li>
-{{#if isObject}}
-    {{{template}}}
-{{else}}
-    {{#if isNumber}}
-    <label>{{name}} <input type="number" data-option-name="{{name}}" value="{{value}}" /></label>
-    {{/if}}
-    {{#if isString}}
-    <label>{{name}} <input type="text" data-option-name="{{name}}" value="{{value}}" /></label>
-    {{/if}}
-    {{#if isBoolean}}
-    <label>{{name}} <input type="checkbox" data-option-name="{{name}}" value="{{value}}" /></label>
-    {{/if}}
-{{/if}}
+<li data-option-name='{{name}}'>
 </li>

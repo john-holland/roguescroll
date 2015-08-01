@@ -195,7 +195,7 @@ function V2(x, y) {
     }
     
     this.toString = function() {
-        return "x: " + this.X + " y: " + this.Y;
+        return 'x: ' + this.X + ' y: ' + this.Y;
     }
     
     this.toFixed = function(decimalPlaces) {
@@ -333,7 +333,7 @@ function ImmutableV2(x, y) {
     }
     
     this.toString = function() {
-        return "x: " + this.X + " y: " + this.Y;
+        return 'x: ' + this.X + ' y: ' + this.Y;
     }
     
     this.toFixed = function(decimalPlaces) {

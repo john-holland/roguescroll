@@ -7,15 +7,15 @@ module.exports = function() {
             },
             isStaticPosition: false
         },
-        requiredComponents: ["position"],
+        requiredComponents: ['position'],
         onAdd: function(entity, component) {
             if (!component.spawned) {
                 component.spawned = true;
                 
                 for (var i = 0; i < 25; i++) {
                     var ent = entity.engine.createEntity({ tags: ['hide-at-start'] });
-                    ent.addComponent("sine-line", { });
-                    ent.addComponent("glyphicon-renderer", { icon: "clock" });
+                    ent.addComponent('sine-line', { });
+                    ent.addComponent('glyphicon-renderer', { icon: 'clock' });
                 }
             }
         },

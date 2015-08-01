@@ -1,4 +1,4 @@
-var V2 = require("../util/V2");
+var V2 = require('../util/V2');
 var ImmutableV2 = V2.ImmutableV2;
 V2 = V2.V2;
 
@@ -19,7 +19,7 @@ module.exports = function Movement() {
             isMoving: false,
             pursueTarget: true,
             ignoreXForTarget: true,
-            direction: "down",
+            direction: 'down',
             isMobile: true
         },
         onAdd: function(entity, component) {
@@ -46,10 +46,10 @@ module.exports = function Movement() {
                 _y = this.target.y - this.position.y,
                 toTarget = new V2(_x, _y),
                 length = toTarget.length(),
-                move = toTarget.normalize().multiply(this.speed * (dt/1000)),
+                move = toTarget.normalize().multiply(this.speed * (dt/1000)), //todo: put in lerp for movement when close to soften things up
                 target = new V2(this.target.x, this.target.y),
                 position = new V2(this.position.x, this.position.y),
-                reachedTarget = target.sub(position).dot(move) <= 0;
+                reachedTarget = target.sub(position).dot(move) <= 0;// || toTarget <= move.length();
                  
             //or you know, if you're really close.
             if (reachedTarget || length < 3) {
@@ -75,7 +75,7 @@ module.exports = function Movement() {
             }
             
             if (!reachedTarget) {
-                this.direction = this.position.y > this.target.y ? "down" : "up";   
+                this.direction = this.position.y > this.target.y ? 'down' : 'up';   
             }
             
             var wasMoving = this.isMoving;
@@ -83,22 +83,22 @@ module.exports = function Movement() {
             this.isMoving = !(this.position.x == this.previousPosition.x && this.position.y == this.previousPosition.y);
             
             if (reachedTarget || (!this.isMoving && wasMoving)) {
-                entity.sendMessage("stop-animating", {animation: "walk"});
+                entity.sendMessage('stop-animating', {animation: 'walk'});
             }
             
             if (this.isMoving && !wasMoving) {
-                entity.sendMessage("animate", {animation: "walk"});
+                entity.sendMessage('animate', {animation: 'walk'});
             }
         },
-        requiredComponents: ["position"],
+        requiredComponents: ['position'],
         messages: {
-            "go-to": function(entity, data) {
+            'go-to': function(entity, data) {
                 this.pursueTarget = true;
                 this.target.x = data.x;
                 this.target.y = data.y;
                 
-                if ("stopAfterArrive" in data) this.target.stopAfterArrival = data.stopAfterArrive;
-                if ("callback" in data) this.target.callbacks.push(data.callback);
+                if ('stopAfterArrive' in data) this.target.stopAfterArrival = data.stopAfterArrive;
+                if ('callback' in data) this.target.callbacks.push(data.callback);
             }
         }
     };

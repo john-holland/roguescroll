@@ -5,7 +5,7 @@ module.exports = function() {
         },
         requiredComponents: ['html-renderer'],
         onAdd: function(entity, component) {
-            this.$text = $("<span style='line-height: 30px; vertical-align:middle;' data-health-display='" + entity.id + "'></span>").appendTo(this.$el);
+            this.$text = $('<span style="line-height: 30px; vertical-align:middle;" data-health-display="' + entity.id + '"></span>').appendTo(this.$el);
             entity.sendMessage('set-text-color', { textColor: this.textColor });
         },
         update: function(dt, entity, component) {

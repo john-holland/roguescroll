@@ -1,4 +1,7 @@
 define(function() {
+    var V2 = require('../util/V2'),
+        ImmutableV2 = V2.ImmutableV2;
+    
     return function Sensor() {
         return {
             _: {
@@ -19,7 +22,7 @@ define(function() {
                     }
                 } else {
                     var sensed = entity.engine.entities.getList().filter(function(entity) {
-                        return currentPosition.distanceTo(entity.data.position) < data.senseRange;
+                        return entity.data.position ? currentPosition.distanceTo(entity.data.position) < data.senseRange : false;
                     });
                     
                     if (sensed.length) {

@@ -2,7 +2,7 @@ module.exports = function() {
     return {
         _: {
             mountId: null,
-            mountTag: "",
+            mountTag: '',
             offset: {
                 x:null,
                 y:null
@@ -35,7 +35,7 @@ module.exports = function() {
                 }
             }
             
-            entity.sendMessage("mount", { 
+            entity.sendMessage('mount', { 
                 target: this.mountTarget,
                 mountId: this.mountId,
                 mountTag: this.mountTag
@@ -43,7 +43,7 @@ module.exports = function() {
         },
         update: function(dt, entity, component) {
             if (!this.mountTarget) {
-                entity.sendMessage("mount", { 
+                entity.sendMessage('mount', { 
                     target: this.mountTarget,
                     mountId: this.mountId,
                     mountTag: this.mountTag
@@ -69,7 +69,8 @@ module.exports = function() {
             
             this.direction = this.mountTarget.data.direction;
         },
-        requiredComponents: ["position"],
+        requiredComponents: ['position'],
+        tags: ['level-change-subscriber'],
         messages: {
             mount: function(entity, data, component) {
                 component.tryMount(this, entity, data.target, data.mountId, data.mountTag);
@@ -78,6 +79,18 @@ module.exports = function() {
                 this.mountTarget = null;
                 this.mountTag = null;
                 this.mountId = null;
+            },
+            'level-change': function(entity, data, component) {
+                if (this.mountTarget && this.mountTarget.data.level && this.worldEntity && this.worldEntity.data.currentLevel === this.mountTarget.data.level) {
+                    entity.sendMessage('switch-to-current-level');
+                    if (entity.shouldRender != this.mountTarget.shouldRender) {
+                        if (this.mountTarget.shouldRender) {
+                            entity.sendMessage('show');
+                        } else {
+                            entity.sendMessage('hide');
+                        }
+                    }
+                }
             }
         }
     };

@@ -1,6 +1,6 @@
 define(function() {
-    var _ = require("../util/underscore"),
-        V2 = require("../util/V2"),
+    var _ = require('../util/underscore'),
+        V2 = require('../util/V2'),
         ImmutableV2 = V2.ImmutableV2,
         V2 = V2.V2;
     
@@ -18,7 +18,7 @@ define(function() {
                 this.visionCircle = entity.engine.createEntity({tags: ['vision-circle']})
                     .addComponent('html-renderer', {
                         htmlTemplateFactory: function(entity, component) {
-                            return "<div style='position:absolute;border:2px dashed " + entity.engine.findEntityByTag('world').data.currentLevel.colors.accent.toHexString() + "'></div>";
+                            return '<div style="position:absolute;border:2px dashed ' + entity.engine.findEntityByTag('world').data.currentLevel.colors.accent.toHexString() + '"></div>';
                         }
                     })
                     .addComponent('mounted', {

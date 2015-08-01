@@ -1,6 +1,6 @@
-var _ = require("../util/underscore");
-var ListMap = require("../util/listmap");
-var Chance = require("../util/chance");
+var _ = require('../util/underscore');
+var ListMap = require('../util/listmap');
+var Chance = require('../util/chance');
 var chance = new Chance();
 
 module.exports = function() {
@@ -36,30 +36,30 @@ module.exports = function() {
                 position = this.spawnPosition;
             }
             
-            enemy.addComponent("enemy", { iconColor:"#eee", position: position, icon: chance.pick(["person", "skull", 'bug']), target: { y: 0, x: 0 } });
+            enemy.addComponent('enemy', { iconColor:'#eee', position: position, icon: chance.pick(['person', 'skull', 'bug']), target: { y: 0, x: 0 } });
             
             var healthTarget = entity.engine.createEntity({tags: ['enemy-health-display']});
             
-            healthTarget.addComponent("health-display", {
+            healthTarget.addComponent('health-display', {
                 isStaticPosition: false
             });
-            healthTarget.addComponent("mounted", {
+            healthTarget.addComponent('mounted', {
                 offset: {
                     x: 50,
                     y: 50
                 }
             });
-            healthTarget.sendMessage("mount", { target: enemy });
+            healthTarget.sendMessage('mount', { target: enemy });
             
             enemy.data.patrolTopTarget.y = patrolTop;
             enemy.data.patrolBottomTarget.y = patrolBottom;
             enemy.data.position.y = patrolCenter;
-            enemy.sendMessage("init");
-            console.log("spawned at: " + enemy.data.position.x + " " + enemy.data.position.y);
+            enemy.sendMessage('init');
+            console.log('spawned at: ' + enemy.data.position.x + ' ' + enemy.data.position.y);
         },
         messages: {
             init: function(entity, data) {
-                this.world = entity.engine.findEntityByTag("world");
+                this.world = entity.engine.findEntityByTag('world');
             }
         }
     };

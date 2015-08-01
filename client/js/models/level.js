@@ -1,10 +1,10 @@
 define(function() {
-    var _ = require("underscore"),
-        Wall = require("../models/walls/walls"),
-        tinycolor = require("../util/tinycolor"),
+    var _ = require('underscore'),
+        Wall = require('../models/walls/walls'),
+        tinycolor = require('../util/tinycolor'),
         tinyColors = _.values(tinycolor.names),
-        $ = require("jquery"),
-        Chance = require("../util/chance"),
+        $ = require('jquery'),
+        Chance = require('../util/chance'),
         chance = new Chance();
  
     function Level(worldEntity, number) {
@@ -18,9 +18,9 @@ define(function() {
         
         if (number === 1) {
             this.colors = {
-                background: tinycolor("#333"),
-                font: tinycolor("#eee"),
-                accent: tinycolor("#eee")
+                background: tinycolor('#333'),
+                font: tinycolor('#eee'),
+                accent: tinycolor('#eee')
             };
         } else {
             var colors = tinycolor(tinyColors[_.random(0, tinyColors.length)]).splitcomplement(),
@@ -64,12 +64,12 @@ define(function() {
         this.entities = [];
         this.traps = [];
         this.walls = [];
-        this.walls.push(new Wall($("#game"), 3000, $(window).width() / 3, Wall.Direction.LEFT, this.colors.accent.toHexString()));
-        this.walls.push(new Wall($("#game"), 3000, $(window).width() / 3, Wall.Direction.RIGHT, this.colors.accent.toHexString()));
+        this.walls.push(new Wall($('#game'), 3000, $(window).width() / 3, Wall.Direction.LEFT, this.colors.accent.toHexString()));
+        this.walls.push(new Wall($('#game'), 3000, $(window).width() / 3, Wall.Direction.RIGHT, this.colors.accent.toHexString()));
         //a list of entities and their isactive and shouldrender states before the level was deactivated
         this.entityMetaData = [];
         
-        this.enemySpawner = worldEntity.engine.createEntity({ tags:["enemy-spawner"] })
+        this.enemySpawner = worldEntity.engine.createEntity({ tags:['enemy-spawner'] })
                                 .addComponent('enemy-spawner', { });
         this.enemySpawner.sendMessage('init');
         this.entities.push(this.enemySpawner);
@@ -137,16 +137,16 @@ define(function() {
             });
             
             this.walls.forEach(function(wall) {
-                wall.$wallContainer.find(".wall-segment").animate({
+                wall.$wallContainer.find('.wall-segment').animate({
                     'border-top-color': self.colors.accent.toHexString()
                 }, 1000);
             });
             
-            $("#game").animate({
+            $('#game').animate({
                 'background-color': this.colors.background.toHexString()
             }, 1000);
             
-            $("#menu").css({'background': 'linear-gradient(to bottom, black 60%, '+ this.colors.background.toHexString() +' 90%)'});
+            $('#menu').css({'background': 'linear-gradient(to bottom, black 60%, '+ this.colors.background.toHexString() +' 90%)'});
             
             if (player) {
                 player.sendMessage('set-scroll-to-position');
@@ -221,10 +221,10 @@ define(function() {
         }
         
         function setHeight() {
-            var $game = $("#game"),
-                hidden = $game.css("display") === 'none';
+            var $game = $('#game'),
+                hidden = $game.css('display') === 'none';
             $game.show();
-            $game.css("height", this.height + "px");
+            $game.css('height', this.height + 'px');
             if (hidden) {
                 $game.hide();
             }

@@ -6,7 +6,7 @@ module.exports = function Health() {
             damagePredicates: []
         },
         messages: {
-            "damage": function(entity, data) {
+            'damage': function(entity, data) {
                 var attackDiverted = false;
                 this.damagePredicates.forEach(function() {
                     if (!entity.data.damagePredicates.pop()(data)) {
@@ -21,10 +21,10 @@ module.exports = function Health() {
                 entity.data.health -= data.amount || 0;
                 
                 if (entity.data.health <= 0) {
-                    entity.sendMessage("death", { overkill: entity.data.health * -1 });
+                    entity.sendMessage('death', { overkill: entity.data.health * -1 });
                 }
             },
-            "heal": function(entity, data) {
+            'heal': function(entity, data) {
                 entity.data.health += data.amount || 0;
                 entity.data.health = Math.min(entity.data.health, this.maxHealth);
             }

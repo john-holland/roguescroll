@@ -2,16 +2,16 @@ module.exports = function() {
     return {
         _: {
             isStaticPosition: true,
-            icon: "clock",
+            icon: 'clock',
             position: {
                 x: 50,
                 y: 250
             },
             metricsFunction: null,
             metricsTarget: null,
-            metricsTargetTag: ""
+            metricsTargetTag: ''
         },
-        requiredComponents: ["text"],
+        requiredComponents: ['text'],
         onAdd: function(entity, component) {
             this.position.y = $(window).height() - 50;
             if (this.metricsTargetTag) {
@@ -20,7 +20,7 @@ module.exports = function() {
         },
         update: function(dt, entity, component) {
             if (typeof this.metricsFunction !== 'function') {
-                this.$text.text("gameTime " + (entity.engine.gameTime / 1000).toFixed(4));
+                this.$text.text('gameTime ' + (entity.engine.gameTime / 1000).toFixed(4));
                 return;
             }
             

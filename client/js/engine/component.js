@@ -1,5 +1,5 @@
 define(function() {
-    var ListMap = require("../util/listmap");
+    var ListMap = require('../util/listmap');
     
     function Component(name, options) {
         this.name = name;
@@ -12,6 +12,7 @@ define(function() {
         this._update = options.update || null;
         this._aggregateUpdate = options.aggregateUpdate || null;
         this._render = options.render || null;
+        this.tags = options.tags || null;
         this.entityData = new ListMap();
     }
     

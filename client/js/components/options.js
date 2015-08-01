@@ -1,5 +1,7 @@
 define(function() {
-    var _ = require("underscore");
+    var _ = require('underscore');
+    var buzz = require('../util/buzz');
+    var $ = require('jquery');
     
     return function Options() {
         return {
@@ -8,73 +10,204 @@ define(function() {
                     width: null,
                     height: null
                 },
+                positionAnchor: 'bottom-right',
+                levelSetsColor: false,
+                'z-index': 10000,
+                optionTemplates: {
+                  slider: {
+                      init: function(entity, option, $parent, $el) {
+                          $el.change(function() {
+                              option.set($(this).val())
+                          });
+                          return $el;
+                      },
+                      set: function($el, value) {
+                          $el.val(value);
+                      }
+                  },
+                  boolean: {
+                      init: function(entity, option, $parent, $el) {
+                          $el.change(function() {
+                              option.set($el.is(':checked'))
+                          })
+                      },
+                      set: function($el, value) {
+                          $el.val(value);
+                      }
+                  },
+                  textbox: {
+                      init: function(entity, option, $parent, $el) {
+                          $el.change(function() {
+                              option.set($(this).val())
+                          });
+                          return $el;
+                      },
+                      set: function($el, value) {
+                          $el.val(value);
+                      }
+                  },
+                  'textarea': {
+                      init: function(entity, option, $parent, $el) {
+                          $el.change(function() {
+                              option.set($(this).val())
+                          })
+                          return $el;
+                      },
+                      set: function($el, value) {
+                          $el.val(value);
+                      }
+                  },
+                  'number': {
+                      init: function(entity, option, $parent, $el) {
+                          $el.change(function() {
+                              option.set($(this).val())
+                          });
+                          return $el;
+                      },
+                      set: function($el, value) {
+                          $el.val(value);
+                      }
+                  },
+                  text: {
+                      init: function(entity, option, $parent, $el) {
+                          $el.change(function() {
+                              option.set($(this).val())
+                          });
+                          return $el;
+                      },
+                      set: function($el, value) {
+                          $el.val(value);
+                      }
+                  }
+                },
                 options: {
                     //if you provide an object, you must provide an function optionsTemplate(option, value, entity, component)
                     // setup sensible data-attributes and use find() selectors on $el to setup callbacks
-                    speed: 200
+                    'dev options': {
+                        type: 'text',
+                        get: function() {
+                            return 'These options should be disabled upon release... probably.';
+                        },
+                        set: function() {
+                            
+                        }
+                    },
+                    speed: {
+                        type: 'slider',
+                        min: 0,
+                        max: 1000,
+                        step: 1,
+                        get: function(entity) {
+                            entity.data.playerCache = entity.data.playerCache || entity.engine.findEntityByTag('player');
+                            return entity.data.playerCache.data.speed;
+                        },
+                        set: function(entity, value) {
+                            entity.data.playerCache = entity.data.playerCache || entity.engine.findEntityByTag('player');
+                            entity.data.playerCache.data.speed = value;
+                        }
+                    },
+                    health: {
+                        type: 'slider',
+                        min: 0,
+                        max: 200,
+                        step: 1,
+                        get: function(entity) {
+                            entity.data.playerCache = entity.data.playerCache || entity.engine.findEntityByTag('player');
+                            return entity.data.playerCache.data.health;
+                        },
+                        set: function(entity, value) {
+                            entity.data.playerCache = entity.data.playerCache || entity.engine.findEntityByTag('player');
+                            entity.data.playerCache.data.health = value;
+                        }
+                    },
+                    'damage': {
+                        type: 'textbox',
+                        get: function(entity) {
+                            entity.data.playerCache = entity.data.playerCache || entity.engine.findEntityByTag('player');
+                            return entity.data.playerCache.data.weapon.data.damage;
+                        },
+                        set: function(entity, value) {
+                            entity.data.playerCache = entity.data.playerCache || entity.engine.findEntityByTag('player');
+                            entity.data.playerCache.data.weapon.data.damage = value;
+                        }
+                    },
+                    'game options': {
+                        type: 'text',
+                        get: function() {
+                            return '';
+                        },
+                        set: function() {
+                            
+                        }
+                    },
+                    'audio level': {
+                        type: 'slider',
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        get: function(entity) {
+                            entity.data.musicCache = entity.data.musicCache || entity.engine.findEntityByTag('music');
+                            return entity.data.musicCache.data.volume;
+                        },
+                        set: function(entity, value) {
+                            entity.data.buzz.all().setVolume(value);
+                        }
+                    }
                 },
                 isStaticPosition: true,
-                metadataFactory: function createOptionMetadata(entity, component, option, value) {
-                    var optionType = typeof value,
-                        optionMetadata = {
-                            isBoolean: optionType === 'boolean',
-                            isNumber: optionType === 'number',
-                            isString: optionType === 'string', //can be tagged with __options_readonly__ = true
-                            isObject: optionType === 'object',
-                            name: option,
-                            value: value
-                        };
+                htmlTemplateFactory: function(entity, component) {
+                    _.pairs(entity.data.options).forEach(function(optPair) {
+                        optPair[1].name = optPair[0];
+                    })
+                    
+                    var $options = $(require('../templates/options.hbs')({ options: entity.data.options }));
+                    
+                    _.pairs(entity.data.options).forEach(function(optPair) {
+                        var self = entity.data,
+                            name = optPair[0],
+                            option = optPair[1],
+                            template = self.optionTemplates[option.type];
+                            
+                        option._name = name;
+
+                        var $el = $(require('../templates/optionControls/' + option.type + '.hbs')(_.extend({value: option.get(entity)}, option)));
+                        var $li = $('<li></li>');
+                        $options.find('.options-list').append($li);
+                        $li.append($el);
+                        option.$el = template.init(entity, option, $options, $el);
                         
-                    if (optionMetadata.isObject) {
-                        if (!('optionsTemplate' in value)) {
-                            return null;
+                        var userModifier = option.set;
+                        
+                        option.set = function(value) {
+                            if (userModifier) {
+                                userModifier(entity, value);
+                            }
+                            template.set(option.$el, value);
                         }
                         
-                        optionMetadata.template = value.optionsTemplate(option, value, entity, component);
-                    }
+                        
+                        option._template = template;
+                        option._previousValue = undefined;
+                    });
                     
-                    return optionMetadata;
-                },
-                optionsMetadata: [],
-                htmlTemplateFactory: function(entity, component) {
-                    var options = _.filter(_.map(_.pairs(entity.data.options), function(pair) {
-                        var option = pair[0],
-                            value = pair[1];
-                        return entity.data.metadataFactory(entity, component, option, value);
-                    }), function(metadata) { return metadata != null });
-                    entity.data.optionsMetadata = options;
-                    return require("../templates/options.hbs")({ options: options });
+                    return $options;
                 }
             },
+            onAdd: function(entity, component) {
+                this.buzz = buzz;
+                this.updateOptions = _.values(this.options);
+            },
             update: function(dt, entity, component) {
-                for (var prop in this.options) {
-                    if (this.options.hasOwnProperty(prop)) {
-                        var metadata = _.find(this.optionsMetadata, function(metadata) { return metadata.name === prop });
-                        if (!metadata) {
-                            metadata = entity.data.metadataFactory(entity, component, prop, this.options[prop]);
-                            this.optionsMetadata.push(metadata);
-                            $(require('../templates/option-list-item.hbs')(metadata)).appendTo(this.$el.find('.options-list'));
-                        } else {
-                            if (metadata.isObject) {
-                                return;
-                            }
-                                
-                            var value;
-                            
-                            if (metadata.isBoolean) {
-                                value = this.$el.find('[data-option-name="' + prop + '"]').prop(":checked");
-                            } else if (metadata.isNumber) {
-                                value = parseFloat(this.$el.find('[data-option-name="' + prop + '"]').val());
-                            } else if (metadata.isString) {
-                                value = this.$el.find('[data-option-name="' + prop + '"]').val();
-                            }
-                            
-                            if (this.options[prop] != value) {
-                                this.options[prop] = value;
-                            }
-                        }
+                //each update, iterate through all options and call get 
+                
+                this.updateOptions.forEach(function(option) {
+                    var currentValue = option.get(entity);
+                    
+                    if (currentValue !== option._previousValue) {
+                        option.set(currentValue);
+                        option._previousValue = currentValue;
                     }
-                }
+                });
             },
             requiredComponents: ['html-renderer']
         };

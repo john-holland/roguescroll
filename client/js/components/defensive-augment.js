@@ -1,7 +1,7 @@
 module.exports = function() {
     return {
         _: {
-            augmentPosition: "right",
+            augmentPosition: 'right',
             icon: 'umbrella'
         },
         requiredComponents: ['augment']
