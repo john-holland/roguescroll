@@ -2,7 +2,7 @@
   "name": "roguescroll",
   "version": "0.0.0",
   "description": "A 1 dimensional rogue-like.",
-  "main": "server.js",
+  "main": "app.js",
   "author": "John Holland <jholland87@gmail.com>",
   "dependencies": {
     "css-loader": "^0.9.1",
