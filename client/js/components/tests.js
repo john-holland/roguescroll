@@ -23,8 +23,8 @@ define(function() {
             messages: {
                 'set-keep-frames': function(entity, data) {
                     if ('keepFrames' in data) {
-                        while (testResultFrames.length > data.keepFrames) {
-                            testResultFrames.unshift();
+                        while (this.testResultFrames.length > data.keepFrames) {
+                            this.testResultFrames.unshift();
                         }
                         
                         this.keepFrames = data.keepFrames;

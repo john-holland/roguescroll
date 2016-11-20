@@ -27,8 +27,10 @@ module.exports = function() {
                 } else {
                     entity.sendMessage('animate', { animation: 'attack-up' });
                 }
+                var target = data.targets.find(function(t) { return !t.onCoffeeBreak});
+                    
+                if (!target) { return; } //no targets not drinking coffee...
                 
-                var target = data.targets[0];
                 var toHit = _.random(this.character.skills / 2, this.character.brawn + this.character.skills);
                 
                 if (toHit > target.data.baseMiss) {

@@ -57,7 +57,8 @@ define(function() {
             'sine-wave-movement': require('./components/sine-wave-movement')(),
             music: require('./components/music')(),
             'spell-container': require('./components/spell-container')(),
-            'spell': require('./components/spell')()
+            'spell': require('./components/spell')(),
+            'boss': require('./components/boss')()
         },
         entities: [
             {

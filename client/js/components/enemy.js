@@ -26,12 +26,20 @@ module.exports = function() {
             damage: '1d6',
             playerAttackOffset: 60,
             sineWaveRange: 50,
-            sineWaveSpeed: 500
+            sineWaveSpeed: 500,
+            onCoffeeBreak: false
         },
         onAdd: function(entity, component) {
+            setTimeout(function() { entity.sendMessage('coffee-break') }, chance.integer({min: 5000, max: 10000}));
         },
         update: function(dt, entity, component) {
             if (!this.player) {
+                return;
+            }
+            
+            if (this.onCoffeeBreak) {
+                this.sineWaveMovementEnabled = false;
+                this.xOffsetOverride = $(document).width() / 5;
                 return;
             }
             
@@ -74,6 +82,10 @@ module.exports = function() {
                     return;
                 }
                 
+                if (this.onCoffeeBreak || entity.tags.indexOf('boss') > -1) {
+                    return false;
+                }
+                
                 entity.sendMessage('animate', { animation: 'attack-up' });
                 var hit = _.random(0, 15 - this.player.data.character.skills / 4);
                 
@@ -83,6 +95,34 @@ module.exports = function() {
                 
                 data.targets[0].sendMessage('damage', {amount: chance.rpg(this.damage, {sum:true}), hitRoll: hit});
                 return true;
+            },
+            'coffee-break': function(entity, data) {
+                var coffee = entity.engine.createEntity({});
+                coffee.addComponent('glyphicon-renderer', {
+                    icon: 'coffee-cup'
+                })
+                .addComponent('mounted', {
+                    mountTarget: entity,
+                    offset: {
+                        x: -50, y: 50
+                    }
+                })
+                .addComponent('animation', {
+                    animation: 'drink'
+                });
+                
+                var previousSenseDistance = this.senseDistance;
+                this.senseDistance = 0;
+                this.onCoffeeBreak = true;
+                setTimeout(function() {
+                    coffee.destroy();
+                    entity.data.senseDistance = previousSenseDistance;
+                    entity.data.sineWaveMovementEnabled = true;
+                    entity.data.onCoffeeBreak = false;
+                    setTimeout(function() {
+                        entity.sendMessage('coffee-break');
+                    }, chance.integer({ min: 20000, max: 80000 }))    
+                }, chance.integer({ min: 10000, max: 20000 }))
             }
         }
     };

@@ -14,6 +14,7 @@ module.exports = function() {
             ability: null, //function(entity),
             state: 'not-held'
         },
+        tags: ['level-change-subscriber'],
         onAdd: function(entity, component) {
             if (this.mountTarget) {
                 this.mountTarget.data.weapon = entity;

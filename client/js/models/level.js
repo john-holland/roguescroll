@@ -5,7 +5,8 @@ define(function() {
         tinyColors = _.values(tinycolor.names),
         $ = require('jquery'),
         Chance = require('../util/chance'),
-        chance = new Chance();
+        chance = new Chance(),
+        BOSS_LEVEL = 5;
  
     function Level(worldEntity, number) {
         var self = this;
@@ -101,7 +102,7 @@ define(function() {
                                      'doorDown' in self ? self.doorDown.data.position.y - 300 : self.maxHeight - 400);
                 console.log('spawned trap at: ' + trapY);
                 var trap = worldEntity.engine.createEntity({ tags: ['trap', 'vision-candidate'] })
-                            .addComponent('trap', {icon: chance.pick(['fire', 'electricity', 'birthday-cake', 'bomb', 'heat', 'cardio'])});
+                            .addComponent('trap', {icon: chance.pick(['fire', 'electricity', 'birthday-cake', 'bomb', 'heat', 'fingerprint-scan', 'webcam', 'restart'])});
                 trap.data.position.y = trapY;
                 trap.data.level = self;
                 trap.sendMessage('init');
@@ -111,11 +112,24 @@ define(function() {
         
         this.activate = function(enteredFrom) {
             var player = this.worldEntity.engine.findEntityByTag('player');
+            
             if (enteredFrom == 'below') {
                 if (player) player.data.position.y = this.doorDown.data.position.y - 150;
+                this.doorDown.data.$el[0].scrollIntoView();
             } else {
-                if (player && this.number > 1) player.data.position.y = 1000;
-                else if (player) player.data.position.y = 0;
+                if (player && this.number > 1) {
+                    player.data.position.y = 1000;
+                    this.doorUp.data.$el[0].scrollIntoView();
+                } else if (player) player.data.position.y = 0;
+                
+                if (this.number % BOSS_LEVEL === 0) {
+                    var boss = worldEntity.engine.createEntity({ tags: ['boss'] });
+                    boss.data.level = self;
+                    boss.addComponent('boss', {
+                        position: { x: this.doorDown.data.position.x, y: this.doorDown.data.position.y }
+                    });
+                    this.doorDown.isActive = false;
+                }
             }
             
             this.worldEntity.data.currentLevel = this;

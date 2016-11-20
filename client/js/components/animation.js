@@ -56,6 +56,11 @@ module.exports = function Animation() {
                         duration: 1000,
                         looping: false,
                         defferable: false
+                    },
+                    drink: {
+                        duration: 1500,
+                        looping: true,
+                        defferable: true
                     }
                 };
                 

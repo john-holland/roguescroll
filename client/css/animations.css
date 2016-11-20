@@ -287,3 +287,14 @@ which is great */
     -webkit-animation-name: explode; 
     animation-name: explode; 
 }
+
+.drink { 
+    -webkit-animation-name: drink; 
+    animation-name: drink; 
+}
+
+@keyframes drink { 
+    0% { 
+        transform: rotate(90deg)
+    } 
+} 
