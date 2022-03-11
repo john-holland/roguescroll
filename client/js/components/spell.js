@@ -2,7 +2,7 @@
 define(function() {
     var Spell = require('../models/spell'),
         ListMap = require('../util/listmap'),
-        _ = require('underscore');
+        _ = require('../util/underscore');
     
     return function Spell() {
         return {

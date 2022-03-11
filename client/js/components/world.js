@@ -1,5 +1,5 @@
 module.exports = function() {
-    var _ = require('underscore'),
+    var _ = require('../util/underscore'),
         Wall = require('../models/walls/walls'),
         Level = require('../models/level');
     

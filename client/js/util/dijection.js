@@ -7,7 +7,7 @@
         _ = '_' in this ? this._ : null;
 
     if (typeof _ !== 'function' && typeof require === 'function') {
-        var _ = require('underscore');
+        var _ = require('./underscore');
     }
     
     function isArray(array) {

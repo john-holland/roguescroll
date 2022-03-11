@@ -6,7 +6,7 @@ define(function() {
         JSONfn = require('../util/JSONfn'),
         Entity = require('./entity'),
         Component = require('./component'),
-        _ = require('underscore');
+        _ = require('../util/underscore');
     
     function Engine(game) {
         var self = this,

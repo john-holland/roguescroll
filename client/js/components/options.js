@@ -1,8 +1,8 @@
 define(function() {
-    var _ = require('underscore');
+    var _ = require('../util/underscore');
     var buzz = require('../util/buzz');
-    var $ = require('jquery');
-    
+    var $ = require('../util/jquery');
+
     return function Options() {
         return {
             _: {
@@ -16,67 +16,67 @@ define(function() {
                 optionTemplates: {
                   slider: {
                       init: function(entity, option, $parent, $el) {
-                          $el.change(function() {
+                          $($el).change(function() {
                               option.set($(this).val())
                           });
                           return $el;
                       },
                       set: function($el, value) {
-                          $el.val(value);
+                          $($el).val(value);
                       }
                   },
                   boolean: {
                       init: function(entity, option, $parent, $el) {
-                          $el.change(function() {
-                              option.set($el.is(':checked'))
+                          $($el).change(function() {
+                              option.set($($el).is(':checked'))
                           })
                       },
                       set: function($el, value) {
-                          $el.val(value);
+                          $($el).val(value);
                       }
                   },
                   textbox: {
                       init: function(entity, option, $parent, $el) {
-                          $el.change(function() {
+                          $($el).change(function() {
                               option.set($(this).val())
                           });
                           return $el;
                       },
                       set: function($el, value) {
-                          $el.val(value);
+                          $($el).val(value);
                       }
                   },
                   'textarea': {
                       init: function(entity, option, $parent, $el) {
-                          $el.change(function() {
+                          $($el).change(function() {
                               option.set($(this).val())
                           })
                           return $el;
                       },
                       set: function($el, value) {
-                          $el.val(value);
+                          $($el).val(value);
                       }
                   },
                   'number': {
                       init: function(entity, option, $parent, $el) {
-                          $el.change(function() {
+                          $($el).change(function() {
                               option.set($(this).val())
                           });
                           return $el;
                       },
                       set: function($el, value) {
-                          $el.val(value);
+                          $($el).val(value);
                       }
                   },
                   text: {
                       init: function(entity, option, $parent, $el) {
-                          $el.change(function() {
+                          $($el).change(function() {
                               option.set($(this).val())
                           });
                           return $el;
                       },
                       set: function($el, value) {
-                          $el.val(value);
+                          $($el).val(value);
                       }
                   }
                 },
@@ -159,8 +159,12 @@ define(function() {
                     _.pairs(entity.data.options).forEach(function(optPair) {
                         optPair[1].name = optPair[0];
                     })
+
+                    const domParser = new DOMParser();
+
+                    const parseHtml = (htmlString) => domParser.parseFromString(htmlString, 'text/html').body.firstElementChild;
                     
-                    var $options = $(require('../templates/options.hbs')({ options: entity.data.options }));
+                    var $options = parseHtml(require('../templates/options.hbs')({ options: entity.data.options }));
                     
                     _.pairs(entity.data.options).forEach(function(optPair) {
                         var self = entity.data,
@@ -170,9 +174,10 @@ define(function() {
                             
                         option._name = name;
 
-                        var $el = $(require('../templates/optionControls/' + option.type + '.hbs')(_.extend({value: option.get(entity)}, option)));
-                        var $li = $('<li></li>');
-                        $options.find('.options-list').append($li);
+                        var $el = parseHtml(require('../templates/optionControls/' + option.type + '.hbs')(_.extend({value: option.get(entity)}, option)))
+
+                        var $li = parseHtml('<li></li>');
+                        $options.querySelector('.options-list').append($li);
                         $li.append($el);
                         option.$el = template.init(entity, option, $options, $el);
                         

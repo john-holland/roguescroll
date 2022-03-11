@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('../util/underscore');
 
 module.exports = function() {
     return {
@@ -78,10 +78,12 @@ module.exports = function() {
                     
                     return char;
                 });
+
+                const domParser = new DOMParser();
+                const parseHtml = (htmlString) => domParser.parseFromString(htmlString, 'text/html').body.firstElementChild;
+                var characterTemplate = parseHtml(require('../templates/characterSelection.hbs')({characters: characters}));
                 
-                var characterTemplate = require('../templates/characterSelection.hbs');
-                
-                $('#menu').append($(characterTemplate({characters: characters})));
+                $('#menu').append(characterTemplate);
                 
                 function setCharacterUi(selectedCharacter) {
                     //set the active on the character
@@ -139,8 +141,14 @@ module.exports = function() {
                 
                 var selectedCharacter = data.character;
                 $('.start-your-adventure').show();
-                
-                $('#game').show();
+
+                var $game = $('#game');
+                if ($game.length === 0) {
+                    document.querySelector('#scroll-container').append(new DOMParser().parseFromString('<div id="game"></div>', 'text/html').body.firstElementChild);
+                }
+
+                $game = $('#game');
+                $game.show();
                 
                 var player = entity.engine.findEntityByTag('player');
                 player.data.character = selectedCharacter;
@@ -153,7 +161,9 @@ module.exports = function() {
                 
                 var world = entity.engine.findEntityByTag('world');
                 world.sendMessage('generate', { seed: selectedCharacter.name + +new Date() });
-                
+
+                $game.css('height', world.data.levels[0].height + 'px');
+
                 entity.engine.entities.getList().forEach(function(entity) {
                     entity.sendMessage('game-start');
                 })

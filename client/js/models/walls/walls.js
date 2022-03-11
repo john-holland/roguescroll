@@ -1,5 +1,5 @@
 define(function() {
-    var _ = require('underscore');
+    var _ = require('../../util/underscore');
     var WallSegment = require('./wall-segment');
     
     //build a wall

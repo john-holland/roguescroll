@@ -9,6 +9,10 @@
         <link rel="stylesheet" href="/css/google-fonts.css">
         <link rel="stylesheet" href="/css/animations.css">
         <style type="text/css">
+            @font-face {
+                font-family:'Glyphicons Regular';
+                src:url('/css/glyphicons-basic-regular.otf');
+            }
           body {
             
           }
@@ -36,6 +40,7 @@
           #game {
             background: #333;
             display: none;
+            position: relative;
             overflow: hidden;
           }
           
@@ -100,7 +105,7 @@
           
           .left-wall {
             top: 0;
-            left: 0%;
+            left: 0;
           }
           
           .right-wall {
@@ -160,12 +165,11 @@
           <h2 class="start-your-adventure" style="display: none; margin-top: 50px">Scroll down to start your adventure!</h2>
           <p class="start-your-adventure" style="display: none;">Return here to pause.</p>
           <br/>
-          <p class="start-your-adventure" style="display: none;">You will automatically attack any enemies you come accross.</p>
+          <p class="start-your-adventure" style="display: none;">You will automatically attack any enemies you come across.</p>
           <h3 class="start-your-adventure" style="display: none; margin-top: 50px">Watch your step! If you see a trap (<span class="glyphicons glyphicons-heat" style="font-size: 1em"></span> for example), click on the <span class="glyphicons glyphicons-warning-sign" style="font-size: 1em"></span> to disarm it...</h3>
           <p class="start-your-adventure" style="display: none;">If you don't see a trap, that's too bad <span class="glyphicons glyphicons-thumbs-up"></span></p>
         </div>
-        <div id="game" style="position: relative">
-        </div>
+        <div id="game"></div>
       </div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>

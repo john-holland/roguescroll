@@ -9,12 +9,12 @@
  * 
  * 2 options in nav: Pause, Play
  * 
- * Once use scrolls down, they start to descend. As they descend they the page will grow.
+ * Once user scrolls down, they start to descend. As they descend the page will grow.
  * 
  **/
 define(function() {
-    var Game = require('./engine/game'),
-    RogueScroll = new Game({
+    var Game = require('./engine/game');
+    window.RogueScroll = new Game({
         name: 'Rogue Scroll',
         components: { 
             health: require('./components/health')(),

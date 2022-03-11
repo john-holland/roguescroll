@@ -1,9 +1,9 @@
 define(function() {
-    var _ = require('underscore'),
+    var _ = require('../util/underscore'),
         Wall = require('../models/walls/walls'),
         tinycolor = require('../util/tinycolor'),
         tinyColors = _.values(tinycolor.names),
-        $ = require('jquery'),
+        $ = require('../util/jquery'),
         Chance = require('../util/chance'),
         chance = new Chance(),
         BOSS_LEVEL = 5;
@@ -12,7 +12,7 @@ define(function() {
         var self = this;
         this.worldEntity = worldEntity;
         this.active = false;
-        this.height = 2000;
+        this.height = 2000 + window.outerHeight;
         this.maxHeight = _.random(8000, Math.min(8000 + (number * 1000), 14000));
         this.lowestKnownY = 0;
         this.number = number;
@@ -212,7 +212,7 @@ define(function() {
             }
             
             if (this.player && this.player.data.position.y + 1000 > this.lowestKnownY) {
-                this.lowestKnownY = this.player.data.position.y + 3000;
+                this.lowestKnownY = this.player.data.position.y + document.height * 2;
             }
             
             if (this.lowestKnownY > previousLowest) {
@@ -237,6 +237,12 @@ define(function() {
         function setHeight() {
             var $game = $('#game'),
                 hidden = $game.css('display') === 'none';
+
+            if ($game.length === 0) {
+                document.querySelector('#scroll-container').append(new DOMParser().parseFromString('<div id="game"></div>', 'text/html').body.firstElementChild);
+                $game = $('#game');
+            }
+
             $game.show();
             $game.css('height', this.height + 'px');
             if (hidden) {

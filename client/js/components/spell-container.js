@@ -1,5 +1,5 @@
 define(function() {
-    var $ = require('jquery');
+    var $ = require('../util/jquery');
     
     return function SpellContainer() {
        return {
@@ -15,7 +15,9 @@ define(function() {
                spells: [],
                'z-index': 800,
                htmlTemplateFactory: function(entity, component) {
-                   return $(require('../templates/spells.hbs')());
+                   const domParser = new DOMParser();
+                   const parseHtml = (htmlString) => domParser.parseFromString(htmlString, 'text/html').body.firstElementChild;
+                   return parseHtml(require('../templates/spells.hbs')());
                }
            },
            onAdd: function() {

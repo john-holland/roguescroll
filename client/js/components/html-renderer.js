@@ -1,39 +1,38 @@
 define(function() {
-
     function applyCss() {
         if (this.size.height != null && this.size.width != null) {
-            this.$el.css({
+            $(this.$el).css({
                 'font-size': (this.size.height != null && this.size.width != null) ? ((this.size.height + this.size.width) / 2) + 'px' : this.$el.css('font-size'),
                 width: this.size.width === null ? this.$el.css('width') : this.size.width,
                 height: this.size.height === null ? this.$el.css('height') : this.size.height,
             });
         }
-        
-        this.$el.css('z-index', this['z-index']);
+
+        $(this.$el).css('z-index', this['z-index']);
             
         if (!this.positionAnchor || this.positionAnchor === 'top-left') {
-            this.$el.css({
+            $(this.$el).css({
                 bottom: 'initial',
                 right: 'initial',
                 left: this.position.x - (this.size.width / 2),
                 top: this.position.y - (this.size.height / 2)
             });
         } else if (this.positionAnchor === 'top-right') {
-            this.$el.css({
+            $(this.$el).css({
                 bottom: 'initial',
                 left: 'initial',
                 right: this.position.x - (this.size.width / 2),
                 top: this.position.y - (this.size.height / 2)     
             });
         } else if (this.positionAnchor === 'bottom-left') {
-            this.$el.css({
+            $(this.$el).css({
                 top: 'initial',
                 right: 'initial',
                 left: this.position.x - (this.size.width / 2),
                 bottom: this.position.y - (this.size.height / 2)     
             });
         } else if (this.positionAnchor === 'bottom-right') {
-            this.$el.css({
+            $(this.$el).css({
                 top: 'initial',
                 left: 'initial',
                 right: this.position.x + (this.size.width / 2),
@@ -68,7 +67,13 @@ define(function() {
             },
             requiredComponents: ['position'],
             onAdd: function(entity, component) {
-                this.$el = $(this.htmlTemplateFactory(entity, component)).appendTo($(this.selector));
+                try {
+                    this.$el = $(this.selector).append(
+                        new DOMParser().parseFromString(this.htmlTemplateFactory(entity, component), 'text/html').body.firstElementChild
+                    );
+                } catch (e) {
+                    debugger;
+                }
                     
                 applyCss.call(this);
                 

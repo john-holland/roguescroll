@@ -11,3 +11,16 @@ Those brave enough to enter and conquer the tomb will need to be especially brav
 ##Todo:
 
 Provide an option for using https://github.com/marcoceppi/bootstrap-glyphicons, refactor glyphicon-renderer
+
+* broken #game div gets deleted or shrunk by mischievous gremlins presumably idk
+  * hide-at-start doesn't seem likely
+  * templating order maybe? check diff?
+  * scroll-container doesn't have any associated html renderer so i don't think it's that
+* bork bork bork - some dog
+* es6 module conversion
+  * +typescript module conversion
+* add excelsior
+* final boss
+* level height and scroll height detection
+* options doesn't seem to work? i probably disabled it, but iirc i was working on it when i left off
+
