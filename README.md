@@ -1,4 +1,7 @@
-#[Rogue Scroll](https://roguescroll-john-holland.c9.io/ "In development, it may not always be on... or working")
+<h1 style>
+Rogue Scroll
+</h1>
+<h2>("In development, it may not always be on... or working")</h1>
 
 The Rogue Scroll is a mythical scroll which grants the reader power over all things for a limited time.
 

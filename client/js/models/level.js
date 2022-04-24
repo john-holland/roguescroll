@@ -216,7 +216,9 @@ define(function() {
             }
             
             if (this.lowestKnownY > previousLowest) {
-                if (this.height > this.lowestKnownY || this.height >= this.maxHeight) {
+                // TODO: this is probably the problem, maybe
+                //if (this.height > this.lowestKnownY || this.height >= this.maxHeight) {
+                if (this.height >= this.maxHeight) {
                     return;
                 }
                 
