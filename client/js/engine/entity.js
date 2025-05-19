@@ -91,11 +91,17 @@ define(function() {
     
     //todo: implement async messages with timeouts
     Entity.prototype.sendMessage = function(message, data, timeoutMS, callback) {
-        
-        var metadata = { handled: false, results: [] },
-        self = this;
+        var metadata = { handled: false, results: [], version: data?.version || '1.0.0' },
+            self = this;
+            
         this.components.getList().forEach(function(component) {
             if (message in component.messageHandlers) {
+                // Check version compatibility
+                if (!component.isVersionCompatible(metadata.version)) {
+                    console.warn(`Component ${component.name} version ${component.version} is not compatible with message version ${metadata.version}`);
+                    return;
+                }
+                
                 metadata.handled = true;
                 var result = component.messageHandlers[message].call(self.data, self, data, component);
                 if (typeof result !== 'undefined') {

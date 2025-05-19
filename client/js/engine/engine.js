@@ -63,6 +63,15 @@ define(function() {
             var component = new Component(name, options);
             component.engine = self;
             
+            // Check version compatibility with existing components
+            var existingComponent = self.components.get(name);
+            if (existingComponent) {
+                if (!existingComponent.isVersionCompatible(component.version)) {
+                    console.warn(`Component ${name} version ${component.version} is not compatible with existing version ${existingComponent.version}`);
+                    return null;
+                }
+            }
+            
             self.components.add(name, component);
             
             return component;
