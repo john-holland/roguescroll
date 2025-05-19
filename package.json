@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "roguescroll",
   "version": "0.0.0",
   "description": "A 1 dimensional rogue-like.",
@@ -16,7 +15,8 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^8.1.1",
     "ws": "^8.13.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "mori": "^0.3.2"
   },
   "scripts": {
     "start": "node server/index.js",
