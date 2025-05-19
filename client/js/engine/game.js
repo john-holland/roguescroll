@@ -1,35 +1,45 @@
-define(function() {
-    var Engine = require('./engine'),
-        _ = require('../util/underscore');
-    
-    function Game(options) {
+define(['engine/entity', 'engine/system', 'engine/renderer'], function(Entity, System, Renderer) {
+    return function Game() {
         var self = this;
-        this.name = options.name || '';
-        this.engine = new Engine(this);
-        this.engine.initialize(options.components || [], options.entities || []);
         
-        this.pause = function() {
-            self.engine.pause();
-            self.engine.entities.getList().forEach(function(entity) {
-                entity.sendMessage('game-pause');
+        this.entities = [];
+        this.systems = [];
+        this.renderer = new Renderer();
+        
+        this.addEntity = function(entity) {
+            this.entities.push(entity);
+            return entity;
+        };
+        
+        this.removeEntity = function(entity) {
+            var index = this.entities.indexOf(entity);
+            if (index !== -1) {
+                this.entities.splice(index, 1);
+            }
+        };
+        
+        this.addSystem = function(system) {
+            this.systems.push(system);
+            return system;
+        };
+        
+        this.removeSystem = function(system) {
+            var index = this.systems.indexOf(system);
+            if (index !== -1) {
+                this.systems.splice(index, 1);
+            }
+        };
+        
+        this.update = function(delta) {
+            this.systems.forEach(function(system) {
+                system.update(delta);
             });
-        }
+        };
         
-        this.play = function() {
-            self.engine.play();
-            self.engine.entities.getList().forEach(function(entity) {
-                entity.sendMessage('game-resume');
-            });
-        }
+        this.render = function() {
+            this.renderer.render(this.entities);
+        };
         
-        this.restart = function() {
-            self.engine.pause();
-            self.engine.destroy();
-            self.engine = new Engine(self);
-            self.engine.initialize(options.components, options.entities);
-            self.play();
-        }
-    }
-    
-    return Game;
+        return this;
+    };
 });

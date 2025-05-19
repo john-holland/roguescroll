@@ -12,255 +12,306 @@
  * Once user scrolls down, they start to descend. As they descend the page will grow.
  * 
  **/
-define(function() {
-    var Game = require('./engine/game');
-    window.RogueScroll = new Game({
-        name: 'Rogue Scroll',
-        components: { 
-            health: require('./components/health')(),
-            position: require('./components/position')(),
-            animation: require('./components/animation')(),
-            'glyphicon-renderer': require('./components/glyphicon-renderer')(),
-            movement: require('./components/movement')(),
-            'center-aligned': require('./components/center-aligned')(),
-            combatant: require('./components/combatant')(),
-            'health-potion': require('./components/health-potion')(),
-            'scroll-chaser': require('./components/scroll-chaser')(),
-            'floating-combat-text': require('./components/floating-combat-text')(),
-            'timed-destroy': require('./components/timed-destroy')(),
-            'weapon': require('./components/weapon')(),
-            'shield': require('./components/shield')(),
-            'augment': require('./components/augment')(),
-            'defensive-augment': require('./components/defensive-augment')(),
-            'offensive-augment': require('./components/offensive-augment')(),
-            'player': require('./components/player')(),
-            'enemy': require('./components/enemy')(),
-            'drops-loot': require('./components/drops-loot')(),
-            'mounted': require('./components/mounted')(),
-            'trap': require('./components/trap')(),
-            'sine-line': require('./components/sine-line')(),
-            'enemy-spawner': require('./components/enemy-spawner')(),
-            'world-entity': require('./components/world-entity')(),
-            'world': require('./components/world')(),
-            'game-manager': require('./components/game-manager')(),
-            'text': require('./components/text')(),
-            'health-display': require('./components/health-display')(),
-            'game-metrics-display': require('./components/game-metrics-display')(),
-            'hide-on-pause': require('./components/hide-on-pause')(),
-            'keyboard-events': require('./components/keyboard-events')(),
-            'html-renderer': require('./components/html-renderer')(),
-            vision: require('./components/vision')(),
-            sensor: require('./components/sensor')(),
-            'level-door': require('./components/level-door')(),
-            options: require('./components/options')(),
-            minimap: require('./components/minimap')(),
-            'sine-wave-movement': require('./components/sine-wave-movement')(),
-            music: require('./components/music')(),
-            'spell-container': require('./components/spell-container')(),
-            'spell': require('./components/spell')(),
-            'boss': require('./components/boss')(),
-            'spectator-view': require('./components/spectator-view')(),
-            'test-view': require('./components/test-view')(),
-            'bathroom-break': require('./components/bathroom-break')(),
-            'window': require('./components/window')()
+define([
+    'engine/game',
+    'components/health',
+    'components/position',
+    'components/renderer',
+    'components/input',
+    'components/physics',
+    'components/combat',
+    'components/inventory',
+    'components/quest',
+    'components/dialogue',
+    'components/ai',
+    'components/network',
+    'components/animation',
+    'components/augment',
+    'components/boss',
+    'components/center-aligned',
+    'components/combatant',
+    'components/defensive-augment',
+    'components/drops-loot',
+    'components/enemy-spawner',
+    'components/enemy',
+    'components/floating-combat-text',
+    'components/game-manager',
+    'components/game-metrics-display',
+    'components/glyphicon-renderer',
+    'components/health-display',
+    'components/health-potion',
+    'components/hide-on-pause',
+    'components/html-renderer',
+    'components/keyboard-events',
+    'components/level-door',
+    'components/minimap',
+    'components/mounted',
+    'components/movement',
+    'components/music',
+    'components/offensive-augment',
+    'components/options',
+    'components/player',
+    'components/scroll-chaser',
+    'components/sensor',
+    'components/shield',
+    'components/sine-line',
+    'components/sine-wave-movement',
+    'components/spell-container',
+    'components/spell',
+    'components/tests',
+    'components/text',
+    'components/timed-destroy',
+    'components/trap',
+    'components/vision'
+], function(
+    Game,
+    Health,
+    Position,
+    Renderer,
+    Input,
+    Physics,
+    Combat,
+    Inventory,
+    Quest,
+    Dialogue,
+    AI,
+    Network,
+    Animation,
+    Augment,
+    Boss,
+    CenterAligned,
+    Combatant,
+    DefensiveAugment,
+    DropsLoot,
+    EnemySpawner,
+    Enemy,
+    FloatingCombatText,
+    GameManager,
+    GameMetricsDisplay,
+    GlyphiconRenderer,
+    HealthDisplay,
+    HealthPotion,
+    HideOnPause,
+    HtmlRenderer,
+    KeyboardEvents,
+    LevelDoor,
+    Minimap,
+    Mounted,
+    Movement,
+    Music,
+    OffensiveAugment,
+    Options,
+    Player,
+    ScrollChaser,
+    Sensor,
+    Shield,
+    SineLine,
+    SineWaveMovement,
+    SpellContainer,
+    Spell,
+    Tests,
+    Text,
+    TimedDestroy,
+    Trap,
+    Vision
+) {
+    var RogueScroll = {
+        game: null,
+        components: {
+            health: Health,
+            position: Position,
+            renderer: Renderer,
+            input: Input,
+            physics: Physics,
+            combat: Combat,
+            inventory: Inventory,
+            quest: Quest,
+            dialogue: Dialogue,
+            ai: AI,
+            network: Network,
+            animation: Animation,
+            augment: Augment,
+            boss: Boss,
+            'center-aligned': CenterAligned,
+            combatant: Combatant,
+            'defensive-augment': DefensiveAugment,
+            'drops-loot': DropsLoot,
+            'enemy-spawner': EnemySpawner,
+            enemy: Enemy,
+            'floating-combat-text': FloatingCombatText,
+            'game-manager': GameManager,
+            'game-metrics-display': GameMetricsDisplay,
+            'glyphicon-renderer': GlyphiconRenderer,
+            'health-display': HealthDisplay,
+            'health-potion': HealthPotion,
+            'hide-on-pause': HideOnPause,
+            'html-renderer': HtmlRenderer,
+            'keyboard-events': KeyboardEvents,
+            'level-door': LevelDoor,
+            minimap: Minimap,
+            mounted: Mounted,
+            movement: Movement,
+            music: Music,
+            'offensive-augment': OffensiveAugment,
+            options: Options,
+            player: Player,
+            'scroll-chaser': ScrollChaser,
+            sensor: Sensor,
+            shield: Shield,
+            'sine-line': SineLine,
+            'sine-wave-movement': SineWaveMovement,
+            'spell-container': SpellContainer,
+            spell: Spell,
+            tests: Tests,
+            text: Text,
+            'timed-destroy': TimedDestroy,
+            trap: Trap,
+            vision: Vision
         },
         entities: [
             {
-                tags: ['world'],
-                components: {
-                    'world': { }
-                }
-            },
-            {
-                tags: ['music', 'level-change-subscriber'],
-                components: {
-                    'music': { }
-                }
-            },
-            {
-                tags: ['player', 'hide-at-start'],
-                components: {
-                    health: {
-                        health: 70,
-                        maxHealth: 100
-                    },
-                    player: {
-                        iconColor: '#eee'
-                    },
-                    movement: {
-                        speed: 250
-                    },
-                    position: {
-                        position: {
-                            x: $(document).width() / 2,
-                            y: -75
-                        },
-                        size: {
-                            width: 50,
-                            height: 50
-                        }
-                    },
-                    'keyboard-events': { },
-                    vision: { }
-                },
-                //isActive: false,
-                shouldRender: false
-            },
-            {
-                tags:['shield', 'hide-at-start'],
-                components: {
-                    shield: {
-                        mountTag: 'player'
-                    }
-                }
-            },
-            {
-                tags:['weapon', 'hide-at-start', 'level-change-subscriber'],
-                components: {
-                    weapon: {
-                        mountTag: 'player'
-                    }
-                }
-            },
-            {
-                tags:['health-display', 'hide-at-start'],
-                components: {
-                    'health-display': {
-                        textColor: '#eee',
-                        'z-index': 10000
-                    },
-                    'hide-on-pause': {}
-                }
-            },
-            {
-                tags: ['metrics'],
-                components: {
-                    'game-metrics-display': {
-                        textColor: '#eee',
-                        'z-index': 10000
-                    },
-                    'hide-on-pause': {}
-                }
-            },
-            {
-                tags: ['health-potion', 'hide-at-start'],
-                components: {
-                    'health-potion': {
-                        position: {
-                            y: 500,
-                            x: 0
-                        },
-                        target: {
-                            y: 500,
-                            x: 0
-                        },
-                        pursueTarget: false
-                    }
-                }
-            },
-            {
                 tags: ['game-manager'],
                 components: {
-                    'game-manager': { }
+                    'game-manager': {}
                 }
             },
             {
-                tags: ['player-metrics'],
+                tags: ['player'],
                 components: {
-                    'game-metrics-display': {
-                        shouldRender: false,
-                        isActive: false,
-                        metricsTargetTag: 'player',
-                        isStaticPosition: true,
-                        positionAnchor: 'bottom-right',
-                        position: {
-                            x: 250,
-                            y: 200
-                        },
-                        metricsFunction: function(entity, dt, target) {
-                            return target.data.position.x.toFixed(3) + ' ' + target.engine.updateEntities.getList().length;
-                        },
-                        icon: 'global',
-                        textColor: '#eee'
-                    },
-                    'hide-on-pause': {}
-                }
-            },
-            // {
-            //     tags: ['hide-at-start'],
-            //     components: {
-            //         'glyphicon-renderer': {
-            //             icon: 'clock'
-            //         },
-            //         'sine-line': {}
-            //     }
-            // },
-            {
-                components: {
-                    'defensive-augment': {
-                        mountTag: 'player'
-                    }
+                    'player': {},
+                    'health': {},
+                    'position': { x: 0, y: 0 },
+                    'movement': { speed: 100 },
+                    'glyphicon-renderer': { icon: 'user' },
+                    'center-aligned': {},
+                    'animation': {},
+                    'combatant': {},
+                    'floating-combat-text': {},
+                    'world-entity': {}
                 }
             },
             {
+                tags: ['world'],
                 components: {
-                    'offensive-augment': {
-                        mountTag: 'player'
-                    }
+                    'world': {}
                 }
             },
             {
+                tags: ['music'],
                 components: {
-                    'glyphicon-renderer': {
-                        icon: 'align-center'
-                    },
-                    mounted: {
-                        mountTag: 'level-door',
-                        offset: {
-                            x: 0,
-                            y: 25
-                        }
-                    }
+                    'music': {}
                 }
             },
             {
                 tags: ['minimap'],
                 components: {
-                    minimap: { }
+                    'minimap': {}
                 }
             },
             {
                 tags: ['options'],
                 components: {
-                    options: { }
-                }
-            },
-            {
-                tags: ['spell-container'],
-                components: {
-                    'spell-container': { }
-                }
-            },
-            {
-                tags: ['spectator-view'],
-                components: {
-                    'spectator-view': { }
-                }
-            },
-            {
-                tags: ['test-view'],
-                components: {
-                    'test-view': {}
-                }
-            },
-            {
-                tags: ['bathroom-break'],
-                components: {
-                    'bathroom-break': {}
+                    'options': {}
                 }
             }
-        ]
-    });
-
+        ],
+        isRunning: false,
+        lastTime: 0,
+        targetFPS: 60,
+        frameTime: 1000 / 60,
+        init: function() {
+            try {
+                // Initialize game engine
+                this.game = new Game();
+                
+                // Initialize all systems
+                this.systems = {
+                    physics: new Physics(),
+                    combat: new Combat(),
+                    ai: new AI(),
+                    network: new Network(),
+                    input: new Input(),
+                    renderer: new Renderer()
+                };
+                
+                // Add systems to game
+                Object.values(this.systems).forEach(system => {
+                    this.game.addSystem(system);
+                });
+                
+                // Initialize entities
+                this.entities.forEach(entityConfig => {
+                    var entity = this.game.createEntity({ tags: entityConfig.tags });
+                    Object.entries(entityConfig.components).forEach(([name, data]) => {
+                        entity.addComponent(name, data);
+                    });
+                });
+                
+                // Start game loop
+                this.start();
+                
+                // Add cleanup on window unload
+                window.addEventListener('unload', this.cleanup.bind(this));
+                
+                return true;
+            } catch (error) {
+                console.error('Failed to initialize RogueScroll:', error);
+                return false;
+            }
+        },
+        
+        start: function() {
+            if (!this.isRunning) {
+                this.isRunning = true;
+                this.lastTime = performance.now();
+                requestAnimationFrame(this.gameLoop.bind(this));
+            }
+        },
+        
+        stop: function() {
+            this.isRunning = false;
+        },
+        
+        gameLoop: function(timestamp) {
+            if (!this.isRunning) return;
+            
+            // Calculate delta time in seconds
+            var delta = (timestamp - this.lastTime) / 1000;
+            this.lastTime = timestamp;
+            
+            // Cap delta to prevent large jumps
+            delta = Math.min(delta, 0.1);
+            
+            try {
+                // Update game state
+                this.game.update(delta);
+                this.game.render();
+            } catch (error) {
+                console.error('Error in game loop:', error);
+                this.stop();
+                return;
+            }
+            
+            // Schedule next frame
+            requestAnimationFrame(this.gameLoop.bind(this));
+        },
+        
+        cleanup: function() {
+            this.stop();
+            if (this.game) {
+                // Cleanup systems
+                Object.values(this.systems).forEach(system => {
+                    if (system.cleanup) {
+                        system.cleanup();
+                    }
+                });
+                
+                // Cleanup game
+                this.game.destroy();
+                this.game = null;
+            }
+        }
+    };
+    
     return RogueScroll;
 });
