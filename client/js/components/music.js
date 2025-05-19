@@ -63,7 +63,15 @@
                 timeSinceLastQuantization: 0,
                 tracksToPlay: [],
                 tracksToStop: [],
-                volume: 50
+                volume: 50,
+                volumeRamps: {
+                    background: { target: 50, current: 50, speed: 0.5 },
+                    font: { target: 50, current: 50, speed: 0.5 },
+                    accent: { target: 50, current: 50, speed: 0.5 }
+                },
+                defaultVolume: 50,
+                maxVolume: 100,
+                minVolume: 20
             },
             tags: ['level-change-subscriber'],
             onAdd: function(entity, component) {
@@ -101,6 +109,21 @@
                 //increment the 
                 var self = this;
                 this.timeSinceLastQuantization += dt;
+                
+                // Update volume ramps
+                _.pairs(this.volumeRamps).forEach(function(pair) {
+                    var track = pair[0];
+                    var ramp = pair[1];
+                    var diff = ramp.target - ramp.current;
+                    if (Math.abs(diff) > 0.1) {
+                        ramp.current += diff * (dt / 1000) * ramp.speed;
+                    }
+                    
+                    // Apply volume to track
+                    if (self.loadedTracks && self.loadedTracks.contains(track)) {
+                        self.loadedTracks.get(track).setVolume(ramp.current);
+                    }
+                });
                 
                 if (this.timeSinceLastQuantization > msPerQuantization) {
                     this.timeSinceLastQuantization -= msPerQuantization;
@@ -188,12 +211,36 @@
                     loadLevel(levelMusic, self.loadedTracks, self.baseDir, self.formats);
                     console.log('loaded music for next level');
                 },
+                'enemy-spotted-player': function(entity, data) {
+                    // Ramp up background track when enemy spots player
+                    this.volumeRamps.background.target = this.maxVolume;
+                    this.volumeRamps.background.speed = 1.0; // Faster ramp for immediate tension
+                },
+                'enemy-lost-player': function(entity, data) {
+                    // Return background track to normal volume
+                    this.volumeRamps.background.target = this.defaultVolume;
+                    this.volumeRamps.background.speed = 0.3; // Slower fade out
+                },
+                'trap-nearby': function(entity, data) {
+                    // Ramp up accent track when player is near a trap
+                    this.volumeRamps.accent.target = this.maxVolume;
+                    this.volumeRamps.accent.speed = 0.8;
+                },
+                'trap-disarmed': function(entity, data) {
+                    // Return accent track to normal volume
+                    this.volumeRamps.accent.target = this.defaultVolume;
+                    this.volumeRamps.accent.speed = 0.3;
+                },
                 'set-volume': function(entity, data) {
                     if (!data.volume) {
-                        throw new Error('volume requied');
+                        throw new Error('volume required');
                     }
                     
-                    buzz.all().setVolume(data.volume);
+                    this.defaultVolume = data.volume;
+                    // Update all ramp targets to new default
+                    _.pairs(this.volumeRamps).forEach(function(pair) {
+                        pair[1].target = data.volume;
+                    });
                 }
             }
         };
