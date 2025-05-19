@@ -1,18 +1,26 @@
 const express = require('express');
 const path = require('path');
-const GameServer = require('./websocket');
-
+const WebSocket = require('ws');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Serve static files from the client directory
-app.use(express.static(path.join(__dirname, '../client')));
+// Set up static file serving with proper MIME types
+app.use(express.static(path.join(__dirname, '../client'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (path.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html');
+    }
+  }
+}));
 
 // Create WebSocket server
-const gameServer = new GameServer(8080);
+const wss = new WebSocket.Server({ port: 8080 });
 
 // Start HTTP server
 app.listen(port, () => {
-    console.log(`Game server running at http://localhost:${port}`);
-    console.log(`WebSocket server running at ws://localhost:8080`);
+  console.log(`Server running at http://localhost:${port}`);
 }); 

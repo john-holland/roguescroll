@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  roguescroll:
+    build: .
+    ports:
+      - "3000:3000"  # HTTP server
+      - "8080:8080"  # WebSocket server
+      - "9229:9229"  # Debug port
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DEBUG=roguescroll:*
+    command: npm run dev 
