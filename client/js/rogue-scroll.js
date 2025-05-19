@@ -58,7 +58,11 @@ define(function() {
             music: require('./components/music')(),
             'spell-container': require('./components/spell-container')(),
             'spell': require('./components/spell')(),
-            'boss': require('./components/boss')()
+            'boss': require('./components/boss')(),
+            'spectator-view': require('./components/spectator-view')(),
+            'test-view': require('./components/test-view')(),
+            'bathroom-break': require('./components/bathroom-break')(),
+            'window': require('./components/window')()
         },
         entities: [
             {
@@ -236,7 +240,26 @@ define(function() {
                 components: {
                     'spell-container': { }
                 }
-            }]
+            },
+            {
+                tags: ['spectator-view'],
+                components: {
+                    'spectator-view': { }
+                }
+            },
+            {
+                tags: ['test-view'],
+                components: {
+                    'test-view': {}
+                }
+            },
+            {
+                tags: ['bathroom-break'],
+                components: {
+                    'bathroom-break': {}
+                }
+            }
+        ]
     });
 
     return RogueScroll;
