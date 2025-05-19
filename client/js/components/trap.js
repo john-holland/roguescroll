@@ -21,7 +21,8 @@ define(function() {
                     disarmerPosition: {
                         x: 0,
                         y: 0
-                    }
+                    },
+                    playerWasNearby: false
                 };
             },
             requiredComponents: ['sensor', 'glyphicon-renderer', 'sine-wave-movement', 'world-entity', 'animation'],
@@ -83,7 +84,12 @@ define(function() {
                         return;
                     }
                     
+                    var playerNearby = false;
                     data.sensed.forEach(function(sensedEntity) {
+                        if (sensedEntity.tags.indexOf('player') > -1) {
+                            playerNearby = true;
+                        }
+                        
                         if (!self.hasTriggered && ImmutableV2.distanceBetween(self.position, sensedEntity.data.position) < self.triggerRange) {
                             var hit = _.random(10, 25 - sensedEntity.data.character.skills / 4);
                             sensedEntity.sendMessage('damage', { amount: self.spellModel.getDamage() + chance.integer({max: self.level.number, min: 0}), hitRoll: hit });
@@ -93,6 +99,14 @@ define(function() {
                             }});
                         }
                     });
+                    
+                    // Send music events based on player proximity
+                    if (playerNearby && !this.playerWasNearby) {
+                        entity.engine.findEntityByTag('music').sendMessage('trap-nearby');
+                    } else if (!playerNearby && this.playerWasNearby) {
+                        entity.engine.findEntityByTag('music').sendMessage('trap-disarmed');
+                    }
+                    this.playerWasNearby = playerNearby;
                     
                     if (!this.disarmer && data.sensed.length) {
                         this.disarmer = entity.engine.createEntity({ tags: ['trap-disarmer'] })

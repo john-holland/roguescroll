@@ -43,7 +43,17 @@ module.exports = function() {
                 return;
             }
             
-            if (Math.abs(this.position.y - this.player.data.position.y) < this.senseDistance) {
+            var wasInRange = Math.abs(this.position.y - this.player.data.position.y) < this.senseDistance;
+            var isInRange = Math.abs(this.position.y - this.player.data.position.y) < this.senseDistance;
+            
+            // Send music events based on player detection
+            if (isInRange && !wasInRange) {
+                entity.engine.findEntityByTag('music').sendMessage('enemy-spotted-player');
+            } else if (!isInRange && wasInRange) {
+                entity.engine.findEntityByTag('music').sendMessage('enemy-lost-player');
+            }
+            
+            if (isInRange) {
                 entity.isPatrolling = false;
                 this.target.y = this.player.data.position.y + this.playerAttackOffset;
                 this.sineWaveMovementEnabled = false;
