@@ -1,148 +1,115 @@
 define(function() {
-    var _ = require('../util/underscore'),
-        ImmutableV2 = require('../util/V2').ImmutableV2,
-        Chance = require('../util/chance'),
-        chance = new Chance(),
-        Spell = require('../models/spell');
-    
+    var Chance = require('../util/chance'),
+        chance = new Chance();
+        
     return function Trap() {
         return {
-            _: function() {
-                return {
-                    triggerRange: 50,
-                    hasTriggered: false,
-                    senseRange: 100,
-                    senseTag: 'player',
-                    damage: '2d6',
-                    icon: 'heat',
-                    sineWaveSpeed: _.random(3000, 2000),
-                    unlockProximity: 0.8, // 80% proximity required to unlock
-                    currentProximity: 0,
-                    disarmerPosition: {
-                        x: 0,
-                        y: 0
-                    },
-                    playerWasNearby: false
-                };
+            _: {
+                icon: 'warning-sign',
+                damage: '2d6',
+                disarmDifficulty: 15,
+                detectionRange: 100,
+                isDisarmed: false,
+                isDetected: false,
+                disarmAttempts: 0,
+                maxDisarmAttempts: 3
             },
-            requiredComponents: ['sensor', 'glyphicon-renderer', 'sine-wave-movement', 'world-entity', 'animation'],
+            requiredComponents: ['position', 'glyphicon-renderer', 'sensor'],
             onAdd: function(entity, component) {
-                this.spellModel = Spell.createRandom();
-                entity.sendMessage('change-icon', { icon: this.spellModel.icon });
+                // Set up sensor for player detection
+                this.senseTag = 'player';
+                this.senseRange = this.detectionRange;
                 
-                // Initialize disarmer position with some random offset
-                this.disarmerPosition = {
-                    x: this.position.x + _.random(-30, 30),
-                    y: this.position.y + _.random(-30, 30)
-                };
-            },
-            onRemove: function(entity, component) {
-                if (this.disarmer) {
-                    this.disarmer.destroy();
-                }
+                // Initialize trap state
+                entity.sendMessage('change-icon', { icon: this.icon });
+                entity.sendMessage('set-icon-color', { color: '#ff0000' });
             },
             update: function(dt, entity, component) {
-                if (this.disarmer && this.disarmer.data.$el) {
-                    // Calculate proximity based on mouse position
-                    const mousePos = {
-                        x: this.disarmer.data.$el.data('mouseX') || 0,
-                        y: this.disarmer.data.$el.data('mouseY') || 0
-                    };
-                    
-                    const distance = ImmutableV2.distanceBetween(
-                        this.disarmerPosition,
-                        mousePos
-                    );
-                    
-                    // Calculate proximity percentage (1 = exact match, 0 = far away)
-                    this.currentProximity = Math.max(0, 1 - (distance / 100));
-                    
-                    // Update disarmer appearance based on proximity
-                    if (this.currentProximity >= this.unlockProximity) {
-                        this.disarmer.data.$el.addClass('unlock-ready');
-                        if (!this.disarmer.data.$el.data('unlockShown')) {
-                            this.showMessage('Trap can be disarmed!', 'success');
-                            this.disarmer.data.$el.data('unlockShown', true);
-                        }
-                    } else {
-                        this.disarmer.data.$el.removeClass('unlock-ready');
-                        this.disarmer.data.$el.data('unlockShown', false);
-                    }
+                if (this.isDisarmed) {
+                    return;
                 }
-            },
-            showMessage: function(message, type) {
-                if (this.disarmer && this.disarmer.data.$el) {
-                    const $message = $(`<div class="trap-message ${type}">${message}</div>`);
-                    this.disarmer.data.$el.append($message);
-                    setTimeout(() => $message.fadeOut(() => $message.remove()), 2000);
+                
+                // Check if player is in range
+                if (this.isDetected && !this.isDisarmed) {
+                    var player = entity.engine.findEntityByTag('player');
+                    if (player && Math.abs(player.data.position.y - this.position.y) < 50) {
+                        // Trigger trap
+                        this.triggerTrap(entity, player);
+                    }
                 }
             },
             messages: {
-                sensed: function(entity, data) {
-                    var self = this;
-                    if (this.hasTriggered) {
+                'sensed': function(entity, data) {
+                    if (this.isDisarmed || this.isDetected) {
                         return;
                     }
                     
-                    var playerNearby = false;
-                    data.sensed.forEach(function(sensedEntity) {
-                        if (sensedEntity.tags.indexOf('player') > -1) {
-                            playerNearby = true;
-                        }
+                    // Check if player is in range
+                    var player = data.sensed.find(function(e) { return e.tags.includes('player'); });
+                    if (player) {
+                        this.isDetected = true;
+                        entity.sendMessage('animate', { animation: 'pulse' });
                         
-                        if (!self.hasTriggered && ImmutableV2.distanceBetween(self.position, sensedEntity.data.position) < self.triggerRange) {
-                            var hit = _.random(10, 25 - sensedEntity.data.character.skills / 4);
-                            sensedEntity.sendMessage('damage', { amount: self.spellModel.getDamage() + chance.integer({max: self.level.number, min: 0}), hitRoll: hit });
-                            self.hasTriggered = true;
-                            entity.sendMessage('animate', { animation: 'explode', callback: function() {
-                                entity.destroy();
-                            }});
-                        }
-                    });
-                    
-                    // Send music events based on player proximity
-                    if (playerNearby && !this.playerWasNearby) {
+                        // Notify music system
                         entity.engine.findEntityByTag('music').sendMessage('trap-nearby');
-                    } else if (!playerNearby && this.playerWasNearby) {
-                        entity.engine.findEntityByTag('music').sendMessage('trap-disarmed');
                     }
-                    this.playerWasNearby = playerNearby;
+                },
+                'disarm': function(entity, data) {
+                    if (this.isDisarmed || !this.isDetected) {
+                        return false;
+                    }
                     
-                    if (!this.disarmer && data.sensed.length) {
-                        this.disarmer = entity.engine.createEntity({ tags: ['trap-disarmer'] })
-                                            .addComponent('glyphicon-renderer', { icon: 'warning-sign' })
-                                            .addComponent('mounted', { 
-                                                mountId: entity.id, 
-                                                offset: { 
-                                                    x: this.disarmerPosition.x - this.position.x,
-                                                    y: this.disarmerPosition.y - this.position.y
-                                                } 
-                                            });
-                        this.disarmer.sendMessage('init');
-                        
-                        // Add mouse tracking
-                        this.disarmer.data.$el.on('mousemove', function(e) {
-                            const rect = this.getBoundingClientRect();
-                            $(this).data('mouseX', e.clientX - rect.left);
-                            $(this).data('mouseY', e.clientY - rect.top);
-                        });
-                        
-                        // Add unlock on proximity
-                        this.disarmer.data.$el.on('mouseover', function() {
-                            if (self.currentProximity >= self.unlockProximity) {
-                                entity.engine.findEntityByTag('spell-container').sendMessage('add-spell', { spell: self.spellModel });
+                    this.disarmAttempts++;
+                    
+                    // Calculate disarm chance based on player skills
+                    var player = entity.engine.findEntityByTag('player');
+                    var disarmRoll = chance.rpg('1d20', { sum: true }) + 
+                                   (player.data.character.skills || 0);
+                    
+                    if (disarmRoll >= this.disarmDifficulty) {
+                        // Successfully disarmed
+                        this.isDisarmed = true;
+                        entity.sendMessage('animate', { 
+                            animation: 'explode',
+                            callback: function() {
                                 entity.destroy();
                             }
                         });
                         
-                        // Add visual feedback
-                        this.disarmer.data.$el.css({
-                            'cursor': 'pointer',
-                            'transition': 'all 0.3s ease',
-                            'opacity': '0.7'
-                        });
+                        // Notify music system
+                        entity.engine.findEntityByTag('music').sendMessage('trap-disarmed');
+                        return true;
+                    } else if (this.disarmAttempts >= this.maxDisarmAttempts) {
+                        // Failed too many times, trigger trap
+                        this.triggerTrap(entity, player);
                     }
+                    
+                    return false;
                 }
+            },
+            triggerTrap: function(entity, player) {
+                if (this.isDisarmed) {
+                    return;
+                }
+                
+                this.isDisarmed = true;
+                
+                // Calculate damage
+                var damage = chance.rpg(this.damage, { sum: true });
+                
+                // Apply damage to player
+                player.sendMessage('damage', { 
+                    amount: damage,
+                    isCritical: chance.bool({ likelihood: 20 })
+                });
+                
+                // Visual feedback
+                entity.sendMessage('animate', { 
+                    animation: 'explode',
+                    callback: function() {
+                        entity.destroy();
+                    }
+                });
             }
         };
     };

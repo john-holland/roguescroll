@@ -1,7 +1,7 @@
 define(function() {
     var _ = require('../util/underscore');
     var buzz = require('../util/buzz');
-    var $ = require('../util/jquery');
+    var $ = require('jquery');
 
     return function Options() {
         return {
@@ -90,6 +90,103 @@ define(function() {
                         },
                         set: function() {
                             
+                        }
+                    },
+                    'temp max mode (30s)': {
+                        type: 'boolean',
+                        get: function(entity) {
+                            return entity.data.tempMaxMode || false;
+                        },
+                        set: function(entity, value) {
+                            if (value) {
+                                entity.data.tempMaxMode = true;
+                                // Store original values
+                                entity.data.originalValues = {
+                                    speed: entity.data.options.speed.get(entity),
+                                    health: entity.data.options.health.get(entity),
+                                    damage: entity.data.options.damage.get(entity),
+                                    audio: entity.data.options['audio level'].get(entity)
+                                };
+                                
+                                // Set to max
+                                entity.data.options.speed.set(1000);
+                                entity.data.options.health.set(200);
+                                entity.data.options.damage.set(999);
+                                entity.data.options['audio level'].set(100);
+                                
+                                // Reset after 30 seconds
+                                setTimeout(() => {
+                                    entity.data.tempMaxMode = false;
+                                    entity.data.options.speed.set(entity.data.originalValues.speed);
+                                    entity.data.options.health.set(entity.data.originalValues.health);
+                                    entity.data.options.damage.set(entity.data.originalValues.damage);
+                                    entity.data.options['audio level'].set(entity.data.originalValues.audio);
+                                }, 30000);
+                            }
+                        }
+                    },
+                    'coffee break': {
+                        type: 'boolean',
+                        get: function(entity) {
+                            return entity.data.coffeeBreak || false;
+                        },
+                        set: function(entity, value) {
+                            if (value) {
+                                entity.data.coffeeBreak = true;
+                                const player = entity.engine.findEntityByTag('player');
+                                const enemies = entity.engine.findEntitiesByTag('enemy');
+                                
+                                if (enemies.length > 0) {
+                                    // Find closest enemy
+                                    const closestEnemy = enemies.reduce((closest, enemy) => {
+                                        const dist = Math.abs(enemy.data.position.x - player.data.position.x);
+                                        return (!closest || dist < closest.dist) ? {enemy, dist} : closest;
+                                    }, null).enemy;
+                                    
+                                    // 50% chance enemy smokes
+                                    if (Math.random() < 0.5) {
+                                        // Enemy smokes - they'll return with player
+                                        closestEnemy.data.willReturn = true;
+                                        closestEnemy.sendMessage('coffee-break', {withPlayer: true});
+                                    } else {
+                                        // Enemy doesn't smoke - they'll stay
+                                        closestEnemy.sendMessage('coffee-break', {withPlayer: false});
+                                    }
+                                }
+                                
+                                // Reset after 60 seconds
+                                setTimeout(() => {
+                                    entity.data.coffeeBreak = false;
+                                    if (closestEnemy && closestEnemy.data.willReturn) {
+                                        closestEnemy.sendMessage('return-from-break');
+                                    }
+                                }, 60000);
+                            }
+                        }
+                    },
+                    'max mode': {
+                        type: 'boolean',
+                        get: function(entity) {
+                            return entity.data.maxMode || false;
+                        },
+                        set: function(entity, value) {
+                            entity.data.maxMode = value;
+                            if (value) {
+                                // Set all values to max
+                                entity.data.playerCache = entity.data.playerCache || entity.engine.findEntityByTag('player');
+                                entity.data.playerCache.data.speed = 1000;
+                                entity.data.playerCache.data.health = 200;
+                                if (entity.data.playerCache.data.weapon) {
+                                    entity.data.playerCache.data.weapon.data.damage = 999;
+                                }
+                                entity.data.buzz.all().setVolume(100);
+                                
+                                // Update UI
+                                entity.data.options.speed.set(1000);
+                                entity.data.options.health.set(200);
+                                entity.data.options.damage.set(999);
+                                entity.data.options['audio level'].set(100);
+                            }
                         }
                     },
                     speed: {

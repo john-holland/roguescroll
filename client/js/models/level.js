@@ -3,7 +3,7 @@ define(function() {
         Wall = require('../models/walls/walls'),
         tinycolor = require('../util/tinycolor'),
         tinyColors = _.values(tinycolor.names),
-        $ = require('../util/jquery'),
+        $ = require('jquery'),
         Chance = require('../util/chance'),
         chance = new Chance(),
         BOSS_LEVEL = 5;

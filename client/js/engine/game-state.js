@@ -1,16 +1,16 @@
-define(function() {
-    var dataClone = require('../util/data-clone');
-    
-    function GameState(engine) {
+import dataClone from '../util/data-clone';
+
+class GameState {
+    constructor(engine) {
         this.engine = engine;
         this.state = {};
         this.stateHistory = [];
         this.maxHistoryLength = 10;
     }
-    
-    GameState.prototype.updateState = function(newState) {
+
+    updateState(newState) {
         // Clone the new state before updating
-        var clonedState = dataClone.clone(newState);
+        const clonedState = dataClone.clone(newState);
         
         // Store current state in history
         this.stateHistory.push(dataClone.clone(this.state));
@@ -23,18 +23,18 @@ define(function() {
         
         // Notify listeners
         this.engine.trigger('stateChanged', clonedState);
-    };
-    
-    GameState.prototype.getState = function() {
+    }
+
+    getState() {
         return dataClone.clone(this.state);
-    };
-    
-    GameState.prototype.getPreviousState = function() {
+    }
+
+    getPreviousState() {
         if (this.stateHistory.length === 0) {
             return null;
         }
         return dataClone.clone(this.stateHistory[this.stateHistory.length - 1]);
-    };
-    
-    return GameState;
-}); 
+    }
+}
+
+export default GameState; 

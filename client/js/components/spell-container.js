@@ -1,5 +1,5 @@
 define(function() {
-    var $ = require('../util/jquery');
+    var $ = require('jquery');
     
     return function SpellContainer() {
        return {
