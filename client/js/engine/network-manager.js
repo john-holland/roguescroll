@@ -10,6 +10,8 @@ class NetworkManager extends Component {
         this.playerId = null;
         this.isConnected = false;
         this.pendingActions = [];
+        this.stateVersion = 0;
+        this.lastSentState = new Map();
     }
 
     init() {
@@ -90,15 +92,22 @@ class NetworkManager extends Component {
     }
 
     handleActorUpdate(data) {
-        const { actorId, state, owner } = data;
-        
-        // Update local actor state
-        const entity = this.entity.engine.findEntityById(actorId);
-        if (entity) {
-            entity.data.position = state.position;
-            entity.data.health = state.health;
-            entity.data.maxHealth = state.maxHealth;
+        const entity = this.engine.entities.get(data.entityId);
+        if (!entity) return;
+
+        // Apply delta update
+        if (data.delta) {
+            Object.entries(data.delta).forEach(([key, value]) => {
+                entity.setData(key, value);
+            });
         }
+
+        // Notify components of state update
+        entity.sendMessage('state-update', {
+            version: data.version,
+            timestamp: data.timestamp,
+            delta: data.delta
+        });
     }
 
     async sendAction(action) {
@@ -121,20 +130,17 @@ class NetworkManager extends Component {
     }
 
     async sendState(state) {
-        if (!this.isConnected) {
-            this.pendingActions.push(() => this.sendState(state));
-            return;
-        }
+        if (!this.isConnected || !this.roomId) return;
 
-        // Update actor state through ICP
-        await this.icpManager.sendMessage('actor-update', {
-            actorId: this.playerId,
-            state: {
-                ...state,
-                owner: this.icpManager.data.authToken,
-                lastUpdate: Date.now()
-            }
-        });
+        try {
+            await this.icpManager.sendMessage('state-update', {
+                roomId: this.roomId,
+                state: state
+            });
+        } catch (error) {
+            console.error('Failed to send state update:', error);
+            this.handleDisconnect();
+        }
     }
 
     processPendingActions() {
@@ -142,6 +148,63 @@ class NetworkManager extends Component {
             const action = this.pendingActions.shift();
             action();
         }
+    }
+
+    updateEntityState(entity, state) {
+        // Get current state
+        const currentState = this.getEntityState(entity);
+        
+        // Calculate delta
+        const delta = this.calculateDelta(currentState, state);
+        
+        // Only send if there are changes
+        if (Object.keys(delta).length > 0) {
+            // Update version
+            this.stateVersion++;
+            
+            // Add metadata
+            const stateUpdate = {
+                version: this.stateVersion,
+                timestamp: Date.now(),
+                entityId: entity.id,
+                delta: delta
+            };
+            
+            // Store last sent state
+            this.lastSentState.set(entity.id, currentState);
+            
+            // Send update
+            this.sendState(stateUpdate);
+        }
+    }
+
+    calculateDelta(oldState, newState) {
+        const delta = {};
+        
+        // Compare each property
+        for (const key in newState) {
+            if (JSON.stringify(oldState[key]) !== JSON.stringify(newState[key])) {
+                delta[key] = newState[key];
+            }
+        }
+        
+        return delta;
+    }
+
+    getEntityState(entity) {
+        const state = {
+            isActive: entity.isActive,
+            shouldRender: entity.shouldRender
+        };
+
+        // Get state from all components that support state synchronization
+        entity.components.getList().forEach(component => {
+            if (component.syncState) {
+                Object.assign(state, component.getState(entity));
+            }
+        });
+
+        return state;
     }
 
     destroy() {

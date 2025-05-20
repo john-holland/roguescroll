@@ -107,32 +107,46 @@ module.exports = function() {
                 return true;
             },
             'coffee-break': function(entity, data) {
-                var coffee = entity.engine.createEntity({});
-                coffee.addComponent('glyphicon-renderer', {
-                    icon: 'coffee-cup'
-                })
-                .addComponent('mounted', {
-                    mountTarget: entity,
-                    offset: {
-                        x: -50, y: 50
+                if (data.withPlayer) {
+                    // Enemy smokes - they'll return with player
+                    entity.data.onBreak = true;
+                    entity.data.originalPosition = {...entity.data.position};
+                    entity.data.originalBehavior = {...entity.data.behavior};
+                    
+                    // Move to coffee break position
+                    entity.data.position.x = entity.engine.findEntityByTag('player').data.position.x + 50;
+                    entity.data.position.y = -100; // Above the player
+                    
+                    // Change appearance to show smoking
+                    entity.sendMessage('change-icon', {icon: 'smoking'});
+                } else {
+                    // Enemy doesn't smoke - they stay in place
+                    entity.data.onBreak = true;
+                    entity.data.originalPosition = {...entity.data.position};
+                    entity.data.originalBehavior = {...entity.data.behavior};
+                    
+                    // Stop moving
+                    entity.data.behavior = 'idle';
+                }
+            },
+            'return-from-break': function(entity, data) {
+                if (entity.data.onBreak) {
+                    entity.data.onBreak = false;
+                    
+                    if (entity.data.willReturn) {
+                        // Return to original position
+                        entity.data.position = {...entity.data.originalPosition};
+                        entity.data.behavior = {...entity.data.originalBehavior};
+                        
+                        // Change appearance back
+                        entity.sendMessage('change-icon', {icon: entity.data.originalIcon});
+                        
+                        // Attack player with message
+                        const player = entity.engine.findEntityByTag('player');
+                        entity.sendMessage('attack', {target: player});
+                        entity.sendMessage('say', {text: "I can't believe you don't smoke!"});
                     }
-                })
-                .addComponent('animation', {
-                    animation: 'drink'
-                });
-                
-                var previousSenseDistance = this.senseDistance;
-                this.senseDistance = 0;
-                this.onCoffeeBreak = true;
-                setTimeout(function() {
-                    coffee.destroy();
-                    entity.data.senseDistance = previousSenseDistance;
-                    entity.data.sineWaveMovementEnabled = true;
-                    entity.data.onCoffeeBreak = false;
-                    setTimeout(function() {
-                        entity.sendMessage('coffee-break');
-                    }, chance.integer({ min: 20000, max: 80000 }))    
-                }, chance.integer({ min: 10000, max: 20000 }))
+                }
             }
         }
     };

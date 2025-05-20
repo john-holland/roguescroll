@@ -1,4 +1,4 @@
-define(['engine/renderer'], function(Renderer) {
+define(['../engine/renderer'], function(Renderer) {
     return function RendererComponent() {
         return {
             _: {

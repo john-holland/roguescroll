@@ -32,7 +32,7 @@
                         'MELODY4', 'MELODY5', 'MELODY6'
                     ),
                     colors: mori.vector('blue', 'purple', 'red', 'orange', 'yellow', 'green'),
-                    drums: mori.hash_map(
+                    drums: mori.hashMap(
                         'blue', 'OUTRO_DRUMS 2',
                         'red', 'OUTRO_DRUMS 3',
                         'yellow', 'OUTRO_DRUMS'
@@ -43,10 +43,10 @@
                 tracksToPlay: mori.vector(),
                 tracksToStop: mori.vector(),
                 volume: 50,
-                volumeRamps: mori.hash_map(
-                    'background', mori.hash_map('target', 50, 'current', 50, 'speed', 0.5),
-                    'font', mori.hash_map('target', 50, 'current', 50, 'speed', 0.5),
-                    'accent', mori.hash_map('target', 50, 'current', 50, 'speed', 0.5)
+                volumeRamps: mori.hashMap(
+                    'background', mori.hashMap('target', 50, 'current', 50, 'speed', 0.5),
+                    'font', mori.hashMap('target', 50, 'current', 50, 'speed', 0.5),
+                    'accent', mori.hashMap('target', 50, 'current', 50, 'speed', 0.5)
                 ),
                 defaultVolume: 50,
                 maxVolume: 100,

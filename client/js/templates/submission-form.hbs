@@ -1,0 +1,218 @@
+<div class="submission-form">
+    <h2>Submit Your Design</h2>
+    <form id="designSubmissionForm">
+        <div class="form-group">
+            <label for="designName">Your Name</label>
+            <input type="text" id="designName" name="name" class="form-control" placeholder="Anonymous">
+        </div>
+        
+        <div class="form-group">
+            <label>Components</label>
+            {{#each componentTypes}}
+            <div class="component-selection">
+                <label>{{@key}}</label>
+                <select name="components[{{@key}}]" class="form-control">
+                    <option value="">Select {{@key}}</option>
+                    {{#each this}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+                {{#if (eq @key 'circuitBreaker')}}
+                <div class="breaker-description">
+                    {{#with (lookup ../safetyFeatures this)}}
+                    <small class="text-muted">{{description}}</small>
+                    <div class="breaker-stats">
+                        <span>Reliability: {{reliability}}%</span>
+                        <span>Response Time: {{responseTime}}s</span>
+                        <span>Cost: {{cost}}</span>
+                    </div>
+                    {{/with}}
+                </div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        
+        <div class="form-group">
+            <label>Safety Features</label>
+            <div class="safety-features">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="safetyFeatures" value="water-level-sensor">
+                        Water Level Sensor
+                        <small class="text-muted">- Monitors water levels to prevent overflow</small>
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="safetyFeatures" value="temperature-monitor">
+                        Temperature Monitor
+                        <small class="text-muted">- Prevents system overheating</small>
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="safetyFeatures" value="automatic-shutdown">
+                        Automatic Shutdown
+                        <small class="text-muted">- Emergency power cutoff system</small>
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="safetyFeatures" value="battery-protection">
+                        Battery Protection
+                        <small class="text-muted">- Prevents overcharging and deep discharge</small>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="materials">Materials Used</label>
+            <textarea id="materials" name="materials" class="form-control" rows="3" 
+                      placeholder="List the materials you used (e.g., electric desk fan, lithium ion battery, etc.)"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Design Description</label>
+            <textarea id="description" name="description" class="form-control" rows="5"
+                      placeholder="Describe how your design works and any innovative features"></textarea>
+        </div>
+        
+        <div class="design-stats">
+            <h3>Design Statistics</h3>
+            <div class="stat-bars">
+                <div class="stat">
+                    <label>Power Efficiency</label>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{designStats.powerEfficiency}}%">
+                            {{designStats.powerEfficiency}}%
+                        </div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <label>Water Efficiency</label>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{designStats.waterEfficiency}}%">
+                            {{designStats.waterEfficiency}}%
+                        </div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <label>Cost Efficiency</label>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{designStats.costEfficiency}}%">
+                            {{designStats.costEfficiency}}%
+                        </div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <label>Innovation Score</label>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{designStats.innovationScore}}%">
+                            {{designStats.innovationScore}}%
+                        </div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <label>Safety Score</label>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{designStats.safetyScore}}%">
+                            {{designStats.safetyScore}}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Submit Design</button>
+    </form>
+    
+    <div class="leaderboard">
+        <h3>Top Designs</h3>
+        <div id="designLeaderboard">
+            <!-- Leaderboard will be populated dynamically -->
+        </div>
+    </div>
+</div>
+
+<style>
+.submission-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    color: #eee;
+}
+
+.component-selection {
+    margin-bottom: 15px;
+}
+
+.design-stats {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.stat {
+    margin-bottom: 10px;
+}
+
+.progress {
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #4a90e2, #50e3c2);
+    transition: width 0.3s ease;
+}
+
+.leaderboard {
+    margin-top: 30px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+#designLeaderboard {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.breaker-description {
+    margin-top: 5px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.breaker-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.safety-features {
+    margin-top: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.safety-features .checkbox {
+    margin-bottom: 10px;
+}
+
+.safety-features small {
+    display: block;
+    margin-left: 20px;
+    color: #999;
+}
+</style> 

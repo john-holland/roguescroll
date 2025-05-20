@@ -1,66 +1,104 @@
-define(function() {
-    var ListMap = require('../util/listmap');
-    var dataClone = require('../util/data-clone');
+import ListMap from '../util/listmap';
+import dataClone from '../util/data-clone';
+
+// Add data access layer
+const EntityDataAccess = {
+    get: function(entity, key) {
+        if (!entity._data) {
+            entity._data = {};
+        }
+        return entity._data[key];
+    },
     
-    function Entity(id, engine) {
-        this.id = id;
+    set: function(entity, key, value) {
+        if (!entity._data) {
+            entity._data = {};
+        }
+        const oldValue = entity._data[key];
+        entity._data[key] = value;
         
-        this.data = { };
+        // Notify components of data change
+        entity.sendMessage('data-changed', {
+            key: key,
+            oldValue: oldValue,
+            newValue: value
+        });
+        
+        return value;
+    },
+    
+    has: function(entity, key) {
+        return entity._data && key in entity._data;
+    }
+};
+
+class Entity {
+    constructor(id, world) {
+        this.id = id;
+        this.world = world;
         this.components = new ListMap();
-        this.engine = engine;
-        this.isActive = true;
-        this.shouldRender = true;
+        this.data = {};
+        this.tags = new Set();
+        this._isActive = true;
+        this._shouldRender = true;
         //entities for which we will send all messages we recieve.
         this.forwardMessages = [];
         // does not forward init message by default.
         this.forwardInit = false;
     }
     
-    Object.defineProperty(Entity.prototype, 'isActive', {
-        get: function() { return this.engine.updateEntities.contains(this.id); },
-        set: function(value) {
-            if (value) {
-                this.engine.updateEntities.add(this.id, this);
-            } else {
-                this.engine.updateEntities.remove(this.id);
-            }
-        }
-    });
+    get isActive() {
+        return this.world.updateEntities.contains(this.id);
+    }
     
-    Object.defineProperty(Entity.prototype, 'shouldRender', {
-        get: function() { return this.engine.renderEntities.contains(this.id); },
-        set: function(value) {
-            if (value) {
-                this.engine.renderEntities.add(this.id, this);
-            } else {
-                this.engine.renderEntities.remove(this.id);
-            }
+    set isActive(value) {
+        if (value) {
+            this.world.updateEntities.add(this.id, this);
+        } else {
+            this.world.updateEntities.remove(this.id);
         }
-    });
+    }
     
-    Entity.prototype.addComponent = function(name, defaultData) {
-        this.engine.addComponentToEntity(this, name, defaultData || { });
+    get shouldRender() {
+        return this.world.renderEntities.contains(this.id);
+    }
+    
+    set shouldRender(value) {
+        if (value) {
+            this.world.renderEntities.add(this.id, this);
+        } else {
+            this.world.renderEntities.remove(this.id);
+        }
+    }
+    
+    addComponent(name, defaultData) {
+        this.world.addComponentToEntity(this, name, defaultData || {});
         return this;
     }
     
-    Entity.prototype.removeComponent = function(name) {
-        this.engine.removeComponent(this, name);
+    removeComponent(name) {
+        this.world.removeComponent(this, name);
     }
     
-    Entity.prototype.destroy = function() {
-        this.components.getList().forEach(function(component) {
-            component._onRemove && component._onRemove.call(this.data);
-        }.bind(this));
+    destroy() {
+        if (this.__isDestroyed) return;
+        
+        this.components.forEach((component) => {
+            if (component.onRemove) {
+                component.onRemove();
+            }
+        });
+        
         this.sendMessage('destroyed');
-        this.engine.destroyEntity(this);
+        this.world.destroyEntity(this);
         this.__isDestroyed = true;
     }
     
-    Entity.prototype.isDestroyed = function() {
+    isDestroyed() {
         return !!this.__isDestroyed;
     }
     
-    Entity.prototype.update = function(dt) {
+    update(dt) {
         if (this.__isDestroyed) {
             return;
         }
@@ -75,7 +113,7 @@ define(function() {
         }
     }
     
-    Entity.prototype.render = function(dt) {
+    render(dt) {
         if (this.__isDestroyed) {
             return;
         }
@@ -91,7 +129,7 @@ define(function() {
     }
     
     //todo: implement async messages with timeouts
-    Entity.prototype.sendMessage = function(message, data, timeoutMS, callback) {
+    sendMessage(message, data, timeoutMS, callback) {
         var metadata = { 
             handled: false, 
             results: [], 
@@ -119,6 +157,54 @@ define(function() {
         
         return metadata;
     }
-    
-    return Entity;
-});
+
+    // Add data access methods to prototype
+    getData(key) {
+        return EntityDataAccess.get(this, key);
+    }
+
+    setData(key, value) {
+        return EntityDataAccess.set(this, key, value);
+    }
+
+    hasData(key) {
+        return EntityDataAccess.has(this, key);
+    }
+
+    hasComponent(name) {
+        return this.components.has(name);
+    }
+
+    getComponent(name) {
+        return this.components.get(name);
+    }
+
+    addTag(tag) {
+        this.tags.add(tag);
+        return this;
+    }
+
+    removeTag(tag) {
+        this.tags.delete(tag);
+        return this;
+    }
+
+    hasTag(tag) {
+        return this.tags.has(tag);
+    }
+
+    clone() {
+        const clone = new Entity(this.id + '_clone', this.world);
+        clone.data = dataClone(this.data);
+        
+        this.components.forEach((component, name) => {
+            clone.addComponent(name, dataClone(component.data));
+        });
+        
+        this.tags.forEach(tag => clone.addTag(tag));
+        
+        return clone;
+    }
+}
+
+export default Entity;
