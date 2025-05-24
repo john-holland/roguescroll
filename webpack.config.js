@@ -47,19 +47,22 @@ module.exports = {
         alias: {
             'jquery': path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
             'jquery.transit': path.resolve(__dirname, 'node_modules/jquery.transit/jquery.transit.js'),
-            'jquery.color': path.resolve(__dirname, 'node_modules/jquery-color/jquery.color.js')
+            'jquery.color': path.resolve(__dirname, 'node_modules/jquery-color/jquery.color.js'),
+            'mori': path.resolve(__dirname, 'node_modules/mori/mori.js')
         }
     },
     externals: {
         'jquery': 'jQuery',
         'mori': 'mori',
-        'underscore': '_'
+        'underscore': '_',
+        'pixi.js': 'PIXI'
     },
     plugins: [
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
-            'window.jQuery': 'jquery'
+            'window.jQuery': 'jquery',
+            mori: 'mori'
         })
     ],
     optimization: {

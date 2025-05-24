@@ -1,0 +1,18 @@
+version: '3'
+services:
+  test:
+    build: .
+    user: pptruser
+    network_mode: host
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  e2e-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    user: "pptruser"
+    network_mode: "host"  # This allows the container to access the host's network 

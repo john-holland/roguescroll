@@ -13,4 +13,9 @@ services:
     environment:
       - NODE_ENV=development
       - DEBUG=roguescroll:*
-    command: npm run dev 
+    command: npm run dev
+    # Enable debugging
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined 
