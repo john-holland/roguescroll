@@ -10,13 +10,26 @@
         <link rel="stylesheet" href="/css/animations.css">
         <!-- <script src="/dist/main.bundle.js"></script> -->
         <!-- Load dependencies first -->
-        <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.9.9/jquery.transit.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mori/0.3.2/mori.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.7/pixi.min.js"></script>
+        <script>
+            // Test mode - use local resources
+            if (window.location.search.includes('test=true')) {
+                document.write('<script src="/js/lib/jquery-2.1.1.min.js"><\/script>');
+                document.write('<script src="/js/lib/jquery.transit.min.js"><\/script>');
+                document.write('<script src="/js/lib/jquery.color.min.js"><\/script>');
+                document.write('<script src="/js/lib/bootstrap.min.js"><\/script>');
+                document.write('<script src="/js/lib/underscore-min.js"><\/script>');
+                document.write('<script src="/js/lib/mori.min.js"><\/script>');
+                document.write('<script src="/js/lib/pixi.min.js"><\/script>');
+            } else {
+                document.write('<script src="https://code.jquery.com/jquery-2.1.1.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.9.9/jquery.transit.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"><\/script>');
+                document.write('<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/mori/0.3.2/mori.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.7/pixi.min.js"><\/script>');
+            }
+        </script>
         
         <!-- Load main bundle -->
         <script src="/dist/main.bundle.js"></script>
@@ -183,20 +196,6 @@
         </div>
         <div id="game"></div>
       </div>
-      
-      <!-- Load dependencies first -->
-      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.9.9/jquery.transit.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mori/0.3.2/mori.min.js"></script>
-      
-      <!-- Load main bundle -->
-      <script src="/dist/main.bundle.js"></script>
-      
-      <!-- Initialize game -->
-      <script src="/js/context.js"></script>
       
       <!-- Analytics -->
       <script>

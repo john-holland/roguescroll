@@ -62,7 +62,7 @@ import Text from './components/text';
 import TimedDestroy from './components/timed-destroy';
 import Trap from './components/trap';
 import Vision from './components/vision';
-import * as mori from './util/mori';
+import mori from './util/mori';
 import $ from 'jquery.transit';
 
 // Load non-critical components dynamically
@@ -90,6 +90,7 @@ const loadNonCriticalComponents = async () => {
     };
 };
 
+// Create empty RogueScroll object
 const RogueScroll = {
     game: null,
     components: {
@@ -305,8 +306,12 @@ const RogueScroll = {
     isRunning: false,
     lastTime: 0,
     targetFPS: 60,
-    frameTime: 1000 / 60,
-    init: async () => {
+    frameTime: 1000 / 60
+};
+
+// Define methods separately
+const methods = {
+    async init() {
         try {
             // Load non-critical components
             const nonCriticalComponents = await loadNonCriticalComponents();
@@ -342,7 +347,7 @@ const RogueScroll = {
             this.start();
             
             // Add cleanup on window unload
-            window.addEventListener('unload', this.cleanup.bind(this));
+            window.addEventListener('unload', this.cleanup);
             
             return true;
         } catch (error) {
@@ -351,19 +356,19 @@ const RogueScroll = {
         }
     },
     
-    start: () => {
+    start() {
         if (!this.isRunning) {
             this.isRunning = true;
             this.lastTime = performance.now();
-            requestAnimationFrame(this.gameLoop.bind(this));
+            requestAnimationFrame(this.gameLoop);
         }
     },
     
-    stop: () => {
+    stop() {
         this.isRunning = false;
     },
     
-    gameLoop: (timestamp) => {
+    gameLoop(timestamp) {
         if (!this.isRunning) return;
         
         // Calculate delta time in seconds
@@ -384,10 +389,10 @@ const RogueScroll = {
         }
         
         // Schedule next frame
-        requestAnimationFrame(this.gameLoop.bind(this));
+        requestAnimationFrame(this.gameLoop);
     },
     
-    cleanup: () => {
+    cleanup() {
         this.stop();
         if (this.game) {
             // Cleanup systems
@@ -403,24 +408,23 @@ const RogueScroll = {
         }
     },
     
-    play: () => {
+    play() {
         if (this.game) {
             this.game.play();
         }
     },
     
-    pause: () => {
+    pause() {
         if (this.game) {
             this.game.pause();
         }
     }
 };
 
-for (let propName in RogueScroll) {
-    if (RogueScroll.hasOwnProperty(propName) && typeof RogueScroll[propName] === 'function') {
-        RogueScroll[propName] = RogueScroll[propName].bind(RogueScroll);
-    }
-}
+// Add bound methods to RogueScroll
+Object.entries(methods).forEach(([name, method]) => {
+    RogueScroll[name] = method.bind(RogueScroll);
+});
 
 // Make RogueScroll available globally
 window.RogueScroll = RogueScroll;
