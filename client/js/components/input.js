@@ -1,5 +1,5 @@
-export default function Input() {
-    return {
-        // Minimal stub
-    };
-} 
+class Input {
+    update(delta) {}
+}
+
+export default Input; 

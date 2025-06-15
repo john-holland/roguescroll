@@ -3074,7 +3074,12 @@ webpack-sources@^3.2.3:
   resolved "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.2.3.tgz"
   integrity sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==
 
-webpack@^5.1.0, webpack@^5.27.0, webpack@^5.88.2, webpack@>=5.61.0, webpack@5.x.x:
+webpack-subresource-integrity@^5.2.0-rc.1:
+  version "5.2.0-rc.1"
+  resolved "https://registry.npmjs.org/webpack-subresource-integrity/-/webpack-subresource-integrity-5.2.0-rc.1.tgz"
+  integrity sha512-SyjlQ3VZVwpNeVPIMpYf9Qt6oTnq9G3lCcr5YNwjW9TfUoip70MlB9ZDNhJPhkHvfvajMDQwZFfDVVL1QVwnLQ==
+
+webpack@^5.1.0, webpack@^5.12.0, webpack@^5.27.0, webpack@^5.88.2, webpack@>=5.61.0, webpack@5.x.x:
   version "5.99.8"
   resolved "https://registry.npmjs.org/webpack/-/webpack-5.99.8.tgz"
   integrity sha512-lQ3CPiSTpfOnrEGeXDwoq5hIGzSjmwD72GdfVzF7CQAI7t47rJG9eDWvcEkEn3CUQymAElVvDg3YNTlCYj+qUQ==

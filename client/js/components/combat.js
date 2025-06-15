@@ -1,7 +1,7 @@
 define(function() {
-    return function Combat() {
-        return {
-            // Minimal stub
-        };
-    };
+    class Combat {
+        update(delta) {}
+    }
+
+    return Combat;
 }); 

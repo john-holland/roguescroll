@@ -1,4 +1,6 @@
-define(['../engine/renderer'], function(Renderer) {
+import Renderer from '../engine/renderer';
+
+export default function RendererComponent(Renderer) {
     return function RendererComponent() {
         return {
             _: {
@@ -44,4 +46,4 @@ define(['../engine/renderer'], function(Renderer) {
             }
         };
     };
-}); 
+}; 

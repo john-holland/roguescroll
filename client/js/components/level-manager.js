@@ -5,6 +5,7 @@ module.exports = function() {
     
     return {
         name: 'level-manager',
+        tags: ['level-manager'],
         _: {
             level: null,
             currentLevel: null,

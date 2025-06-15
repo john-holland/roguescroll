@@ -1,5 +1,5 @@
-export default function AI() {
-    return {
-        // Minimal stub
-    };
-} 
+class AI {
+    update(delta) {}
+}
+
+export default AI; 
