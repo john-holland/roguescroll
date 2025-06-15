@@ -159,10 +159,10 @@ module.exports = function() {
                     entity.sendMessage('show');
                 });
                 
-                var world = entity.engine.findEntityByTag('world');
-                world.sendMessage('generate', { seed: selectedCharacter.name + +new Date() });
+                var levelManager = entity.engine.findEntityByTag('level-manager');
+                levelManager.sendMessage('generate', { seed: selectedCharacter.name + +new Date() });
 
-                $game.css('height', world.data.levels[0].height + 'px');
+                $game.css('height', levelManager.data.levels[0].height + 'px');
 
                 entity.engine.entities.getList().forEach(function(entity) {
                     entity.sendMessage('game-start');

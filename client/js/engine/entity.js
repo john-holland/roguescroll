@@ -72,7 +72,29 @@ class Entity {
     }
     
     addComponent(name, defaultData) {
-        this.world.addComponentToEntity(this, name, defaultData || {});
+        var component = this.world.components[name];
+        if (!component) {
+            throw new Error('Component ' + name + ' not found');
+        }
+
+        var instance = Object.create(component);
+        instance.data = defaultData || {};
+        instance.entity = this;
+
+        if (component.requiredComponents) {
+            component.requiredComponents.forEach(function(required) {
+                if (!this.hasComponent(required)) {
+                    throw new Error('Required component ' + required + ' not found on entity');
+                }
+            }.bind(this));
+        }
+
+        this.components.set(name, instance);
+
+        if (component.onAdd) {
+            component.onAdd.call(instance);
+        }
+
         return this;
     }
     

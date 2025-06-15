@@ -16,13 +16,13 @@ define(function() {
                 this.$el.css('cursor', 'pointer');
             },
             update: function(dt, entity, component) {
-                if (!this.world) {
-                    this.world = entity.engine.findEntityByTag('world');
+                if (!this.levelManager) {
+                    this.levelManager = entity.engine.findEntityByTag('level-manager');
                 } else if (!this.player) {
                     this.player = entity.engine.findEntityByTag('player');
                     entity.sendMessage('change-icon', {icon: this.player.data.icon });
                 } else {
-                    this.position.y = (this.player.data.position.y / this.world.data.currentLevel.maxHeight) * $(window).height()
+                    this.position.y = (this.player.data.position.y / this.levelManager.data.currentLevel.maxHeight) * $(window).height()
                     this.position.x = $(window).width() - 50;
                 }
             }

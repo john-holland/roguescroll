@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install development dependencies
 COPY package*.json ./
-RUN npm install
+RUN yarn install
 
 # Copy game files
 COPY . .

@@ -9,11 +9,10 @@ services:
       - "9229:9229"  # Debug port
     volumes:
       - .:/app
-      - /app/node_modules
     environment:
       - NODE_ENV=development
       - DEBUG=roguescroll:*
-    command: npm run dev
+    command: yarn run dev
     # Enable debugging
     cap_add:
       - SYS_PTRACE

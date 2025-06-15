@@ -1,6 +1,7 @@
 define(function() {
     const { Actor, HttpAgent } = require('@dfinity/agent');
     const { idlFactory } = require('../icp/roguescroll.did.js');
+    const crypto = require('crypto');
 
     return function ICPManager() {
         return {
@@ -11,7 +12,8 @@ define(function() {
                 canisterId: null,
                 ownedActors: new Set(),
                 sharedActors: new Map(),
-                authToken: null
+                authToken: null,
+                sourceHash: null
             },
             requiredComponents: ['network-manager'],
             onAdd: function(entity, component) {
@@ -19,6 +21,9 @@ define(function() {
             },
             init: async function() {
                 if (this.isInitialized) return;
+
+                // Calculate source hash
+                this.sourceHash = await this.calculateSourceHash();
 
                 // Initialize ICP agent
                 this.agent = new HttpAgent({
@@ -38,6 +43,23 @@ define(function() {
                 await this.authenticate();
                 
                 this.isInitialized = true;
+            },
+            calculateSourceHash: async function() {
+                // Get all script elements
+                const scripts = Array.from(document.getElementsByTagName('script'));
+                const sourceContent = scripts
+                    .filter(script => script.src && !script.src.includes('node_modules'))
+                    .map(script => script.src)
+                    .join('');
+                
+                // Calculate SHA-384 hash
+                return crypto.createHash('sha384')
+                    .update(sourceContent)
+                    .digest('base64');
+            },
+            verifySourceIntegrity: function(update) {
+                if (!update.sourceHash) return false;
+                return update.sourceHash === this.sourceHash;
             },
             authenticate: async function() {
                 try {
@@ -66,6 +88,12 @@ define(function() {
                 }
             },
             handleSharedActorUpdate: function(update) {
+                // Verify source integrity
+                if (!this.verifySourceIntegrity(update.state)) {
+                    console.warn('Received actor update with invalid source hash');
+                    return;
+                }
+
                 const { actorId, state, owner } = update;
                 
                 // Update shared actor state
@@ -115,7 +143,13 @@ define(function() {
                 if (!this.isInitialized || !this.ownedActors.has(actorId)) return false;
                 
                 try {
-                    const result = await this.actor.updateActorState(actorId, state);
+                    // Add source hash to state
+                    const stateWithHash = {
+                        ...state,
+                        sourceHash: this.sourceHash
+                    };
+                    
+                    const result = await this.actor.updateActorState(actorId, stateWithHash);
                     return result.success;
                 } catch (error) {
                     console.error('Failed to update actor state:', error);

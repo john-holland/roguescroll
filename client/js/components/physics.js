@@ -1,7 +1,7 @@
 define(function() {
-    return function Physics() {
-        return {
-            // Minimal stub
-        };
-    };
+    class Physics {
+        update(delta) {}
+    }
+
+    return Physics;
 }); 

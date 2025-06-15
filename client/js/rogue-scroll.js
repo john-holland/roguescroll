@@ -26,7 +26,6 @@ import AI from './components/ai';
 import Network from './components/network';
 import Animation from './components/animation';
 import Augment from './components/augment';
-import Boss from './components/boss';
 import CenterAligned from './components/center-aligned';
 import Combatant from './components/combatant';
 import DefensiveAugment from './components/defensive-augment';
@@ -48,52 +47,27 @@ import Mounted from './components/mounted';
 import Movement from './components/movement';
 import Music from './components/music';
 import OffensiveAugment from './components/offensive-augment';
-import Options from './components/options';
 import Player from './components/player';
 import ScrollChaser from './components/scroll-chaser';
 import Sensor from './components/sensor';
 import Shield from './components/shield';
 import SineLine from './components/sine-line';
 import SineWaveMovement from './components/sine-wave-movement';
-import SpellContainer from './components/spell-container';
-import Spell from './components/spell';
-import Tests from './components/tests';
 import Text from './components/text';
 import TimedDestroy from './components/timed-destroy';
 import Trap from './components/trap';
 import Vision from './components/vision';
 import mori from './util/mori';
 import $ from 'jquery.transit';
+import Boss from './components/boss';
+import SpellContainer from './components/spell-container';
+import Spell from './components/spell';
+import Tests from './components/tests';
+import Options from './components/options';
 
 // Load non-critical components dynamically
 const loadNonCriticalComponents = async () => {
-    const [
-        Boss,
-        SpellContainer,
-        Spell,
-        Tests,
-        Options
-    ] = await Promise.all([
-        import('./components/boss'),
-        import('./components/spell-container'),
-        import('./components/spell'),
-        import('./components/tests'),
-        import('./components/options')
-    ]);
-    
     return {
-        boss: Boss.default,
-        'spell-container': SpellContainer.default,
-        spell: Spell.default,
-        tests: Tests.default,
-        options: Options.default
-    };
-};
-
-// Create empty RogueScroll object
-const RogueScroll = {
-    game: null,
-    components: {
         health: Health,
         position: Position,
         renderer: Renderer,
@@ -137,189 +111,213 @@ const RogueScroll = {
         text: Text,
         'timed-destroy': TimedDestroy,
         trap: Trap,
-        vision: Vision
-    },
-    entities: mori.vector(
-        mori.hashMap(
-            'tags', mori.vector('world'),
-            'components', mori.hashMap('world', mori.hashMap())
-        ),
-        mori.hashMap(
-            'tags', mori.vector('music', 'level-change-subscriber'),
-            'components', mori.hashMap('music', mori.hashMap())
-        ),
-        mori.hashMap(
-            'tags', mori.vector('player', 'hide-at-start'),
-            'components', mori.hashMap(
-                'health', mori.hashMap(
-                    'health', 70,
-                    'maxHealth', 100
-                ),
-                'player', mori.hashMap(
-                    'iconColor', '#eee'
-                ),
-                'movement', mori.hashMap(
-                    'speed', 250
-                ),
-                'position', mori.hashMap(
-                    'position', mori.hashMap(
-                        'x', document.documentElement.clientWidth / 2,
-                        'y', -75
-                    ),
-                    'size', mori.hashMap(
-                        'width', 50,
-                        'height', 50
-                    )
-                ),
-                'keyboard-events', mori.hashMap(),
-                'vision', mori.hashMap()
-            ),
-            'shouldRender', false
-        ),
-        mori.hashMap(
-            'tags', mori.vector('shield', 'hide-at-start'),
-            'components', mori.hashMap(
-                'shield', mori.hashMap(
-                    'mountTag', 'player'
-                )
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('weapon', 'hide-at-start', 'level-change-subscriber'),
-            'components', mori.hashMap(
-                'weapon', mori.hashMap(
-                    'mountTag', 'player'
-                )
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('health-display', 'hide-at-start'),
-            'components', mori.hashMap(
-                'health-display', mori.hashMap(
-                    'textColor', '#eee',
-                    'z-index', 10000
-                ),
-                'hide-on-pause', mori.hashMap()
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('metrics'),
-            'components', mori.hashMap(
-                'game-metrics-display', mori.hashMap(
-                    'textColor', '#eee',
-                    'z-index', 10000
-                ),
-                'hide-on-pause', mori.hashMap()
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('health-potion', 'hide-at-start'),
-            'components', mori.hashMap(
-                'health-potion', mori.hashMap(
-                    'position', mori.hashMap(
-                        'y', 500,
-                        'x', 0
-                    ),
-                    'target', mori.hashMap(
-                        'y', 500,
-                        'x', 0
-                    ),
-                    'pursueTarget', false
-                )
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('game-manager'),
-            'components', mori.hashMap(
-                'game-manager', mori.hashMap()
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('player-metrics'),
-            'components', mori.hashMap(
-                'game-metrics-display', mori.hashMap(
-                    'shouldRender', false,
-                    'isActive', false,
-                    'metricsTargetTag', 'player',
-                    'isStaticPosition', true,
-                    'positionAnchor', 'bottom-right',
-                    'position', mori.hashMap(
-                        'x', 250,
-                        'y', 200
-                    ),
-                    'metricsFunction', function(entity, dt, target) {
-                        return target.data.position.x.toFixed(3) + ' ' + target.engine.updateEntities.getList().length;
-                    },
-                    'icon', 'global',
-                    'textColor', '#eee'
-                ),
-                'hide-on-pause', mori.hashMap()
-            )
-        ),
-        mori.hashMap(
-            'components', mori.hashMap(
-                'defensive-augment', mori.hashMap(
-                    'mountTag', 'player'
-                )
-            )
-        ),
-        mori.hashMap(
-            'components', mori.hashMap(
-                'offensive-augment', mori.hashMap(
-                    'mountTag', 'player'
-                )
-            )
-        ),
-        mori.hashMap(
-            'components', mori.hashMap(
-                'glyphicon-renderer', mori.hashMap(
-                    'icon', 'align-center'
-                ),
-                'mounted', mori.hashMap(
-                    'mountTag', 'level-door',
-                    'offset', mori.hashMap(
-                        'x', 0,
-                        'y', 25
-                    )
-                )
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('minimap'),
-            'components', mori.hashMap(
-                'minimap', mori.hashMap()
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('options'),
-            'components', mori.hashMap(
-                'options', mori.hashMap()
-            )
-        ),
-        mori.hashMap(
-            'tags', mori.vector('spell-container'),
-            'components', mori.hashMap(
-                'spell-container', mori.hashMap()
-            )
-        )
-    ),
-    isRunning: false,
-    lastTime: 0,
-    targetFPS: 60,
-    frameTime: 1000 / 60
+        vision: Vision,
+        boss: Boss,
+        'spell-container': SpellContainer,
+        spell: Spell,
+        tests: Tests,
+        options: Options
+    };
 };
 
-// Define methods separately
-const methods = {
+class RogueScroll {
+    constructor() {
+        this.game = null;
+        this.components = {};
+        this.entities = mori.vector(
+            mori.hashMap(
+                'tags', mori.vector('world'),
+                'components', mori.hashMap('world', mori.hashMap())
+            ),
+            mori.hashMap(
+                'tags', mori.vector('music', 'level-change-subscriber'),
+                'components', mori.hashMap('music', mori.hashMap())
+            ),
+            mori.hashMap(
+                'tags', mori.vector('player', 'hide-at-start'),
+                'components', mori.hashMap(
+                    'health', mori.hashMap(
+                        'health', 70,
+                        'maxHealth', 100
+                    ),
+                    'player', mori.hashMap(
+                        'iconColor', '#eee'
+                    ),
+                    'movement', mori.hashMap(
+                        'speed', 250
+                    ),
+                    'position', mori.hashMap(
+                        'position', mori.hashMap(
+                            'x', document.documentElement.clientWidth / 2,
+                            'y', -75
+                        ),
+                        'size', mori.hashMap(
+                            'width', 50,
+                            'height', 50
+                        )
+                    ),
+                    'keyboard-events', mori.hashMap(),
+                    'vision', mori.hashMap()
+                ),
+                'shouldRender', false
+            ),
+            mori.hashMap(
+                'tags', mori.vector('shield', 'hide-at-start'),
+                'components', mori.hashMap(
+                    'shield', mori.hashMap(
+                        'mountTag', 'player'
+                    )
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('weapon', 'hide-at-start', 'level-change-subscriber'),
+                'components', mori.hashMap(
+                    'weapon', mori.hashMap(
+                        'mountTag', 'player'
+                    )
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('health-display', 'hide-at-start'),
+                'components', mori.hashMap(
+                    'health-display', mori.hashMap(
+                        'textColor', '#eee',
+                        'z-index', 10000
+                    ),
+                    'hide-on-pause', mori.hashMap()
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('metrics'),
+                'components', mori.hashMap(
+                    'game-metrics-display', mori.hashMap(
+                        'textColor', '#eee',
+                        'z-index', 10000
+                    ),
+                    'hide-on-pause', mori.hashMap()
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('health-potion', 'hide-at-start'),
+                'components', mori.hashMap(
+                    'health-potion', mori.hashMap(
+                        'position', mori.hashMap(
+                            'y', 500,
+                            'x', 0
+                        ),
+                        'target', mori.hashMap(
+                            'y', 500,
+                            'x', 0
+                        ),
+                        'pursueTarget', false
+                    )
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('game-manager'),
+                'components', mori.hashMap(
+                    'game-manager', mori.hashMap()
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('player-metrics'),
+                'components', mori.hashMap(
+                    'game-metrics-display', mori.hashMap(
+                        'shouldRender', false,
+                        'isActive', false,
+                        'metricsTargetTag', 'player',
+                        'isStaticPosition', true,
+                        'positionAnchor', 'bottom-right',
+                        'position', mori.hashMap(
+                            'x', 250,
+                            'y', 200
+                        ),
+                        'metricsFunction', function (entity, dt, target) {
+                            return target.data.position.x.toFixed(3) + ' ' + target.engine.updateEntities.getList().length;
+                        },
+                        'icon', 'global',
+                        'textColor', '#eee'
+                    ),
+                    'hide-on-pause', mori.hashMap()
+                )
+            ),
+            mori.hashMap(
+                'components', mori.hashMap(
+                    'defensive-augment', mori.hashMap(
+                        'mountTag', 'player'
+                    )
+                )
+            ),
+            mori.hashMap(
+                'components', mori.hashMap(
+                    'offensive-augment', mori.hashMap(
+                        'mountTag', 'player'
+                    )
+                )
+            ),
+            mori.hashMap(
+                'components', mori.hashMap(
+                    'glyphicon-renderer', mori.hashMap(
+                        'icon', 'align-center'
+                    ),
+                    'mounted', mori.hashMap(
+                        'mountTag', 'level-door',
+                        'offset', mori.hashMap(
+                            'x', 0,
+                            'y', 25
+                        )
+                    )
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('minimap'),
+                'components', mori.hashMap(
+                    'minimap', mori.hashMap()
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('options'),
+                'components', mori.hashMap(
+                    'options', mori.hashMap()
+                )
+            ),
+            mori.hashMap(
+                'tags', mori.vector('spell-container'),
+                'components', mori.hashMap(
+                    'spell-container', mori.hashMap()
+                )
+            )
+        );
+        this.isRunning = false;
+        this.lastTime = 0;
+        this.targetFPS = 60;
+        this.frameTime = 1000 / this.targetFPS;
+
+        // Bind methods to this instance
+        this.init = this.init.bind(this);
+        this.start = this.start.bind(this);
+        this.stop = this.stop.bind(this);
+        this.gameLoop = this.gameLoop.bind(this);
+        this.cleanup = this.cleanup.bind(this);
+        this.play = this.play.bind(this);
+        this.pause = this.pause.bind(this);
+    }
+
     async init() {
         try {
+            console.log('Starting RogueScroll initialization...');
             // Load non-critical components
             const nonCriticalComponents = await loadNonCriticalComponents();
+            console.log('nonCriticalComponents:', nonCriticalComponents);
+            console.log('Before merge - components:', this.components);
             this.components = { ...this.components, ...nonCriticalComponents };
-            
+            console.log('After merge - components:', this.components);
+
             // Initialize game
-            this.game = new Game(this.components, this.entities);
-            
+            this.game = new Game(this.components, mori.intoArray(this.entities));
+            console.log('DEBUG this.game:', this.game);
+            console.log('DEBUG this in init:', this);
+
             // Initialize all systems
             this.systems = {
                 physics: new Physics(),
@@ -329,55 +327,67 @@ const methods = {
                 input: new Input(),
                 renderer: new Renderer()
             };
-            
+
             // Add systems to game
             Object.values(this.systems).forEach(system => {
                 this.game.addSystem(system);
             });
-            
+
             // Initialize entities
-            this.entities.forEach(entityConfig => {
+            // Add default player entity
+            this.entities = mori.conj(this.entities, {
+                tags: ['player'],
+                components: {
+                    position: { x: 0, y: 0 },
+                    renderer: { type: 'player' },
+                    health: { current: 100, max: 100 },
+                    input: {},
+                    physics: { velocity: { x: 0, y: 0 } }
+                }
+            });
+
+            mori.each(this.entities, entityConfig => {
                 var entity = this.game.createEntity({ tags: entityConfig.tags });
                 Object.entries(entityConfig.components).forEach(([name, data]) => {
                     entity.addComponent(name, data);
                 });
             });
-            
+
             // Start game loop
             this.start();
-            
+
             // Add cleanup on window unload
             window.addEventListener('unload', this.cleanup);
-            
+
             return true;
         } catch (error) {
             console.error('Failed to initialize RogueScroll:', error);
             return false;
         }
-    },
-    
+    }
+
     start() {
         if (!this.isRunning) {
             this.isRunning = true;
             this.lastTime = performance.now();
             requestAnimationFrame(this.gameLoop);
         }
-    },
-    
+    }
+
     stop() {
         this.isRunning = false;
-    },
-    
+    }
+
     gameLoop(timestamp) {
         if (!this.isRunning) return;
-        
+
         // Calculate delta time in seconds
         var delta = (timestamp - this.lastTime) / 1000;
         this.lastTime = timestamp;
-        
+
         // Cap delta to prevent large jumps
         delta = Math.min(delta, 0.1);
-        
+
         try {
             // Update game state
             this.game.update(delta);
@@ -387,11 +397,11 @@ const methods = {
             this.stop();
             return;
         }
-        
+
         // Schedule next frame
         requestAnimationFrame(this.gameLoop);
-    },
-    
+    }
+
     cleanup() {
         this.stop();
         if (this.game) {
@@ -401,32 +411,27 @@ const methods = {
                     system.cleanup();
                 }
             });
-            
+
             // Cleanup game
             this.game.destroy();
             this.game = null;
         }
-    },
-    
+    }
+
     play() {
         if (this.game) {
             this.game.play();
         }
-    },
-    
+    }
+
     pause() {
         if (this.game) {
             this.game.pause();
         }
     }
-};
+}
 
-// Add bound methods to RogueScroll
-Object.entries(methods).forEach(([name, method]) => {
-    RogueScroll[name] = method.bind(RogueScroll);
-});
-
-// Make RogueScroll available globally
-window.RogueScroll = RogueScroll;
-
-export default RogueScroll;
+// Create and export a singleton instance
+const rogueScroll = new RogueScroll();
+window.RogueScroll = rogueScroll;
+export default rogueScroll;

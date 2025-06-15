@@ -2,7 +2,7 @@
   "name": "roguescroll",
   "version": "1.0.0",
   "description": "RogueScroll Game Server: 1 dimensional rogue-like.",
-  "license": "MIT",
+  "license": "MIT for my code, Glyphicons is Glyphicons, see their license",
   "main": "server/index.js",
   "author": "John Holland <jholland87@gmail.com>",
   "dependencies": {
@@ -52,7 +52,8 @@
     "handlebars": "^4.7.8",
     "handlebars-loader": "^1.7.3",
     "rimraf": "^5.0.1",
-    "style-loader": "^4.0.0"
+    "style-loader": "^4.0.0",
+    "webpack-subresource-integrity": "^5.2.0-rc.1"
   },
   "keywords": [
     "game",
@@ -64,5 +65,7 @@
     "scroll",
     "roguescroll"
   ],
-  "license": "MIT for my code, Glyphicons is Glyphicons, see their license"
+  "credits": {
+    "cursor-ai": "@https://www.cursor.com/"
+  }
 }

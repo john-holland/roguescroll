@@ -14,7 +14,7 @@ class ListMap {
 
     has(key) {
         if (mori) {
-            return mori.has_key(this.map, key);
+            return mori.hasKey(this.map, key);
         }
         return key in this.map;
     }

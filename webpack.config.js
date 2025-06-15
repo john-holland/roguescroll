@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 
 module.exports = {
     context: __dirname + "/client/js",
@@ -14,7 +15,8 @@ module.exports = {
             export: 'default',
             umdNamedDefine: true
         },
-        globalObject: 'this'
+        globalObject: 'this',
+        crossOriginLoading: 'anonymous'
     },
     performance: {
         hints: false,
@@ -70,6 +72,10 @@ module.exports = {
             jQuery: 'jquery',
             'window.jQuery': 'jquery',
             mori: 'mori'
+        }),
+        new SubresourceIntegrityPlugin({
+            hashFuncNames: ['sha384'],
+            enabled: process.env.NODE_ENV === 'production'
         })
     ],
     optimization: {

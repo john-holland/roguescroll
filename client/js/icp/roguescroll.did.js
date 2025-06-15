@@ -7,7 +7,8 @@ export const idlFactory = ({ IDL }) => {
         health: IDL.Nat,
         maxHealth: IDL.Nat,
         owner: IDL.Principal,
-        lastUpdate: IDL.Nat64
+        lastUpdate: IDL.Nat64,
+        sourceHash: IDL.Opt(IDL.Text)
     });
 
     const ActorUpdate = IDL.Record({

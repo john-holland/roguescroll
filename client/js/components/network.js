@@ -1,5 +1,5 @@
-export default function Network() {
-    return {
-        // Minimal stub
-    };
-} 
+class Network {
+    update(delta) {}
+}
+
+export default Network; 

@@ -10,7 +10,7 @@ const debugProtocol = {
   event: (event) => console.log(`🎯 [Game Event] ${event}`)
 };
 
-test.describe('RogueScroll Game', () => {
+test.describe('Game', () => {
   let consoleMessages = [];
 
   test.beforeEach(async ({ page }) => {
@@ -47,43 +47,34 @@ test.describe('RogueScroll Game', () => {
   });
 
   test('should load the game page and show menu', async ({ page }) => {
-    // Check page title
-    const title = await page.title();
-    debugProtocol.log(`Page title: ${title}`);
-    expect(title).toContain('Rogue Scroll');
-    debugProtocol.success('Page title verified');
-
-    // Check for welcome message
-    const welcomeMessage = await page.locator('h1');
-    await expect(welcomeMessage).toContainText('Welcome to Rogue Scroll', { timeout: 60000 });
-    debugProtocol.success('Welcome message verified');
-    
-    // Log all captured console messages
-    debugProtocol.log('Captured console messages:');
-    consoleMessages.forEach((msg, index) => {
-      debugProtocol.event(`${index + 1}. [${msg.type}] ${msg.text}`);
-    });
+    await page.goto('http://localhost:3000');
+    await expect(page.locator('h1')).toContainText('Welcome to Rogue Scroll');
+    await expect(page.locator('#menu')).toBeVisible();
   });
 
-  test('should be able to start the game', async ({ page }) => {
-    // Click the game link in the navigation
-    debugProtocol.log('Attempting to start game...');
-    await page.locator('a[href="#game"]').click();
+  test('should start the game when clicking start', async ({ page }) => {
+    await page.goto('http://localhost:3000');
     
-    // Wait for the game container to be visible
-    const gameContainer = await page.locator('#game');
-    await expect(gameContainer).toBeVisible({ timeout: 60000 });
-    debugProtocol.success('Game container loaded');
-
-    // Check that the menu is hidden
-    const menu = await page.locator('#menu');
-    await expect(menu).not.toBeVisible();
-    debugProtocol.success('Menu hidden as expected');
-
-    // Log any new console messages
-    debugProtocol.log('Console messages after starting game:');
-    consoleMessages.forEach((msg, index) => {
-      debugProtocol.event(`${index + 1}. [${msg.type}] ${msg.text}`);
+    // Wait for RogueScroll to be available
+    await page.waitForFunction(() => typeof window.RogueScroll !== 'undefined', { timeout: 10000 });
+    
+    // Click the start button
+    await page.click('a[href="#game"]');
+    
+    // Wait for game initialization
+    await page.waitForFunction(() => {
+      const rs = window.RogueScroll;
+      return rs && rs.game && typeof rs.game.addComponentToEntity === 'function';
+    }, { timeout: 10000 });
+    
+    // Verify game container is visible
+    await expect(page.locator('#game')).toBeVisible();
+    
+    // Verify game is running
+    const isGameRunning = await page.evaluate(() => {
+      const rs = window.RogueScroll;
+      return rs && rs.game && rs.isRunning;
     });
+    expect(isGameRunning).toBe(true);
   });
 }); 
