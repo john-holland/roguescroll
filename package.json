@@ -6,7 +6,7 @@
   "author": "John Holland <jholland87@gmail.com>",
   "dependencies": {
     "css-loader": "^0.9.1",
-    "express": "~3.2.4",
+    "express": "~5.1.0",
     "handlebars": "^4.7.7",
     "handlebars-loader": "^1.7.3",
     "html-loader": "^0.2.3",
