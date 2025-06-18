@@ -42,6 +42,7 @@ import HideOnPause from './components/hide-on-pause';
 import HtmlRenderer from './components/html-renderer';
 import KeyboardEvents from './components/keyboard-events';
 import LevelDoor from './components/level-door';
+import LevelManager from './components/level-manager';
 import Minimap from './components/minimap';
 import Mounted from './components/mounted';
 import Movement from './components/movement';
@@ -64,6 +65,9 @@ import SpellContainer from './components/spell-container';
 import Spell from './components/spell';
 import Tests from './components/tests';
 import Options from './components/options';
+import Window from './components/window';
+import Weapon from './components/weapon';
+
 
 // Load non-critical components dynamically
 const loadNonCriticalComponents = async () => {
@@ -97,6 +101,7 @@ const loadNonCriticalComponents = async () => {
         'html-renderer': HtmlRenderer,
         'keyboard-events': KeyboardEvents,
         'level-door': LevelDoor,
+        'level-manager': LevelManager,
         minimap: Minimap,
         mounted: Mounted,
         movement: Movement,
@@ -116,7 +121,9 @@ const loadNonCriticalComponents = async () => {
         'spell-container': SpellContainer,
         spell: Spell,
         tests: Tests,
-        options: Options
+        options: Options,
+        'window': Window,
+        weapon: Weapon
     };
 };
 
@@ -124,10 +131,11 @@ class RogueScroll {
     constructor() {
         this.game = null;
         this.components = {};
+        // @Cursor: keep this, it's the default entities
         this.entities = mori.vector(
             mori.hashMap(
-                'tags', mori.vector('world'),
-                'components', mori.hashMap('world', mori.hashMap())
+                'tags', mori.vector('level-manager'),
+                'components', mori.hashMap('level-manager', mori.hashMap())
             ),
             mori.hashMap(
                 'tags', mori.vector('music', 'level-change-subscriber'),
@@ -146,15 +154,14 @@ class RogueScroll {
                     'movement', mori.hashMap(
                         'speed', 250
                     ),
-                    'position', mori.hashMap(
+                    'glyphicon-renderer', mori.hashMap(
                         'position', mori.hashMap(
                             'x', document.documentElement.clientWidth / 2,
                             'y', -75
                         ),
-                        'size', mori.hashMap(
-                            'width', 50,
-                            'height', 50
-                        )
+                        'width', 50,
+                        'height', 50,
+                        'icon', 'user'
                     ),
                     'keyboard-events', mori.hashMap(),
                     'vision', mori.hashMap()
@@ -346,11 +353,17 @@ class RogueScroll {
                 }
             });
 
+            const thisGame = this.game;
             mori.each(this.entities, entityConfig => {
-                var entity = this.game.createEntity({ tags: entityConfig.tags });
-                Object.entries(entityConfig.components).forEach(([name, data]) => {
-                    entity.addComponent(name, data);
-                });
+                let config = mori.toJs(entityConfig);
+                var entity = thisGame.createEntity({ tags: config?.tags || [] });
+                try {
+                    mori.each(Object.entries(config?.components || {}), ([name, data]) => {
+                        entity.addComponent(name, data);
+                    });
+                } catch (error) {
+                    console.error('Failed to add component to entity:', error, config);
+                }
             });
 
             // Start game loop

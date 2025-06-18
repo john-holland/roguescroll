@@ -47,8 +47,8 @@ class Engine {
         }
 
         const entity = new Entity(id, this);
-        this.entities.add(id, entity);
         entity.tags = tags.slice();
+        this.entities.add(id, entity);
         entity.isActive = typeof options.isActive !== 'undefined' ? options.isActive : true;
         entity.shouldRender = typeof options.shouldRender !== 'undefined' ? options.shouldRender : true;
 

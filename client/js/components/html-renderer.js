@@ -13,29 +13,29 @@ function applyCss() {
         $(this.$el).css({
             bottom: 'initial',
             right: 'initial',
-            left: this.position.x - (this.size.width / 2),
-            top: this.position.y - (this.size.height / 2)
+            left: this.x - (this.size.width / 2),
+            top: this.y - (this.size.height / 2)
         });
     } else if (this.positionAnchor === 'top-right') {
         $(this.$el).css({
             bottom: 'initial',
             left: 'initial',
-            right: this.position.x - (this.size.width / 2),
-            top: this.position.y - (this.size.height / 2)     
+            right: this.x - (this.size.width / 2),
+            top: this.y - (this.size.height / 2)     
         });
     } else if (this.positionAnchor === 'bottom-left') {
         $(this.$el).css({
             top: 'initial',
             right: 'initial',
-            left: this.position.x - (this.size.width / 2),
-            bottom: this.position.y - (this.size.height / 2)     
+            left: this.x - (this.size.width / 2),
+            bottom: this.y - (this.size.height / 2)     
         });
     } else if (this.positionAnchor === 'bottom-right') {
         $(this.$el).css({
             top: 'initial',
             left: 'initial',
-            right: this.position.x + (this.size.width / 2),
-            bottom: this.position.y + (this.size.height / 2)
+            right: this.x + (this.size.width / 2),
+            bottom: this.y + (this.size.height / 2)
         });
     }
 }
@@ -59,6 +59,10 @@ export default function HtmlRenderer() {
                 width: 0,
                 height: 0,
                 shouldRender: false
+            },
+            size: {
+                width: 0,
+                height: 0
             },
             levelSetsColor: true,
             positionAnchor: 'top-left' //'top-right', 'bottom-left', 'bottom-right'
@@ -92,8 +96,8 @@ export default function HtmlRenderer() {
         },
         render: function(dt, entity, component) {
             //todo: Use the current scroll of the screen as the 'active rectangle' to choose what to render.
-            if (this.renderBuffer.position.x == this.position.x &&
-                this.renderBuffer.position.y == this.position.y &&
+            if (this.renderBuffer.position.x == this.x &&
+                this.renderBuffer.position.y == this.y &&
                 this.renderBuffer.width == this.size.width &&
                 this.renderBuffer.height == this.size.height) {
                 return;
@@ -103,8 +107,8 @@ export default function HtmlRenderer() {
                 applyCss.call(this);
             }
             
-            this.renderBuffer.position.x = this.position.x;
-            this.renderBuffer.position.y = this.position.y;
+            this.renderBuffer.position.x = this.x;
+            this.renderBuffer.position.y = this.y;
             this.renderBuffer.width = this.size.width;
             this.renderBuffer.height = this.size.height;
             this.renderBuffer.shouldRender = entity.shouldRender;

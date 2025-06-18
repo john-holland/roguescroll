@@ -8,8 +8,19 @@ export default function Position() {
             scale: 1,
             layer: 0
         },
+        update: function (dt, entity, component) {
+            this.position = {
+                ...(this?.position || {}),
+                x: this.x,
+                y: this.y,
+                z: this.z, 
+                rotation: this.rotation, 
+                scale: this.scale, 
+                layer: this.layer
+            };
+        },
         messages: {
-            'move': function(entity, data) {
+            'move': function (entity, data) {
                 if (data.x !== undefined) entity.data.x = data.x;
                 if (data.y !== undefined) entity.data.y = data.y;
                 if (data.z !== undefined) entity.data.z = data.z;

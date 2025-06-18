@@ -84,7 +84,7 @@ class Entity {
         if (component.requiredComponents) {
             component.requiredComponents.forEach(function(required) {
                 if (!this.hasComponent(required)) {
-                    throw new Error('Required component ' + required + ' not found on entity');
+                    throw new Error('Required component ' + required + ' not found on entity ' + JSON.stringify(this.tags));
                 }
             }.bind(this));
         }
