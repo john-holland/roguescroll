@@ -8,20 +8,21 @@
     "css-loader": "^0.9.1",
     "express": "~3.2.4",
     "handlebars": "^4.7.7",
-    "handlebars-loader": "^0.1.7",
+    "handlebars-loader": "^1.7.3",
     "html-loader": "^0.2.3",
     "nib": "^1.0.4",
     "raw-loader": "^0.5.1",
     "stylus": "^0.54.5",
-    "stylus-loader": "^0.5.0"
+    "stylus-loader": "^8.1.1"
   },
   "scripts": {
     "start": "node server.js",
-    "build": "webpack -o webpack.config.js"
+    "build": "webpack"
   },
   "devDependencies": {
     "gulp": "^3.8.10",
-    "webpack": "^1.4.15"
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   },
   "keywords": [
     "game",

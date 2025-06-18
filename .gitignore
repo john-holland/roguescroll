@@ -1,3 +1,5 @@
 node_modules
 client/fonts/glyphicons*
 .c9
+build/
+.idea/
