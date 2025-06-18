@@ -1,4 +1,5 @@
 define(function() {
+    var mori = require('mori');
 
 /*
   V2 is a mutable vector2 for performance
@@ -203,6 +204,16 @@ function V2(x, y) {
         this.Y = parseFloat(this.Y.toFixed(decimalPlaces));
         return this;
     }
+
+    this.toMori = function() {
+        return mori.hashMap('x', this.X, 'y', this.Y);
+    }
+
+    this.fromMori = function(moriVector) {
+        this.X = mori.get(moriVector, 'x');
+        this.Y = mori.get(moriVector, 'y');
+        return this;
+    }
 }
 
 
@@ -338,6 +349,17 @@ function ImmutableV2(x, y) {
     
     this.toFixed = function(decimalPlaces) {
         return new ImmutableV2(parseFloat(this.X.toFixed(decimalPlaces)), parseFloat(this.Y.toFixed(decimalPlaces)));
+    }
+
+    this.toMori = function() {
+        return mori.hashMap('x', this.X, 'y', this.Y);
+    }
+
+    this.fromMori = function(moriVector) {
+        return new ImmutableV2(
+            mori.get(moriVector, 'x'),
+            mori.get(moriVector, 'y')
+        );
     }
 }
 

@@ -13,12 +13,12 @@ define(function() {
                 circleColor: null
             },
             onAdd: function(entity, component) {
-                this.world = entity.engine.findEntityByTag('world');
-                var world = this.world;
+                this.levelManager = entity.engine.findEntityByTag('level-manager');
+                var levelManager = this.levelManager;
                 this.visionCircle = entity.engine.createEntity({tags: ['vision-circle']})
                     .addComponent('html-renderer', {
                         htmlTemplateFactory: function(entity, component) {
-                            return '<div style="position:absolute;border:2px dashed ' + entity.engine.findEntityByTag('world').data.currentLevel.colors.accent.toHexString() + '"></div>';
+                            return '<div style="position:absolute;border:2px dashed ' + entity.engine.findEntityByTag('level-manager').data.currentLevel.colors.accent.toHexString() + '"></div>';
                         }
                     })
                     .addComponent('mounted', {
@@ -39,8 +39,8 @@ define(function() {
                 })
             },
             update: function(dt, entity, component) {
-                if (this.showVision && this.circleColor != this.world.data.currentLevel.colors.accent.toHexString()) {
-                    this.circleColor = this.world.data.currentLevel.colors.accent.toHexString();
+                if (this.showVision && this.circleColor != this.levelManager.data.currentLevel.colors.accent.toHexString()) {
+                    this.circleColor = this.levelManager.data.currentLevel.colors.accent.toHexString();
                     this.visionCircle.data.$el.css({'border-color': this.circleColor });
                 }
                 

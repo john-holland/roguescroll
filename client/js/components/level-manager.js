@@ -4,6 +4,8 @@ module.exports = function() {
         Level = require('../models/level');
     
     return {
+        name: 'level-manager',
+        tags: ['level-manager'],
         _: {
             level: null,
             currentLevel: null,

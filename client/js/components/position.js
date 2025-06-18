@@ -1,21 +1,33 @@
-module.exports = function Position() {
+export default function Position() {
     return {
         _: {
-            position: {
-                x: 0,
-                y: 0
-            },
-            size: {
-                width: 24,
-                height: 24
-            },
+            x: 0,
+            y: 0,
+            z: 0,
             rotation: 0,
-            isStaticPosition: false
+            scale: 1,
+            layer: 0
+        },
+        update: function (dt, entity, component) {
+            this.position = {
+                ...(this?.position || {}),
+                x: this.x,
+                y: this.y,
+                z: this.z, 
+                rotation: this.rotation, 
+                scale: this.scale, 
+                layer: this.layer
+            };
         },
         messages: {
-            'set-position-type': function(entity, data) {
-                this.isStaticPosition = (data || { }).isStaticPosition || false;
+            'move': function (entity, data) {
+                if (data.x !== undefined) entity.data.x = data.x;
+                if (data.y !== undefined) entity.data.y = data.y;
+                if (data.z !== undefined) entity.data.z = data.z;
+                if (data.rotation !== undefined) entity.data.rotation = data.rotation;
+                if (data.scale !== undefined) entity.data.scale = data.scale;
+                if (data.layer !== undefined) entity.data.layer = data.layer;
             }
         }
     };
-};
+}

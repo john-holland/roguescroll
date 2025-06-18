@@ -8,6 +8,31 @@
         <link rel="stylesheet" href="/css/glyphicons.css">
         <link rel="stylesheet" href="/css/google-fonts.css">
         <link rel="stylesheet" href="/css/animations.css">
+        <!-- <script src="/dist/main.bundle.js"></script> -->
+        <!-- Load dependencies first -->
+        <script>
+            // Test mode - use local resources
+            if (window.location.search.includes('test=true')) {
+                document.write('<script src="/js/lib/jquery-2.1.1.min.js"><\/script>');
+                document.write('<script src="/js/lib/jquery.transit.min.js"><\/script>');
+                document.write('<script src="/js/lib/jquery.color.min.js"><\/script>');
+                document.write('<script src="/js/lib/bootstrap.min.js"><\/script>');
+                document.write('<script src="/js/lib/underscore-min.js"><\/script>');
+                document.write('<script src="/js/lib/mori.min.js"><\/script>');
+                document.write('<script src="/js/lib/pixi.min.js"><\/script>');
+            } else {
+                document.write('<script src="https://code.jquery.com/jquery-2.1.1.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.9.9/jquery.transit.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"><\/script>');
+                document.write('<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/mori/0.3.2/mori.min.js"><\/script>');
+                document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.7/pixi.min.js"><\/script>');
+            }
+        </script>
+        
+        <!-- Load main bundle -->
+        <script src="/dist/main.bundle.js"></script>
         <style type="text/css">
             @font-face {
                 font-family:'Glyphicons Regular';
@@ -171,45 +196,8 @@
         </div>
         <div id="game"></div>
       </div>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-      <!--<script src="/socket.io/socket.io.js"></script>-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
-      <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.transit/0.9.12/jquery.transit.min.js"></script>
-      <script src="game.js"></script>
       
-      <script>
-      $(function() {
-        window.unload = function() {
-          
-        };
-        
-        $("a[href='#menu']").click(function() {
-          $("li a[href='#game']").parent().removeClass("active");
-          $(this).parent().addClass('active');
-        });
-        $("a[href='#game']").click(function() {
-          $("li a[href='#menu']").parent().removeClass("active");
-          $(this).parent().addClass('active');
-        });
-        
-        $('#nav').on('activate.bs.scrollspy', function () {
-          if ($(".active [href='#menu']").length) {
-            RogueScroll.pause();
-          }
-          if ($(".active [href='#game']").length) {
-            if (RogueScroll.engine.findEntityByTag('game-manager').data.gameState === 'in-play') {
-                RogueScroll.play();
-            }
-          }
-        });
-        
-        RogueScroll.pause();
-      });
-      </script>
+      <!-- Analytics -->
       <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -218,7 +206,7 @@
       
         ga('create', 'UA-58454755-1', 'auto');
         ga('send', 'pageview');
-      
       </script>
-  </body>
+    </body>
 </html>
+ 

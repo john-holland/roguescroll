@@ -1,5 +1,12 @@
 node_modules
 client/fonts/glyphicons*
 .c9
+dist/
 build/
 .idea/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
